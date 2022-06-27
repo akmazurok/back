@@ -1,13 +1,28 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const { restart } = require("nodemon");
+const bodyParser = require("body-parser");
+
 
 dotenv.config();
 
 const app = express();
 
-//rotas
-const rotaUsuarios = require("./routes/usuarios");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+require('./src/controllers/usuarioController')(app);
+
+app.listen(3000);
+
+/* app.get("/", (req, res) => {
+  res.send("ok");
+});
+
+app.listen(3000);
+ */
+/* //rotas
+const rotaUsuarios = require("./src/routes/usuarios");
 
 app.use("/usuarios", rotaUsuarios);
 
@@ -25,6 +40,5 @@ app.use((error, req, res, next) => {
       message: error.message,
     },
   });
-});
-
-module.exports = app;
+}); 
+ */
