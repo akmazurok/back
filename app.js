@@ -2,43 +2,30 @@ const express = require("express");
 const dotenv = require("dotenv");
 const { restart } = require("nodemon");
 const bodyParser = require("body-parser");
-
+const connectToDatabase = require("./src/database/config");
 
 dotenv.config();
 
 const app = express();
+const port = process.env.PORT || 3000;
+connectToDatabase();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-require('./src/controllers/usuarioController')(app);
+const usuario = require("./src/routes/usuarioRoutes");
+const admin = require("./src/routes/adminRoutes");
+const cursos = require("./src/routes/cursoRoutes");
 
-app.listen(3000);
+app.use("/auth", usuario);
+app.use("/admin", admin);
+app.use("/curso", cursos);
 
-/* app.get("/", (req, res) => {
-  res.send("ok");
+
+app.get("/", (req, res) => {
+  res.send("Hello World");
 });
 
-app.listen(3000);
- */
-/* //rotas
-const rotaUsuarios = require("./src/routes/usuarios");
-
-app.use("/usuarios", rotaUsuarios);
-
-//Tratamento de erro - rota não encontrada
-app.use((req, res, next) => {
-  const err = new Error("Não encontrado");
-  err.status = 404;
-  next(err);
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
-
-app.use((error, req, res, next) => {
-  res.status(error.status || 500);
-  return res.send({
-    erro: {
-      message: error.message,
-    },
-  });
-}); 
- */

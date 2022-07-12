@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+//TO-DO - schema para armazenar imagens
+
 // Usuario Schema
 const UsuarioSchema = new mongoose.Schema({
   documento: {
@@ -26,32 +28,76 @@ const UsuarioSchema = new mongoose.Schema({
     required: true,
   },
 
-  /*   fotoPerfil: Object,
+  acesso: {
+    type: String,
+    enum: ["Administrador", "Estudante", "Entidade"],
+  },
 
   situacaoCadastro: {
     type: String,
-    required: true,
     enum: ["Ativo", "Pendente"],
     default: "Pendente",
   },
 
-  observacaoUsuario: String,
+  //fotoPerfil: Object,
 
   endereco: {
-    cep: String,
-    logradouro: String,
-    complemento: String,
-    numero: String,
-    bairro: String,
-    cidade: String,
-    uf: String,
+    cep: { type: String },
+    logradouro: { type: String },
+    complemento: { type: String },
+    numero: { type: String },
+    bairro: { type: String },
+    cidade: { type: String },
+    uf: { type: String },
   },
 
   dataRegistro: {
     type: Date,
     default: Date.now,
   },
- */
+
+  //ADMIN E ESTUDANTE
+  nome: {
+    type: String,
+  },
+
+  nomeSocial: {
+    type: String,
+  },
+
+  dataNascimento: {
+    type: Date,
+  },
+
+  genero: {
+    type: String,
+  },
+
+  //ESTUDANTE
+  areasInteresse: {
+    type: String,
+  },
+
+  experienciasAnteriores: {
+    type: String,
+  },
+
+  //ENTIDADE
+  razaoSocial: {
+    type: String,
+  },
+
+  nomeFantasia: {
+    type: String,
+  },
+
+  nomeResponsavel: {
+    type: String,
+  },
+
+  cpfResponsavel: {
+    type: String,
+  },
 });
 
 //usando bcrypt para a senha

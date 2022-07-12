@@ -1,21 +1,20 @@
 const express = require("express");
+const Usuario = require("../models/usuario");
 const router = express.Router();
 
-//RETORNA USUARIOS
-router.get("/", (req, res, next) => {
-  res.status(200).send({
-    message: "usando o get da rota usuarios",
-  });
-});
+//TO-DO -
 
-//INSERE USUARIO
-router.post("/", (req, res, next) => {
-  res.status(201).send({
-    message: "usuario inserido",
-  });
-});
+//RETORNAR TODOS OS USUARIOS
+exports.listarUsuarios = async (req, res) => {
+  try {
+    const users = await Usuario.find();
+    res.status(200).send({ users });
+  } catch (error) {
+    res.status(500).send({ erro: error });
+  }
+};
 
-//RETORNA USUARIO ESPECIFICO
+/* //RETORNA USUARIO ESPECIFICO
 router.get("/:id_usuario", (req, res, next) => {
   const id = req.params.id_usuario;
   res.status(200).send({
@@ -37,5 +36,4 @@ router.delete("/", (req, res, next) => {
     message: "usando delete",
   });
 });
-
-module.exports = router;
+ */
