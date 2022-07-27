@@ -63,6 +63,20 @@ exports.cadastrarCurso = async (req, res) => {
   }
 };
 
+
+exports.addCurso = async (req, res) => {
+  const curso = new Curso(req.body);
+
+  try {
+    await Instituicao.updateOne(
+      { _id: req.params.id },
+      { $push: { cursos: curso } }
+    );
+    return res.status(200).send({ curso });
+  } catch (error) {
+    return res.status(400).send({ error: "Erro ao realizar o cadastro" });
+  }
+};
 //LISTAR CURSOS NA IES
 exports.listarCursos = async (req, res) => {
   try {

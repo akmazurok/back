@@ -1,4 +1,4 @@
-  const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 // Curso Schema
 const CursoSchema = new mongoose.Schema({
@@ -8,6 +8,10 @@ const CursoSchema = new mongoose.Schema({
 
   grauAcademico: {
     type: String,
+  },
+
+  instituicao: {
+    type: mongoose.Types.ObjectId, ref:"Instituicao"
   },
 
   campus: {
