@@ -4,6 +4,6 @@ const router = express.Router();
 const usuarioController = require("../controllers/usuarioController");
 
 router.post("/cadastro", usuarioController.cadastrar);
-router.get("/", usuarioController.usuario);
+router.get("/:id", usuarioController.usuario);
 
 module.exports = router;

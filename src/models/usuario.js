@@ -7,25 +7,25 @@ const bcrypt = require("bcryptjs");
 const UsuarioSchema = new mongoose.Schema({
   documento: {
     type: String,
-    unique: true,
-    required: true,
+//    unique: true,
+//    required: true,
   },
 
   email: {
     type: String,
-    unique: true,
-    required: true,
+//    unique: true,
+//    required: true,
   },
 
   senha: {
     type: String,
-    required: true,
-    select: false,
+//    required: true,
+//    select: false,
   },
 
   telefone: {
-    type: String,
-    required: true,
+//    type: String,
+//    required: true,
   },
 
   acesso: {

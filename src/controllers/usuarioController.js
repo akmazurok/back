@@ -4,11 +4,11 @@ const Usuario = require("../models/usuario");
 
 //CADASTRAR
 exports.cadastrar = async (req, res) => {
-  const { documento } = req.body;
+  //  const { documento } = req.body;
 
   try {
-    if (await Usuario.findOne({ documento }))
-      return res.status(400).send({ error: "Documento já cadastrado" });
+    //  if (await Usuario.findOne({ documento }))
+    //    return res.status(400).send({ error: "Documento já cadastrado" });
 
     const usuario = await Usuario.create(req.body);
     usuario.senha = undefined;
@@ -27,6 +27,13 @@ exports.usuario = async (req, res) => {
   } catch (error) {
     res.status(500).send({ erro: error });
   }
+};
+
+//LOGIN
+exports.login = async (req, res) => {
+  try {
+    
+  } catch (error) {}
 };
 
 //UPDATE USUARIO
