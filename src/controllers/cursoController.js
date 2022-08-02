@@ -65,14 +65,11 @@ exports.cadastrarCurso = async (req, res) => {
 
 
 exports.addCurso = async (req, res) => {
-  const curso = new Curso(req.body);
-
+ // const curso = new Curso(req.body);
+  //const ies = await Instituicao.create(req.body);
   try {
-    await Instituicao.updateOne(
-      { _id: req.params.id },
-      { $push: { cursos: curso } }
-    );
-    return res.status(200).send({ curso });
+    const curso = await Curso.create(req.body);
+    return res.status(201).send({ curso });
   } catch (error) {
     return res.status(400).send({ error: "Erro ao realizar o cadastro" });
   }

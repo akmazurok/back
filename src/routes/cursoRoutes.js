@@ -9,5 +9,6 @@ router.get("/ies/:id", cursoController.buscarIes);
 router.delete("/ies/:id", cursoController.excluirIes);
 router.put("/ies/:id", cursoController.cadastrarCurso);
 router.get("/ies/:id/cursos", cursoController.listarCursos);
+router.post("/curso", cursoController.addCurso);
 
 module.exports = router;
