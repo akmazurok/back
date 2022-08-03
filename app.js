@@ -19,7 +19,7 @@ const cursos = require("./src/routes/cursoRoutes");
 
 app.use("/auth", usuario);
 app.use("/admin", admin);
-app.use("/curso", cursos);
+app.use("/ies", cursos);
 
 
 app.get("/", (req, res) => {

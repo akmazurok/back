@@ -15,7 +15,12 @@ const IntituicaoSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  cursos: [],
+  cursos: [
+    {
+      id: { type: mongoose.Types.ObjectId, ref: "Curso" },
+      nome: { type: String },
+    },
+  ],
 });
 
 module.exports = mongoose.model("Instituicao", IntituicaoSchema);
