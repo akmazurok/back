@@ -2,7 +2,7 @@ const express = require("express");
 const Usuario = require("../models/usuario");
 const router = express.Router();
 
-//TO-DO -
+//TO-DO - /retornar usuario /deletar entidade /aprovarvaga /aprovarcadastro
 
 //RETORNAR TODOS OS USUARIOS
 exports.listarUsuarios = async (req, res) => {
@@ -37,3 +37,5 @@ router.delete("/", (req, res, next) => {
   });
 });
  */
+
+//aprovar --- put aprovar find() status=pendente

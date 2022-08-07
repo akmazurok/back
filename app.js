@@ -3,6 +3,9 @@ const dotenv = require("dotenv");
 const { restart } = require("nodemon");
 const bodyParser = require("body-parser");
 const connectToDatabase = require("./src/database/config");
+const usuario = require("./src/routes/usuarioRoutes");
+const admin = require("./src/routes/adminRoutes");
+const cursos = require("./src/routes/cursoRoutes");
 
 dotenv.config();
 
@@ -12,10 +15,6 @@ connectToDatabase();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-const usuario = require("./src/routes/usuarioRoutes");
-const admin = require("./src/routes/adminRoutes");
-const cursos = require("./src/routes/cursoRoutes");
 
 app.use("/auth", usuario);
 app.use("/admin", admin);
