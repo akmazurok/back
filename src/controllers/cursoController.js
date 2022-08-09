@@ -7,9 +7,7 @@ const Curso = require("../models/curso");
 exports.cadastrarIes = async (req, res) => {
   try {
     const ies = await Instituicao.create(req.body);
-    return res
-      .status(201)
-      .send({ message: "Instituição cadastrada com sucesso: " + ies });
+    return res.status(201).send({ message: "Instituição cadastrada com sucesso: " + ies });
   } catch (error) {
     return res
       .status(400)
@@ -23,9 +21,7 @@ exports.listarIes = async function (req, res) {
     const instituicoes = await Instituicao.find();
     res.status(200).send({ instituicoes });
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Não foi possível listar as Instituições: " + error });
+    res.status(500).send({ message: "Não foi possível listar as Instituições: " + error });
   }
 };
 
@@ -35,11 +31,7 @@ exports.buscarIes = async function (req, res) {
     const instituicao = await Instituicao.findOne({ _id: req.params.id });
     res.status(200).send({ instituicao });
   } catch (error) {
-    res
-      .status(500)
-      .send({
-        message: "Instituição " + req.params.nome + " não localizada: " + error,
-      });
+    res.status(500).send({ message: "Instituição " + req.params.nome + " não localizada: " + error });
   }
 };
 
@@ -68,14 +60,9 @@ exports.addCurso = async (req, res) => {
     );
 
     return res
-      .status(201)
-      .send({
-        message: "Curso " + curso.nome + " cadastrado com sucesso! " + curso,
-      });
+      .status(201).send({ message: "Curso " + curso.nome + " cadastrado com sucesso! " + curso });
   } catch (error) {
-    return res
-      .status(400)
-      .send({ message: "Erro ao realizar o cadastro: " + error });
+    return res.status(400).send({ message: "Erro ao realizar o cadastro: " + error });
   }
 };
 

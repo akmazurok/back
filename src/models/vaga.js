@@ -19,18 +19,14 @@ const VagaSchema = new mongoose.Schema({
   },
 
   quantidadeVagas: {
-    type: String,
+    type: Number,
   },
 
   dataInicio: {
     type: Date,
   },
 
-  horaInicio: {
-    type: Date,
-  },
-
-  horaFim: {
+  dataFim: {
     type: Date,
   },
 
@@ -38,10 +34,9 @@ const VagaSchema = new mongoose.Schema({
     type: Number,
   },
 
-  instituicao: {
-    id: { type: mongoose.Types.ObjectId, ref: "Instituicao" },
-    nome: { type: String },
-  },
+  entidade: {
+    id: { type: mongoose.Types.ObjectId, ref: "Usuario" },
+   },
 
   endereco: {
     cep: { type: String },
@@ -69,6 +64,8 @@ const VagaSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+
+  //imagem
 });
 
 module.exports = mongoose.model("Vaga", VagaSchema);

@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// Usuario Schema
+//Arrumar Schema para tipos de imagens
+// Image Schema
 const imageSchema = new Schema({
   img: {
     data: Buffer,

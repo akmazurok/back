@@ -1,6 +1,4 @@
-const express = require("express");
 const Usuario = require("../models/usuario");
-const router = express.Router();
 
 //TO-DO - /retornar usuario /deletar entidade /aprovarvaga /aprovarcadastro
 
@@ -10,7 +8,7 @@ exports.listarUsuarios = async (req, res) => {
     const users = await Usuario.find();
     res.status(200).send({ users });
   } catch (error) {
-    res.status(500).send({ erro: error });
+    res.status(500).send({ message: "Usuários não localizados" + error });
   }
 };
 

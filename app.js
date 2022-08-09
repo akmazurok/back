@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const connectToDatabase = require("./src/database/config");
 const usuario = require("./src/routes/usuarioRoutes");
 const admin = require("./src/routes/adminRoutes");
+const entidade = require("./src/routes/entidadeRoutes");
 const cursos = require("./src/routes/cursoRoutes");
 
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/auth", usuario);
 app.use("/admin", admin);
+app.use("/entidade", entidade);
 app.use("/ies", cursos);
 
 
