@@ -7,25 +7,20 @@ const bcrypt = require("bcryptjs");
 const UsuarioSchema = new mongoose.Schema({
   documento: {
     type: String,
-//    unique: true,
-//    required: true,
+    //    unique: true,
+    //    required: true,
   },
 
   email: {
     type: String,
-//    unique: true,
-//    required: true,
+    //    unique: true,
+    //    required: true,
   },
 
   senha: {
     type: String,
-//    required: true,
-//    select: false,
-  },
-
-  telefone: {
-//    type: String,
-//    required: true,
+    //    required: true,
+    //    select: false,
   },
 
   acesso: {
@@ -33,13 +28,21 @@ const UsuarioSchema = new mongoose.Schema({
     enum: ["Administrador", "Estudante", "Entidade"],
   },
 
-  situacaoCadastro: {
-    type: String,
-    enum: ["Ativo", "Pendente"],
-    default: "Pendente",
+  dataRegistro: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const EstudanteSchema = new mongoose.Schema({
+  userid: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
   },
 
-  //fotoPerfil: Object,
+  telefone: {
+    type: String,
+  },
 
   endereco: {
     cep: { type: String },
@@ -51,12 +54,14 @@ const UsuarioSchema = new mongoose.Schema({
     uf: { type: String },
   },
 
-  dataRegistro: {
-    type: Date,
-    default: Date.now,
+  situacaoCadastro: {
+    type: String,
+    enum: ["Ativo", "Pendente"],
+    default: "Pendente",
   },
 
-  //ADMIN E ESTUDANTE
+  //fotoPerfil: Object,
+  
   nome: {
     type: String,
   },
@@ -74,6 +79,11 @@ const UsuarioSchema = new mongoose.Schema({
   },
 
   //ESTUDANTE
+  curso: {
+    nome: { type: String },
+    instituicao: { type: String },
+  },
+
   areasInteresse: {
     type: String,
   },
@@ -81,8 +91,81 @@ const UsuarioSchema = new mongoose.Schema({
   experienciasAnteriores: {
     type: String,
   },
+});
 
-  //ENTIDADE
+const AdminSchema = new mongoose.Schema({
+  userid: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
+  },
+
+  telefone: {
+    type: String,
+  },
+
+  endereco: {
+    cep: { type: String },
+    logradouro: { type: String },
+    complemento: { type: String },
+    numero: { type: String },
+    bairro: { type: String },
+    cidade: { type: String },
+    uf: { type: String },
+  },
+
+  situacaoCadastro: {
+    type: String,
+    enum: ["Ativo", "Pendente"],
+    default: "Pendente",
+  },
+
+  //fotoPerfil: Object,
+
+  nome: {
+    type: String,
+  },
+
+  nomeSocial: {
+    type: String,
+  },
+
+  dataNascimento: {
+    type: Date,
+  },
+
+  genero: {
+    type: String,
+  },
+});
+
+const EntidadeSchema = new mongoose.Schema({
+  userid: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
+  },
+
+  telefone: {
+    type: String,
+  },
+
+  endereco: {
+    cep: { type: String },
+    logradouro: { type: String },
+    complemento: { type: String },
+    numero: { type: String },
+    bairro: { type: String },
+    cidade: { type: String },
+    uf: { type: String },
+  },
+
+  situacaoCadastro: {
+    type: String,
+    enum: ["Ativo", "Pendente"],
+    default: "Pendente",
+  },
+
+  //fotoPerfil: Object,
+
   razaoSocial: {
     type: String,
   },
@@ -107,5 +190,14 @@ UsuarioSchema.pre("save", async function (next) {
   next();
 });
 
+var Usuario = mongoose.model("Usuario", UsuarioSchema);
+var Estudante = mongoose.model("Estudante", EstudanteSchema);
+var Admin = mongoose.model("Admin", AdminSchema);
+var Entidade = mongoose.model("Entidade", EntidadeSchema);
 
-module.exports = mongoose.model("Usuario", UsuarioSchema);
+module.exports = {
+  Usuario: Usuario,
+  Entidade: Entidade,
+  Estudante: Estudante,
+  Admin: Admin,
+};
