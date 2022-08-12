@@ -35,7 +35,7 @@ const VagaSchema = new mongoose.Schema({
   },
 
   entidade: {
-    id: { type: mongoose.Types.ObjectId, ref: "Usuario" },
+    id: { type: mongoose.Types.ObjectId, ref: "Entidade" },
    },
 
   endereco: {

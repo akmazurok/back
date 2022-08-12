@@ -34,6 +34,7 @@ const UsuarioSchema = new mongoose.Schema({
   },
 });
 
+// Estudante Schema
 const EstudanteSchema = new mongoose.Schema({
   userid: {
     type: mongoose.Types.ObjectId,
@@ -78,7 +79,6 @@ const EstudanteSchema = new mongoose.Schema({
     type: String,
   },
 
-  //ESTUDANTE
   curso: {
     nome: { type: String },
     instituicao: { type: String },
@@ -93,35 +93,14 @@ const EstudanteSchema = new mongoose.Schema({
   },
 });
 
+// Admin Schema
 const AdminSchema = new mongoose.Schema({
   userid: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
   },
 
-  telefone: {
-    type: String,
-  },
-
-  endereco: {
-    cep: { type: String },
-    logradouro: { type: String },
-    complemento: { type: String },
-    numero: { type: String },
-    bairro: { type: String },
-    cidade: { type: String },
-    uf: { type: String },
-  },
-
-  situacaoCadastro: {
-    type: String,
-    enum: ["Ativo", "Pendente"],
-    default: "Pendente",
-  },
-
-  //fotoPerfil: Object,
-
-  nome: {
+ nome: {
     type: String,
   },
 
@@ -129,15 +108,13 @@ const AdminSchema = new mongoose.Schema({
     type: String,
   },
 
-  dataNascimento: {
+dataNascimento: {
     type: Date,
   },
 
-  genero: {
-    type: String,
-  },
-});
+ });
 
+// Entidade Schema
 const EntidadeSchema = new mongoose.Schema({
   userid: {
     type: mongoose.Types.ObjectId,
@@ -164,8 +141,6 @@ const EntidadeSchema = new mongoose.Schema({
     default: "Pendente",
   },
 
-  //fotoPerfil: Object,
-
   razaoSocial: {
     type: String,
   },
@@ -181,6 +156,7 @@ const EntidadeSchema = new mongoose.Schema({
   cpfResponsavel: {
     type: String,
   },
+  //fotoPerfil: Object,  
 });
 
 //usando bcrypt para a senha
