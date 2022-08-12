@@ -57,12 +57,12 @@ const EstudanteSchema = new mongoose.Schema({
 
   situacaoCadastro: {
     type: String,
-    enum: ["Ativo", "Pendente"],
+    enum: ["Ativo", "Pendente", "Reprovado"],
     default: "Pendente",
   },
 
   //fotoPerfil: Object,
-  
+
   nome: {
     type: String,
   },
@@ -82,6 +82,8 @@ const EstudanteSchema = new mongoose.Schema({
   curso: {
     nome: { type: String },
     instituicao: { type: String },
+    campus: { type: String },
+    turno: { type: String },
   },
 
   areasInteresse: {
@@ -100,7 +102,7 @@ const AdminSchema = new mongoose.Schema({
     ref: "Usuario",
   },
 
- nome: {
+  nome: {
     type: String,
   },
 
@@ -108,11 +110,10 @@ const AdminSchema = new mongoose.Schema({
     type: String,
   },
 
-dataNascimento: {
+  dataNascimento: {
     type: Date,
   },
-
- });
+});
 
 // Entidade Schema
 const EntidadeSchema = new mongoose.Schema({
@@ -156,7 +157,7 @@ const EntidadeSchema = new mongoose.Schema({
   cpfResponsavel: {
     type: String,
   },
-  //fotoPerfil: Object,  
+  //fotoPerfil: Object,
 });
 
 //usando bcrypt para a senha

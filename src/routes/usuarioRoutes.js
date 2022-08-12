@@ -7,6 +7,6 @@ router.post("/cadastro", usuarioController.cadastrar);
 //router.post("/cadastroent", usuarioController.cadastrarent);
 router.get("/:id", usuarioController.usuario);
 router.post("/login", usuarioController.login);
-router.put("/:id", usuarioController.editar);
+router.patch("/:id", usuarioController.editar);
 
 module.exports = router;

@@ -20,7 +20,7 @@ exports.cadastrar = async (req, res) => {
 
     var doc = documento;
     var cadastro = null;
-  
+
     if (doc.length > 11) {
       cadastro = new Entidade(req.body);
     } else {
@@ -42,7 +42,7 @@ exports.usuario = async (req, res) => {
   try {
     //Retorna o usuario sem a informacao da senha
     const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
-    res.status(200).send({usuario});
+    res.status(200).send({ usuario });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
@@ -83,8 +83,10 @@ exports.login = async (req, res) => {
 //EDITAR USUARIO - OK
 exports.editar = async (req, res) => {
   const usuario = req.body;
+
   try {
     await Usuario.updateOne({ _id: req.params.id }, usuario);
+
     return res.status(200).send({ message: "Perfil alterado com sucesso!" });
   } catch (error) {
     return res
@@ -92,3 +94,15 @@ exports.editar = async (req, res) => {
       .send({ message: "Erro ao realizar ao atualizar" + error });
   }
 };
+
+/* function tipoUsuario(documento) {
+  var doc = documento;
+  var cadastro = null;
+
+  if (doc.length > 11) {
+    cadastro = "Entidade";
+  } else {
+    cadastro = "Estudante";
+  }
+  return cadastro;
+} */

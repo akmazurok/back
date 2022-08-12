@@ -5,6 +5,9 @@ const IntituicaoSchema = new mongoose.Schema({
   nome: {
     type: String,
   },
+  sigla: {
+    type: String,
+  },
 
   cnpj: {
     type: String,
@@ -18,7 +21,9 @@ const IntituicaoSchema = new mongoose.Schema({
   cursos: [
     {
       id: { type: mongoose.Types.ObjectId, ref: "Curso" },
+      grauAcademico: { type: String },
       nome: { type: String },
+      campus: { type: String },
     },
   ],
 });
