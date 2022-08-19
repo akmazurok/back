@@ -1,9 +1,9 @@
 const Instituicao = require("../models/instituicao");
 const Curso = require("../models/curso");
 
-//TO DO - arrumar excluir curso
+//TO DO - arrumar excluir curso e excluir ies
 
-//CADASTRAR INSTITUICAO
+//CADASTRAR INSTITUICAO - OK
 exports.cadastrarIes = async (req, res) => {
   try {
     const ies = await Instituicao.create(req.body);
@@ -15,7 +15,7 @@ exports.cadastrarIes = async (req, res) => {
   }
 };
 
-//LISTAR IES
+//LISTAR IES - OK
 exports.listarIes = async function (req, res) {
   try {
     const instituicoes = await Instituicao.find();
@@ -25,7 +25,7 @@ exports.listarIes = async function (req, res) {
   }
 };
 
-//RETORNA IES POR ID
+//RETORNA IES POR ID - OK
 exports.buscarIes = async function (req, res) {
   try {
     const instituicao = await Instituicao.findOne({ _id: req.params.id });
@@ -50,7 +50,7 @@ exports.excluirIes = async function (req, res) {
   }
 };
 
-//CADASTRAR CURSO NA COLECAO CURSOS E ADD NA IES
+//CADASTRAR CURSO NA COLECAO CURSOS E ADD NA IES - OK
 exports.addCurso = async (req, res) => {
   try {
     const curso = await Curso.create(req.body);
@@ -66,7 +66,7 @@ exports.addCurso = async (req, res) => {
   }
 };
 
-//LISTAR CURSOS NA IES
+//LISTAR CURSOS NA IES - OK
 exports.listarCursos = async (req, res) => {
   try {
     const instituicao = await Instituicao.findOne({ _id: req.params.id });
@@ -78,7 +78,7 @@ exports.listarCursos = async (req, res) => {
   }
 };
 
-//RETORNA CURSO POR ID
+//RETORNA CURSO POR ID - OK
 exports.buscarCurso = async function (req, res) {
   try {
     const curso = await Curso.findOne({ _id: req.params.id });

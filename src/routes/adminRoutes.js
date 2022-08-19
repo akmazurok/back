@@ -10,6 +10,7 @@ router.get("/admins", adminController.listarAdmins);
 
 router.get("/vagas", adminController.listarVagas);
 router.patch("/vagas/:id", adminController.aprovarVaga);
+router.get("/vagas/:id", adminController.detalhesVaga);
 
 router.post("/cadastro", adminController.cadastrar);
 router.get("/:id", adminController.admin);

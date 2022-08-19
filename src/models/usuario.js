@@ -84,6 +84,9 @@ const EstudanteSchema = new mongoose.Schema({
     instituicao: { type: String },
     campus: { type: String },
     turno: { type: String },
+    anoTermino: { type: Date },
+    anoInicio: { type: Date },
+    //comprovanteMatricula:
   },
 
   areasInteresse: {

@@ -30,13 +30,15 @@ const VagaSchema = new mongoose.Schema({
     type: Date,
   },
 
+  //carga horaria em minutos
   cargaHoraria: {
     type: Number,
   },
 
   entidade: {
     id: { type: mongoose.Types.ObjectId, ref: "Entidade" },
-   },
+    nome: { type: String },
+  },
 
   endereco: {
     cep: { type: String },
@@ -50,7 +52,7 @@ const VagaSchema = new mongoose.Schema({
 
   statusAprovacao: {
     type: String,
-    enum: ["Ativa", "Pendente"],
+    enum: ["Ativa", "Pendente","Reprovada"],
     default: "Pendente",
   },
 

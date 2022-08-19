@@ -16,6 +16,17 @@ exports.listarVagas = async (req, res) => {
   }
 };
 
+//RETORNAR VAGA POR ID - OK
+exports.detalhesVaga = async (req, res) => {
+  try {
+    const vaga = await Vaga.find({ _id: req.params.id });
+    res.status(200).send({ vaga });
+  } catch (error) {
+    res.status(500).send({ message: "Vaga não localizada" + error });
+  }
+};
+
+
 //APROVAR VAGA - OK
 exports.aprovarVaga = async (req, res) => {
   const vaga = req.body;
@@ -23,7 +34,7 @@ exports.aprovarVaga = async (req, res) => {
     await Vaga.updateOne({ _id: req.params.id }, vaga);
     return res
       .status(200)
-      .send({ message: "Status da vaga: " + vaga.statusAprovacao });
+      .send({ message: "Vaga aprovada com sucesso!" });
   } catch (error) {
     return res
       .status(400)

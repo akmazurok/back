@@ -1,9 +1,11 @@
+var mongoose = require("mongoose");
 const Vaga = require("../models/vaga");
 const Entidade = require("../models/usuario").Entidade;
 const Usuario = require("../models/usuario").Usuario;
+
 //TO-DO - /ver inscritos /aprovar inscritos
 
-//CADASTRAR VAGA
+//CADASTRAR VAGA - OK
 exports.cadastrarVaga = async (req, res) => {
   //const entidade = req.params;
   const vaga = new Vaga(req.body);
@@ -19,15 +21,27 @@ exports.cadastrarVaga = async (req, res) => {
   }
 };
 
-//LISTAR VAGAS
+//LISTAR VAGAS DA ENTIDADE - OK
 exports.listarVagas = async (req, res) => {
   //const ies = await Instituicao.findOne({ _id: req.params.id });
-  //  const entidade = req.params;
+  const entidade = mongoose.Types.ObjectId(req.params);
   try {
-    const vagas = await Vaga.find({ "entidade.id": req.params });
+    const vagas = await Vaga.find({ "entidade.id": entidade });
     res.status(200).send({ vagas });
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
+  }
+};
+
+//VISUALIZAR VAGA
+exports.vaga = async (req, res) => {
+  //checar header com autorizacao do id da entidade
+  const { id, idvaga } = req.params;
+  try {
+    const vaga = await Vaga.findOne({ "_id": idvaga });
+    res.status(200).send(vaga);
+  } catch (error) {
+    res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
@@ -45,23 +59,14 @@ exports.editarVaga = async (req, res) => {
   }
 };
 
-//VISUALIZAR VAGA
-exports.vaga = async (req, res) => {
-  const { id, idvaga } = req.params;
-  try {
-    const vaga = await Vaga.findOne({ _id: idvaga });
-    res.status(200).send(vaga);
-  } catch (error) {
-    res.status(404).send({ message: "Dados não encontrados " + error });
-  }
-};
+
 
 //ENTIDADE POR ID
 exports.entidade = async (req, res) => {
   try {
     const entidade = await Entidade.findOne({ _id: req.params.id });
-   // const usuario = await Usuario.find({ userid: entidade.userid }, "-senha");
-    res.status(200).send({entidade});
+    // const usuario = await Usuario.find({ userid: entidade.userid }, "-senha");
+    res.status(200).send({ entidade });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
@@ -73,7 +78,7 @@ exports.usuario = async (req, res) => {
     //Retorna o usuario sem a informacao da senha
     const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
     const estudante = await Estudante.find({ userid: req.params.id });
-    res.status(200).send({usuario, estudante});
+    res.status(200).send({ usuario, estudante });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
