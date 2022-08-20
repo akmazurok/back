@@ -7,7 +7,6 @@ const Usuario = require("../models/usuario").Usuario;
 
 //CADASTRAR VAGA - OK
 exports.cadastrarVaga = async (req, res) => {
-  //const entidade = req.params;
   const vaga = new Vaga(req.body);
   vaga.entidade = req.params;
 
@@ -23,7 +22,6 @@ exports.cadastrarVaga = async (req, res) => {
 
 //LISTAR VAGAS DA ENTIDADE - OK
 exports.listarVagas = async (req, res) => {
-  //const ies = await Instituicao.findOne({ _id: req.params.id });
   const entidade = mongoose.Types.ObjectId(req.params);
   try {
     const vagas = await Vaga.find({ "entidade.id": entidade });
@@ -33,21 +31,19 @@ exports.listarVagas = async (req, res) => {
   }
 };
 
-//VISUALIZAR VAGA
+//VISUALIZAR VAGA - OK
 exports.vaga = async (req, res) => {
-  //checar header com autorizacao do id da entidade
-  const { id, idvaga } = req.params;
   try {
-    const vaga = await Vaga.findOne({ "_id": idvaga });
+    const vaga = await Vaga.findOne({ _id: req.params.vagaid });
     res.status(200).send(vaga);
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
-//EDITAR VAGA
+//EDITAR VAGA - OK
 exports.editarVaga = async (req, res) => {
-  const { idvaga } = req.params;
+  const idvaga = req.params.vagaid;
   const vaga = req.body;
   try {
     await Vaga.updateOne({ _id: idvaga }, vaga);
@@ -59,32 +55,18 @@ exports.editarVaga = async (req, res) => {
   }
 };
 
-
-
-//ENTIDADE POR ID
+//ENTIDADE POR ID - OK
 exports.entidade = async (req, res) => {
   try {
-    const entidade = await Entidade.findOne({ _id: req.params.id });
-    // const usuario = await Usuario.find({ userid: entidade.userid }, "-senha");
+    const entidade = await Entidade.find({ _id: req.params.id });
+
     res.status(200).send({ entidade });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
-//USUARIO POR ID
-exports.usuario = async (req, res) => {
-  try {
-    //Retorna o usuario sem a informacao da senha
-    const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
-    const estudante = await Estudante.find({ userid: req.params.id });
-    res.status(200).send({ usuario, estudante });
-  } catch (error) {
-    res.status(404).send({ message: "Dados não encontrados " + error });
-  }
-};
-
-//EDITAR ENTIDADE
+//EDITAR ENTIDADE - OK
 exports.editarEntidade = async (req, res) => {
   const entidade = req.body;
   try {
