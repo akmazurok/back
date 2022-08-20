@@ -7,6 +7,7 @@ const usuario = require("./src/routes/usuarioRoutes");
 const admin = require("./src/routes/adminRoutes");
 const entidade = require("./src/routes/entidadeRoutes");
 const cursos = require("./src/routes/cursoRoutes");
+const estudante = require("./src/routes/estudanteRoutes");
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ app.use("/auth", usuario);
 app.use("/admin", admin);
 app.use("/entidade", entidade);
 app.use("/ies", cursos);
-
+app.use("/estudante", estudante);
 
 app.get("/", (req, res) => {
   res.send("Hello World");

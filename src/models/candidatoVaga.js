@@ -7,18 +7,20 @@ const CandidatoVaga = new mongoose.Schema({
     ref: "Vaga",
   },
 
-  estudante: {
-    type: mongoose.Types.ObjectId,
-    ref: "Estudante",
-  },
-
   entidade: {
     type: mongoose.Types.ObjectId,
     ref: "Entidade",
   },
 
-  statusAprovacao: {
+  estudante: {
+    type: mongoose.Types.ObjectId,
+    ref: "Estudante",
+  },
+
+  statusVaga: {
     type: String,
+    enum: ["Aberta", "Andamento", "Finalizada", "Pendente"],
+    default: "Pendente",
   },
 
   frequencia: {

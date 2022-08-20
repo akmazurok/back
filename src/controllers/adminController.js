@@ -19,7 +19,7 @@ exports.listarVagas = async (req, res) => {
 //RETORNAR VAGA POR ID - OK
 exports.detalhesVaga = async (req, res) => {
   try {
-    const vaga = await Vaga.find({ _id: req.params.id });
+    const vaga = await Vaga.find({ _id: req.params.vagaid });
     res.status(200).send({ vaga });
   } catch (error) {
     res.status(500).send({ message: "Vaga não localizada" + error });
@@ -31,7 +31,7 @@ exports.detalhesVaga = async (req, res) => {
 exports.aprovarVaga = async (req, res) => {
   const vaga = req.body;
   try {
-    await Vaga.updateOne({ _id: req.params.id }, vaga);
+    await Vaga.updateOne({ _id: req.params.vagaid }, vaga);
     return res
       .status(200)
       .send({ message: "Vaga aprovada com sucesso!" });
@@ -154,7 +154,7 @@ exports.excluir = async (req, res) => {
 exports.entidade = async (req, res) => {
   try {
     //Retorna o usuario sem a informacao da senha
-    const entidade = await Entidade.findOne({ _id: req.params.id });
+    const entidade = await Entidade.findOne({ _id: req.params.entid });
     res.status(200).send({ entidade });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
@@ -165,7 +165,7 @@ exports.entidade = async (req, res) => {
 exports.aprovarEntidade = async (req, res) => {
   const entidade = req.body;
   try {
-    await Entidade.updateOne({ _id: req.params.id }, entidade);
+    await Entidade.updateOne({ _id: req.params.entid }, entidade);
     return res
       .status(200)
       .send({ message: "Status do cadastro: " + entidade. situacaoCadastro });
@@ -180,7 +180,7 @@ exports.aprovarEntidade = async (req, res) => {
 exports.estudante = async (req, res) => {
   try {
     //Retorna o usuario sem a informacao da senha
-    const estudante = await Estudante.findOne({ _id: req.params.id });
+    const estudante = await Estudante.findOne({ _id: req.params.estid });
     res.status(200).send({ estudante });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
@@ -191,7 +191,7 @@ exports.estudante = async (req, res) => {
 exports.aprovarEstudante = async (req, res) => {
   const estudante = req.body;
   try {
-    await Estudante.updateOne({ _id: req.params.id }, estudante);
+    await Estudante.updateOne({ _id: req.params.estid }, estudante);
     return res
       .status(200)
       .send({ message: "Status do cadastro: " + estudante. situacaoCadastro });

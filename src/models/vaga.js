@@ -35,6 +35,14 @@ const VagaSchema = new mongoose.Schema({
     type: Number,
   },
 
+  inscritos: {
+    estudante: { type: mongoose.Types.ObjectId, ref: "Estudante" },
+    statusAprovacao: {
+      type: String,
+      enum: ["Inscrito", "Aprovado", "Recusado", "Cancelado"],
+    },
+  },
+
   entidade: {
     id: { type: mongoose.Types.ObjectId, ref: "Entidade" },
     nome: { type: String },
@@ -52,13 +60,13 @@ const VagaSchema = new mongoose.Schema({
 
   statusAprovacao: {
     type: String,
-    enum: ["Ativa", "Pendente","Reprovada"],
+    enum: ["Ativa", "Pendente", "Reprovada"],
     default: "Pendente",
   },
 
   statusVaga: {
     type: String,
-    enum: ["Ativa", "Andamento", "Finalizada", "Pendente"],
+    enum: ["Aberta", "Andamento", "Finalizada", "Pendente"],
     default: "Pendente",
   },
 
