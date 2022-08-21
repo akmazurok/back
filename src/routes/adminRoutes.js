@@ -9,8 +9,8 @@ router.get("/estudantes", adminController.listarEstudantes);
 router.get("/admins", adminController.listarAdmins);
 
 router.get("/vagas", adminController.listarVagas);
-router.patch("/vagas/:vagaid", adminController.aprovarVaga);
 router.get("/vagas/:vagaid", adminController.detalhesVaga);
+router.patch("/vagas/:vagaid", adminController.aprovarVaga);
 
 router.post("/cadastro", adminController.cadastrar);
 router.get("/:id", adminController.admin);
