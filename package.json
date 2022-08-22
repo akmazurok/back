@@ -4,8 +4,7 @@
   "description": "Backend projeto Estudante Voluntario",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon  app.js",
-    "swagger-autogen": "node ./swagger.js"
+    "start:dev": "nodemon  app.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,13 +13,18 @@
     "swagger-autogen": "^2.21.5"
   },
   "dependencies": {
+    "aws-sdk": "^2.1199.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.4.0",
     "mongoose-extend-schema": "^1.0.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "multer-s3": "^3.0.1",
     "swagger-ui-express": "^4.5.0"
   }
 }

@@ -1,928 +1,1282 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.1",
   "info": {
-    "version": "1.0.0",
     "title": "API Estudante Voluntario",
-    "description": "Documentação referente à API"
+    "description": "Documentação da API Estudante Voluntário",
+    "version": "1.0.0"
   },
-  "host": "localhost:3000",
-  "basePath": "/",
-
-  "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
-
+  "servers": [
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
   "paths": {
     "/": {
       "get": {
-        "tags": ["Home"],
-        "description": "HOME API",
-        "parameters": [],
+        "summary": "Home da API",
+        "tags": [
+          "Home"
+        ],
+        "description": "Home da API",
         "responses": {
-          "200": { "description": "OK" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
         }
       }
     },
     "/auth/cadastro": {
       "post": {
-        "tags": ["Usuario"],
-        "description": "CADASTRO USUARIO",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "documento": { "example": "any" },
-                "email": { "example": "any" },
-                "senha": { "example": "any" },
-                "acesso": { "example": "any" }
+        "summary": "Cadastro do usuário",
+        "tags": [
+          "Home"
+        ],
+        "description": "Cadastro do usuário",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Usuario"
               }
             }
-          }
-        ],
+          },
+          "required": false
+        },
         "responses": {
-          "201": { "description": "Created" },
-          "400": { "description": "Bad Request" }
-        }
+          "201": {
+            "description": "Created",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
       }
     },
     "/auth/{id}": {
       "get": {
-        "tags": ["Usuario"],
-        "description": "VISUALIZA USUARIO POR ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "summary": "Visualizar usuário por ID",
+        "tags": [
+          "Home"
         ],
-        "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
-        }
-      },
-      "patch": {
-        "tags": ["Usuario"],
-        "description": "EDITAR USUARIO",
+        "description": "Visualizar usuário por ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "email": { "example": "any" },
-                "senha": { "example": "any" }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
+        }
+      },
+      "patch": {
+        "summary": "Editar usuário",
+        "tags": [
+          "Home"
+        ],
+        "description": "Editar usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Usuario"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/auth/login": {
       "post": {
-        "tags": ["Usuario"],
-        "description": "LOGIN",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "documento": { "example": "any" },
-                "senha": { "example": "any" }
+        "summary": "Login",
+        "tags": [
+          "Home"
+        ],
+        "description": "Login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "documento": {
+                    "type": "object",
+                    "example": "any"
+                  },
+                  "senha": {
+                    "type": "object",
+                    "example": "any"
+                  }
+                }
               }
             }
-          }
-        ],
+          },
+          "required": false
+        },
         "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" },
-          "422": { "description": "Unprocessable Entity" },
-          "500": { "description": "Internal Server Error" }
-        }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
       }
     },
     "/admin/usuarios": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZAR TODOS OS USUARIOS",
-        "parameters": [],
+        "summary": "Listar todos os usuários",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Listar todos os usuários",
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/admin/entidades": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZAR TODAS AS ENTIDADES",
-        "parameters": [],
+        "summary": "Listar todas as entidades",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Listar todas as entidades",
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/admin/estudantes": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZAR TODOS/AS ESTUDANTES",
-        "parameters": [],
+        "summary": "Listar todos/as os/as estudantes",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Listar todos/as os/as estudantes",
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/admin/admins": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZAR TODOS/AS ADMINS",
-        "parameters": [],
+        "summary": "Listar todos/as os/as admins",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Listar todos/as os/as admins",
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/admin/vagas": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZAR TODAS AS VAGAS",
-        "parameters": [],
+        "summary": "Listar todas as vagas",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Listar todas as vagas",
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/admin/vagas/{vagaid}": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZAR VAGA",
-        "parameters": [
-          {
-            "name": "vagaid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "summary": "Visualizar detalhes da vaga",
+        "tags": [
+          "Admin"
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "patch": {
-        "tags": ["Admin"],
-        "description": "APROVAR VAGA",
+        "description": "Visualizar detalhes da vaga",
         "parameters": [
           {
             "name": "vagaid",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "statusVaga": { "example": "Aberta" },
-                "statusAprovacao": { "example": "Aprovada" }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      },
+      "patch": {
+        "summary": "Aprovar vaga",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Aprovar vaga",
+        "parameters": [
+          {
+            "name": "vagaid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/admin/cadastro": {
       "post": {
-        "tags": ["Admin"],
-        "description": "CADASTRO ADMIN",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "documento": { "example": "any" },
-                "email": { "example": "any" },
-                "senha": { "example": "any" },
-                "acesso": { "example": "any" },
-                "telefone": { "example": "any" },
-                "endereco": {
-                  "cep": { "example": "any" },
-                  "logradouro": { "example": "any" },
-                  "complemento": { "example": "any" },
-                  "numero": { "example": "any" },
-                  "bairro": { "example": "any" },
-                  "cidade": { "example": "any" },
-                  "uf": { "example": "any" }
-                },
-                "nome": { "example": "any" },
-                "dataNascimento": { "example": "any" },
-                "situacaoCadastro": { "example": "Ativo" }
+        "summary": "Cadastrar Admin",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Cadastrar Admin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Admin"
               }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
-          "201": { "description": "Created" },
-          "400": { "description": "Bad Request" }
-        }
+          "201": {
+            "description": "Created",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
       }
     },
     "/admin/{id}": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZA ADMIN POR ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "summary": "Visualizar admin por ID",
+        "tags": [
+          "Admin"
         ],
-        "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
-        }
-      },
-      "patch": {
-        "tags": ["Admin"],
-        "description": "EDITAR ADMIN",
+        "description": "Visualizar admin por ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "email": { "example": "any" },
-                "senha": { "example": "any" },
-                "telefone": { "example": "any" },
-                "endereco": {
-                  "cep": { "example": "any" },
-                  "logradouro": { "example": "any" },
-                  "complemento": { "example": "any" },
-                  "numero": { "example": "any" },
-                  "bairro": { "example": "any" },
-                  "cidade": { "example": "any" },
-                  "uf": { "example": "any" }
-                },
-                "nome": { "example": "any" },
-                "dataNascimento": { "example": "any" }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
         }
       },
       "delete": {
-        "tags": ["Admin"],
-        "description": "",
+        "summary": "Excluir Admin",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Excluir Admin",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      },
+      "patch": {
+        "summary": "Editar Admin",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Editar Admin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Admin"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/admin/entidades/{entid}": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZAR ENTIDADE POR ID",
-        "parameters": [
-          {
-            "name": "entid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "summary": "Visualizar Entidade por ID",
+        "tags": [
+          "Admin"
         ],
-        "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
-        }
-      },
-      "patch": {
-        "tags": ["Admin"],
-        "description": "APROVAR ENTIDADE",
+        "description": "Visualizar Entidade por ID",
         "parameters": [
           {
             "name": "entid",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "situacaoCadastro": { "example": "Aprovado" }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
         }
+      },
+      "patch": {
+        "summary": "Aprovar Entidade",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Aprovar Entidade",
+        "parameters": [
+          {
+            "name": "entid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "situacaoCadastro": {
+                    "type": "string",
+                    "example": "Aprovado"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
       }
     },
     "/admin/estudantes/{estid}": {
       "get": {
-        "tags": ["Admin"],
-        "description": "VISUALIZAR ESTUDANTE POR ID",
-        "parameters": [
-          {
-            "name": "estid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "summary": "Visualizar Estudante por ID",
+        "tags": [
+          "Admin"
         ],
-        "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
-        }
-      },
-      "patch": {
-        "tags": ["Admin"],
-        "description": "APROVAR ESTUDANTE",
+        "description": "Visualizar Estudante por ID",
         "parameters": [
           {
             "name": "estid",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "situacaoCadastro": { "example": "Aprovado" }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
         }
+      },
+      "patch": {
+        "summary": "Aprovar Estudante",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Aprovar Estudante",
+        "parameters": [
+          {
+            "name": "estid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "situacaoCadastro": {
+                    "type": "string",
+                    "example": "Aprovado"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
       }
     },
     "/entidade/{id}/cadastrarvaga": {
       "post": {
-        "tags": ["Entidade"],
-        "description": "CADASTRAR VAGA",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "titulo": { "example": "any" },
-                "descricao": { "example": "any" },
-                "requisitos": { "example": "any" },
-                "auxilio": { "example": "any" },
-                "quantidadeVagas": { "example": "any" },
-                "dataInicio": { "example": "any" },
-                "dataFim": { "example": "any" },
-                "cargaHoraria": { "example": "any" },
-                "entidade": {
-                  "id": { "example": "any" },
-                  "nome": { "example": "any" },
-                  "endereco": {
-                    "cep": { "example": "any" },
-                    "logradouro": { "example": "any" },
-                    "complemento": { "example": "any" },
-                    "numero": { "example": "any" },
-                    "bairro": { "example": "any" },
-                    "cidade": { "example": "any" },
-                    "uf": { "example": "any" }
-                  }
-                }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "201": { "description": "Created" },
-          "400": { "description": "Bad Request" }
+          "201": {
+            "description": "Created",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/entidade/{id}/vagas": {
       "get": {
-        "tags": ["Entidade"],
-        "description": "VISUALIZAR VAGAS DA ENTIDADE",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
         }
       }
     },
     "/entidade/{id}/vagas/{vagaid}": {
       "get": {
-        "tags": ["Entidade"],
-        "description": "VISUALLIZAR VAGA POR ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "vagaid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
-        }
-      },
-      "patch": {
-        "tags": ["Entidade"],
-        "description": "EDITAR VAGA",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "vagaid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "titulo": { "example": "any" },
-                "descricao": { "example": "any" },
-                "requisitos": { "example": "any" },
-                "auxilio": { "example": "any" },
-                "quantidadeVagas": { "example": "any" },
-                "dataInicio": { "example": "any" },
-                "dataFim": { "example": "any" },
-                "cargaHoraria": { "example": "any" },
-                "nome": { "example": "any" },
-                "endereco": {
-                  "cep": { "example": "any" },
-                  "logradouro": { "example": "any" },
-                  "complemento": { "example": "any" },
-                  "numero": { "example": "any" },
-                  "bairro": { "example": "any" },
-                  "cidade": { "example": "any" },
-                  "uf": { "example": "any" }
-                }
-              }
+              "type": "string"
+            }
+          },
+          {
+            "name": "vagaid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vagaid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/entidade/{id}": {
       "get": {
-        "tags": ["Entidade"],
-        "description": "VISUALIZA ENTIDADE POR ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
-        }
-      },
-      "patch": {
-        "tags": ["Entidade"],
-        "description": "EDITAR ENTIDADE",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "email": { "example": "any" },
-                "senha": { "example": "any" },
-                "telefone": { "example": "any" },
-                "endereco": {
-                  "cep": { "example": "any" },
-                  "logradouro": { "example": "any" },
-                  "complemento": { "example": "any" },
-                  "numero": { "example": "any" },
-                  "bairro": { "example": "any" },
-                  "cidade": { "example": "any" },
-                  "uf": { "example": "any" }
-                },
-                "razaoSocial": { "example": "any" },
-                "nomeFantasia": { "example": "any" },
-                "nomeResponsavel": { "example": "any" },
-                "cpfResponsavel": { "example": "any" }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/ies/": {
-      "post": {
-        "tags": ["Cursos"],
-        "description": "CADASTRAR IES",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "nome": { "example": "any" },
-                "sigla": { "example": "any" },
-                "cnpj": { "example": "any" }
-              }
-            }
-          }
-        ],
+      "get": {
         "responses": {
-          "201": { "description": "Created" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       },
-      "get": {
-        "tags": ["Cursos"],
-        "description": "VISUALIZAR TODAS AS IES",
-        "parameters": [],
+      "post": {
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "201": {
+            "description": "Created",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/ies/{id}": {
       "get": {
-        "tags": ["Cursos"],
-        "description": "VISUALIZAR IES POR ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       },
       "delete": {
-        "tags": ["Cursos"],
-        "description": "APAGAR IES",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/ies/{id}/cursos": {
       "get": {
-        "tags": ["Cursos"],
-        "description": "VISUALIZAR CURSOS POR IES",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/ies/{id}/cadastrarcurso": {
       "post": {
-        "tags": ["Cursos"],
-        "description": "CADASTRAR CURSO NA IES",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "nome": { "example": "any" },
-                "grauAcademico": { "example": "any" },
-                "instituicao": { "example": "any" },
-                "dataRegistro": { "example": "any" },
-                "campus": { "example": "any" },
-                "endereco": {
-                  "logradouro": { "example": "any" },
-                  "numero": { "example": "any" },
-                  "complemento": { "example": "any" },
-                  "bairro": { "example": "any" },
-                  "cidade": { "example": "any" },
-                  "uf": { "example": "any" }
-                }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "201": { "description": "Created" },
-          "400": { "description": "Bad Request" }
+          "201": {
+            "description": "Created",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/ies/curso/{id}": {
       "get": {
-        "tags": ["Cursos"],
-        "description": "VISUALIZAR CURSO POR ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/iescurso/{id}": {
       "delete": {
-        "tags": ["Cursos"],
-        "description": "APAGAR CURSO",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "500": { "description": "Internal Server Error" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
         }
       }
     },
     "/estudante/vagas": {
       "get": {
-        "tags": ["Estudante"],
-        "description": "VISUALIZAR VAGAS ABERTAS",
-        "parameters": [],
         "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
         }
       }
     },
     "/estudante/{id}": {
       "get": {
-        "tags": ["Estudante"],
-        "description": "VISUALIZA ESTUDANTE POR ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
-        }
-      },
-      "patch": {
-        "tags": ["Estudante"],
-        "description": "EDITAR ESTUDANTE",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
             "schema": {
-              "type": "object",
-              "properties": {
-                "documento": { "example": "any" },
-                "email": { "example": "any" },
-                "senha": { "example": "any" },
-                "acesso": { "example": "any" },
-                "telefone": { "example": "any" },
-                "endereco": {
-                  "cep": { "example": "any" },
-                  "logradouro": { "example": "any" },
-                  "complemento": { "example": "any" },
-                  "numero": { "example": "any" },
-                  "bairro": { "example": "any" },
-                  "cidade": { "example": "any" },
-                  "uf": { "example": "any" }
-                },
-                "nome": { "example": "any" },
-                "dataNascimento": { "example": "any" },
-                "situacaoCadastro": { "example": "Ativo" },
-                "genero": { "example": "Ativo" },
-                "curso": {
-                  "nome": { "example": "Ativo" },
-                  "instituicao": { "example": "Ativo" },
-                  "campus": { "example": "Ativo" },
-                  "turno": { "example": "Ativo" }
-                },
-                "areasInteresse": { "example": "Ativo" },
-                "experienciasAnteriores": { "example": "Ativo" }
-              }
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          }
         }
       }
     },
     "/estudante/vagas/{vagaid}": {
       "get": {
-        "tags": ["Estudante"],
-        "description": "VISUALIZA DETALHES DA VAGA",
         "parameters": [
           {
             "name": "vagaid",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
         }
       }
     },
     "/estudante/{id}/{vagaid}": {
       "patch": {
-        "tags": ["Estudante"],
-        "description": "INSCREVER-SE NA VAGA",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "vagaid",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
         }
       }
     },
     "/estudante/{id}/{vagaid}/cancelar": {
       "patch": {
-        "tags": ["Estudante"],
-        "description": "CANCELAR INSCRIÇÃO",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "vagaid",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "200": { "description": "OK" },
-          "404": { "description": "Not Found" }
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "documento": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "senha": {
+            "type": "string"
+          },
+          "acesso": {
+            "type": "string",
+            "enum": [
+              "Administrador",
+              "Estudante",
+              "Entidade"
+            ]
+          },
+          "dataRegistro": {
+            "type": "string",
+            "format": "date-time",
+            "default": "date.Now"
+          }
+        }
+      },
+      "Estudante": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "userid": {
+            "$ref": "#/components/schemas/Usuario"
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cep": {
+                  "type": "string"
+                },
+                "logradouro": {
+                  "type": "string"
+                },
+                "complemento": {
+                  "type": "string"
+                },
+                "numero": {
+                  "type": "string"
+                },
+                "bairro": {
+                  "type": "string"
+                },
+                "cidade": {
+                  "type": "string"
+                },
+                "uf": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "situacaoCadastro": {
+            "type": "string",
+            "enum": [
+              "Ativo",
+              "Pendente",
+              "Reprovado"
+            ],
+            "default": "Pendente"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "nomeSocial": {
+            "type": "string"
+          },
+          "dataNascimento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "genero": {
+            "type": "string"
+          },
+          "curso": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string"
+                },
+                "instituicao": {
+                  "type": "string"
+                },
+                "campus": {
+                  "type": "string"
+                },
+                "turno": {
+                  "type": "string"
+                },
+                "anoTermino": {
+                  "type": "string",
+                  "format": "datetime"
+                },
+                "anoInicio": {
+                  "type": "string",
+                  "format": "datetime"
+                }
+              }
+            }
+          },
+          "areasInteresse": {
+            "type": "string"
+          },
+          "experienciasAnteriores": {
+            "type": "string"
+          }
+        }
+      },
+      "Admin": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "userid": {
+            "$ref": "#/components/schemas/Usuario"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "nomeSocial": {
+            "type": "string"
+          },
+          "dataNascimento": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Entidade": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "userid": {
+            "$ref": "#/components/schemas/Usuario"
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cep": {
+                  "type": "string"
+                },
+                "logradouro": {
+                  "type": "string"
+                },
+                "complemento": {
+                  "type": "string"
+                },
+                "numero": {
+                  "type": "string"
+                },
+                "bairro": {
+                  "type": "string"
+                },
+                "cidade": {
+                  "type": "string"
+                },
+                "uf": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "situacaoCadastro": {
+            "type": "string",
+            "enum": [
+              "Ativo",
+              "Pendente",
+              "Reprovado"
+            ],
+            "default": "Pendente"
+          },
+          "razaoSocial": {
+            "type": "string"
+          },
+          "nomeFantasia": {
+            "type": "string"
+          },
+          "nomeResponsavel": {
+            "type": "string"
+          },
+          "cpfResponsavel": {
+            "type": "string"
+          }
         }
       }
     }
