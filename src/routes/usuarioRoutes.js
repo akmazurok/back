@@ -4,15 +4,15 @@ const router = express.Router();
 const multerConfig = require("../config/multer");
 
 const usuarioController = require("../controllers/usuarioController");
-const imagemController = require("../controllers/imagemController");
+const uploadController = require("../controllers/uploadController");
 
-router.post("/imagem", multer(multerConfig).single("file"), imagemController.uploadImagem);
-router.get("/imagens", multer(multerConfig).single("file"), imagemController.imagens);
+router.post("/upload", multer(multerConfig).single("file"), uploadController.uploadArquivo);
+router.get("/uploads", multer(multerConfig).single("file"), uploadController.arquivos);
 
 router.post("/cadastro", usuarioController.cadastrar);
 router.post("/login", usuarioController.login);
 
-router.delete("/imagem/:id", multer(multerConfig).single("file"), imagemController.excluirImagem);
+router.delete("/upload/:id", multer(multerConfig).single("file"), uploadController.excluirArquivo);
 
 router.get("/:id", usuarioController.usuario);
 router.patch("/:id", usuarioController.editar);

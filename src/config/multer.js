@@ -38,7 +38,7 @@ const storageTypes = {
 module.exports = {
   dest: path.resolve(__dirname, "../", "..", "tmp", "uploads"),
   //tipo de storage
-  storage: storageTypes['local'],
+  storage: storageTypes['s3'],
   limits: {
     fileSize: 2 * 1024 * 1024,
   },
@@ -48,6 +48,7 @@ module.exports = {
       "image/pjpeg",
       "image/png",
       "image/gif",
+      'application/pdf'
     ];
 
     if (allowedMimes.includes(file.mimetype)) {

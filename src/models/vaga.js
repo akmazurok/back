@@ -75,7 +75,12 @@ const VagaSchema = new mongoose.Schema({
     default: Date.now,
   },
 
-  //imagem
+  imagem: {
+    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
+    key: { type: String },
+    url: { type: String },
+  },
+  
 });
 
 module.exports = mongoose.model("Vaga", VagaSchema);

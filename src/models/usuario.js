@@ -61,7 +61,11 @@ const EstudanteSchema = new mongoose.Schema({
     default: "Pendente",
   },
 
-  //fotoPerfil: Object,
+  fotoPerfil: {
+    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
+    key: { type: String },
+    url: { type: String },
+  },
 
   nome: {
     type: String,
@@ -160,7 +164,12 @@ const EntidadeSchema = new mongoose.Schema({
   cpfResponsavel: {
     type: String,
   },
-  //fotoPerfil: Object,
+
+  fotoPerfil: {
+    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
+    key: { type: String },
+    url: { type: String },
+  },
 });
 
 //usando bcrypt para a senha
