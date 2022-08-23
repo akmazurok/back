@@ -4,12 +4,13 @@ const Imagem = require("../models/image");
 
 //UPLOAD DE IMAGEM
 exports.uploadImagem = async (req, res) => {
+  const{ originalname: name, size, key, location: url = ''} = req.file;
   try {
-    const imagem = await Imagem.create({
-      name: req.file.originalname,
-      size: req.file.size,
-      key: req.file.filename,
-      url: req.file.location,
+    const imagem = await Imagem.create({ 
+      name,
+      size,
+      key,
+      url
     });
     return res.status(201).send(imagem);
   } catch (error) {
