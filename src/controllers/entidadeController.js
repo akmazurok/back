@@ -25,7 +25,7 @@ exports.listarVagas = async (req, res) => {
   const entidade = mongoose.Types.ObjectId(req.params);
   try {
     const vagas = await Vaga.find({ "entidade.id": entidade });
-    res.status(200).send({ vagas });
+    res.status(200).send(vagas);
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
   }
@@ -34,7 +34,7 @@ exports.listarVagas = async (req, res) => {
 //VISUALIZAR VAGA - OK
 exports.vaga = async (req, res) => {
   try {
-    const vaga = await Vaga.findOne({ _id: req.params.vagaid });
+    const vaga = await Vaga.findById(req.params.vagaid);
     res.status(200).send(vaga);
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
@@ -58,7 +58,7 @@ exports.editarVaga = async (req, res) => {
 //ENTIDADE POR ID - OK
 exports.entidade = async (req, res) => {
   try {
-    const entidade = await Entidade.find({ _id: req.params.id });
+    const entidade = await Entidade.findById(req.params.id);
 
     res.status(200).send({ entidade });
   } catch (error) {
@@ -72,6 +72,18 @@ exports.editarEntidade = async (req, res) => {
   try {
     await Entidade.updateOne({ _id: req.params.id }, entidade);
     return res.status(200).send({ message: "Dados alterados com sucesso!" });
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
+
+//VISUALIZAR INSCRITOS POR VAGA
+exports.visualizarInscritos = async (req, res) => {
+  try {
+    const inscritos = await Vaga.findById(req.params.id , inscritos);
+    return res.status(200).send(inscritos);
   } catch (error) {
     return res
       .status(400)

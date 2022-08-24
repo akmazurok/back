@@ -1,3 +1,4 @@
+const { Router } = require("express");
 const express = require("express");
 const router = express.Router();
 
@@ -10,5 +11,9 @@ router.patch("/:id/vagas/:vagaid", entidadeController.editarVaga);
 
 router.get("/:id", entidadeController.entidade);
 router.patch("/:id", entidadeController.editarEntidade);
+
+router.get("/:id/vagas/:vagaid/inscritos", entidadeController.visualizarInscritos);
+
+
 
 module.exports = router;

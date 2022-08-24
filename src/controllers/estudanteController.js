@@ -8,7 +8,7 @@ const Usuario = require("../models/usuario").Usuario;
 //ESTUDANTE POR ID - OK
 exports.estudante = async (req, res) => {
   try {
-    const estudante = await Estudante.findOne({ _id: req.params.id });
+    const estudante = await Estudante.findById(req.params.id);
     res.status(200).send({ estudante });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
