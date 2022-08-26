@@ -41,6 +41,7 @@ const VagaSchema = new mongoose.Schema({
       type: String,
       enum: ["Inscrito", "Aprovado", "Recusado", "Cancelado"],
     },
+    candidatoVaga: { type: mongoose.Types.ObjectId, ref: "CandidatoVaga" }
   },
 
   entidade: {

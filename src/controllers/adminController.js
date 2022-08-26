@@ -12,7 +12,7 @@ exports.listarVagas = async (req, res) => {
     const vagas = await Vaga.find().sort("-statusAprovacao");
     res.status(200).send({ vagas });
   } catch (error) {
-    res.status(500).send({ message: "Vagas não localizadas" + error });
+    res.status(404).send({ message: "Vagas não localizadas" + error });
   }
 };
 
@@ -22,7 +22,7 @@ exports.detalhesVaga = async (req, res) => {
     const vaga = await Vaga.find({ _id: req.params.vagaid });
     res.status(200).send({ vaga });
   } catch (error) {
-    res.status(500).send({ message: "Vaga não localizada" + error });
+    res.status(404).send({ message: "Vaga não localizada" + error });
   }
 };
 
@@ -37,8 +37,8 @@ exports.aprovarVaga = async (req, res) => {
       .send({ message: "Vaga aprovada com sucesso!" });
   } catch (error) {
     return res
-      .status(400)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
+      .status(500)
+      .send({ message: "Erro ao atualizar" + error });
   }
 };
 
@@ -49,7 +49,7 @@ exports.listarUsuarios = async (req, res) => {
     const usuarios = await Usuario.find({}, { senha: 0 });
     res.status(200).send({ usuarios });
   } catch (error) {
-    res.status(500).send({ message: "Usuários não localizados" + error });
+    res.status(404).send({ message: "Usuários não localizados" + error });
   }
 };
 
@@ -62,7 +62,7 @@ exports.listarEntidades = async (req, res) => {
     );
     res.status(200).send({ entidades });
   } catch (error) {
-    res.status(500).send({ message: "Entidades não localizadas" + error });
+    res.status(404).send({ message: "Entidades não localizadas" + error });
   }
 };
 
@@ -74,7 +74,7 @@ exports.listarEstudantes = async (req, res) => {
     );
     res.status(200).send({ estudantes });
   } catch (error) {
-    res.status(500).send({ message: "Estudantes não localizados" + error });
+    res.status(404).send({ message: "Estudantes não localizados" + error });
   }
 };
 
@@ -85,7 +85,7 @@ exports.listarAdmins = async (req, res) => {
     res.status(200).send({ admins });
   } catch (error) {
     res
-      .status(500)
+      .status(404)
       .send({ message: "Administradores não localizados" + error });
   }
 };
@@ -109,7 +109,7 @@ exports.cadastrar = async (req, res) => {
     return res.status(201).send({ usuario, cadastro });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .send({ message: "Erro ao realizar o cadastro " + error });
   }
 };
@@ -133,7 +133,7 @@ exports.editar = async (req, res) => {
     return res.status(200).send({ message: "Perfil alterado com sucesso!" });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .send({ message: "Erro ao realizar ao atualizar" + error });
   }
 };
@@ -171,7 +171,7 @@ exports.aprovarEntidade = async (req, res) => {
       .send({ message: "Status do cadastro: " + entidade. situacaoCadastro });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .send({ message: "Erro ao realizar ao atualizar" + error });
   }
 };
@@ -197,7 +197,7 @@ exports.aprovarEstudante = async (req, res) => {
       .send({ message: "Status do cadastro: " + estudante. situacaoCadastro });
   } catch (error) {
     return res
-      .status(400)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
+      .status(500)
+      .send({ message: "Erro ao atualizar" + error });
   }
 };

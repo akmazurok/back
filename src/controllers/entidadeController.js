@@ -1,7 +1,9 @@
 var mongoose = require("mongoose");
-const Vaga = require("../models/vaga");
 const Entidade = require("../models/usuario").Entidade;
 const Usuario = require("../models/usuario").Usuario;
+const Estudante = require("../models/usuario").Estudante;
+const Vaga = require("../models/vaga");
+const CandidatoVaga = require('../models/candidatoVaga');
 
 //TO-DO - /ver inscritos /aprovar inscritos
 
@@ -15,7 +17,7 @@ exports.cadastrarVaga = async (req, res) => {
     return res.status(201).send({ message: "Vaga criada com sucesso! ", vaga });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .send({ message: "Não foi possível cadastrar a vaga: " + error });
   }
 };
@@ -50,7 +52,7 @@ exports.editarVaga = async (req, res) => {
     return res.status(200).send({ message: "Vaga alterada com sucesso!" });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .send({ message: "Erro ao realizar ao atualizar" + error });
   }
 };
@@ -59,7 +61,6 @@ exports.editarVaga = async (req, res) => {
 exports.entidade = async (req, res) => {
   try {
     const entidade = await Entidade.findById(req.params.id);
-
     res.status(200).send({ entidade });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
@@ -74,19 +75,84 @@ exports.editarEntidade = async (req, res) => {
     return res.status(200).send({ message: "Dados alterados com sucesso!" });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .send({ message: "Erro ao realizar ao atualizar" + error });
   }
 };
 
-//VISUALIZAR INSCRITOS POR VAGA
+
+//inserir a partir daqui no swagger
+//VISUALIZAR INSCRITOS POR VAGA - TESTAR
 exports.visualizarInscritos = async (req, res) => {
   try {
-    const inscritos = await Vaga.findById(req.params.id , inscritos);
+    const inscritos = await Vaga.findById(req.params.vagaid , inscritos);
     return res.status(200).send(inscritos);
   } catch (error) {
     return res
       .status(400)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
+      .send({ message: "Não há inscritos para a vaga" + error });
   }
 };
+
+//VISUALIZAR DETALHES DO INSCRITO - TESTAR
+exports.visualizarInscrito = async (req, res) => {
+  try {
+    const inscrito = await Estudante.findById(req.params.inscritoid);
+    return res.status(200).send(inscrito);
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ message: "Não localizado" + error });
+  }
+};
+
+//APROVAR INSCRITO - TESTAR
+exports.aprovarInscrito = async (req, res, next) => {
+	const entidade = req.params.id;
+	const vaga = req.params.vagaid;
+	const inscrito = req.params.inscritoid;
+	
+  try {
+	await Vaga.updateOne({_id: vaga, inscritos: inscritoid} , inscritos);
+	
+	
+    await Estudante.updateOne({ _id: req.params.id }, entidade);
+    next('route');
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ message: "Não localizado" + error });
+  }
+};
+
+//GERAR INSCRICAO - TESTAR
+exports.aprovarInscrito = async (req, res, next) => {
+  try {
+    const inscrito = await Estudante.findById(req.params.id);
+    return res.status(200).send(inscrito);
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ message: "Não localizado" + error });
+  }
+};
+
+//CRIAR VINCULO CANDIDATO VAGA - MANTER
+//na vaga, mudar a inscrição para "aprovado" e colocar id do vinculo gerado
+//fazer endpoint para passar os dados pro termo de adesao ser gerado no front e aceito pelo estudante
+//no est fazer endpoint para gerar certificado de horas de participação, com dados de todos as atividades
+//e a soma da carga horária
+exports.candidatoVaga = async (req, res) => {
+  //const {id, vagaid, inscritoid} = req.params;
+  const vaga = new CandidatoVaga(req.params);
+  
+  try {
+    await vaga.save();
+    return res.status(201).send({ message: "Vaga criada com sucesso! ", vaga });
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ message: "Não foi possível cadastrar a vaga: " + error });
+  }
+};
+

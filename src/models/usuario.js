@@ -66,6 +66,12 @@ const EstudanteSchema = new mongoose.Schema({
     key: { type: String },
     url: { type: String },
   },
+  
+   declaracaoMatricula: {
+    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
+    key: { type: String },
+    url: { type: String },
+  },
 
   nome: {
     type: String,
@@ -89,8 +95,7 @@ const EstudanteSchema = new mongoose.Schema({
     campus: { type: String },
     turno: { type: String },
     anoTermino: { type: Date },
-    anoInicio: { type: Date },
-    //comprovanteMatricula:
+    anoInicio: { type: Date },   
   },
 
   areasInteresse: {

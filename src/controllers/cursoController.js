@@ -10,7 +10,7 @@ exports.cadastrarIes = async (req, res) => {
     return res.status(201).send({ message: "Instituição cadastrada com sucesso: " , ies });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .send({ message: "Não foi possível cadastrar a Instituição: " + error });
   }
 };
@@ -31,7 +31,7 @@ exports.buscarIes = async function (req, res) {
     const instituicao = await Instituicao.findOne({ _id: req.params.id });
     res.status(200).send({ instituicao });
   } catch (error) {
-    res.status(500).send({ message: "Instituição " + req.params.nome + " não localizada: " + error });
+    res.status(404).send({ message: "Instituição " + req.params.nome + " não localizada: " + error });
   }
 };
 
@@ -62,7 +62,7 @@ exports.addCurso = async (req, res) => {
     return res
       .status(201).send({ message: "Curso " + curso.nome + " cadastrado com sucesso! " , curso });
   } catch (error) {
-    return res.status(400).send({ message: "Erro ao realizar o cadastro: " + error });
+    return res.status(500).send({ message: "Erro ao realizar o cadastro: " + error });
   }
 };
 
@@ -85,7 +85,7 @@ exports.buscarCurso = async function (req, res) {
     res.status(200).send({ curso });
   } catch (error) {
     res
-      .status(500)
+      .status(404)
       .send({
         message: "Curso " + req.params.nome + " não localizado: " + error,
       });
@@ -100,11 +100,11 @@ exports.excluirCurso = async function (req, res) {
    
    await Curso.findByIdAndRemove({ _id: req.params.id });
 
-    res.status(200).send({ message: "Instituição  excluída com sucesso." });
+    res.status(200).send({ message: "Curso excluído com sucesso." });
   } catch (error) {
     res
       .status(500)
-      .send({ message: "Não foi possível excluir a Instituição: " + error });
+      .send({ message: "Não foi possível excluir o curso: " + error });
   }
 };
 

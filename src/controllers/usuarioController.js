@@ -32,7 +32,7 @@ exports.cadastrar = async (req, res) => {
     return res.status(201).send({ usuario, cadastro });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .send({ message: "Erro ao realizar o cadastro " + error });
   }
 };
@@ -76,7 +76,7 @@ exports.login = async (req, res) => {
       .status(200)
       .send({ message: "Autenticação realizada com sucesso!", token });
   } catch (error) {
-    res.status(500).send({ message: error });
+    res.status(500).send({ message: "Erro ao realizar a autenticação" + error });
   }
 };
 

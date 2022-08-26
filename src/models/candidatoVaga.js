@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-// CandidatoCaga Schema
-const CandidatoVaga = new mongoose.Schema({
+// CandidatoVaga Schema
+const CandidatoVagaSchema = new mongoose.Schema({
   vaga: {
     type: mongoose.Types.ObjectId,
     ref: "Vaga",
@@ -19,8 +19,13 @@ const CandidatoVaga = new mongoose.Schema({
 
   statusVaga: {
     type: String,
-    enum: ["Aberta", "Andamento", "Finalizada", "Pendente"],
-    default: "Pendente",
+    enum: ["Aberta", "Andamento", "Finalizada"],
+    default: "Aberta",
+  },
+
+  termoAdesao: {
+    type: Boolean,
+    default: false,
   },
 
   frequencia: {

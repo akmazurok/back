@@ -11,7 +11,7 @@ exports.estudante = async (req, res) => {
     const estudante = await Estudante.findById(req.params.id);
     res.status(200).send({ estudante });
   } catch (error) {
-    res.status(404).send({ message: "Dados não encontrados " + error });
+    res.status(404).send({ message: "Dados não localizados " + error });
   }
 };
 
@@ -24,7 +24,7 @@ exports.editarEstudante = async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
+      .send({ message: "Erro ao atualizar" + error });
   }
 };
 
@@ -53,27 +53,27 @@ exports.detalhesVaga = async (req, res) => {
 //SE INSCREVER EM VAGA - OK
 exports.inscricaoVaga = async (req, res) => {
   try {
-    const inscricao = { estudante: req.params.id, statusAprovacao: "Inscrito" };
+    const inscricao = { estudante: req.params.id, statusInscricao: "Inscrito" };
     await Vaga.updateOne(
       { _id: req.params.vagaid },
       { $push: { inscritos: inscricao } }
     );
-    res.status(200).send({ inscricao });
+    res.status(200).send({message: "Inscrição realizada com sucesso! " + inscricao });
   } catch (error) {
-    res.status(404).send({ message: "Vaga não localizada" + error });
+    res.status(500).send({ message: "Não foi possível completar a inscrição" + error });
   }
 };
 
 //CANCELAR INSCRICAO - OK
 exports.cancelarInscricao = async (req, res) => {
   try {
-    const inscricao = { estudante: req.params.id, statusAprovacao: "Inscrito" };
+    const inscricao = { estudante: req.params.id, statusInscricao: "Inscrito" };
      await Vaga.updateOne(
       { _id: req.params.vagaid },
       { $pull: { inscritos: inscricao } }
     ); 
     res.status(200).send({ message: "Inscrição cancelada com sucesso!" });
   } catch (error) {
-    res.status(404).send({ message: "Inscrição não localizada" + error });
+    res.status(500).send({ message: "Não foi possível cancelar a inscrição " + error });
   }
 };
