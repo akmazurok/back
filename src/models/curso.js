@@ -2,16 +2,17 @@ const mongoose = require("mongoose");
 
 // Curso Schema
 const CursoSchema = new mongoose.Schema({
-  nome: {
-    type: String,
-  },
-
-  grauAcademico: {
-    type: String,
-  },
-
   instituicao: {
-    type: mongoose.Types.ObjectId, ref:"Instituicao"
+    type: mongoose.Types.ObjectId,
+    ref: "Instituicao",
+  },
+  
+  grau: {
+    type: String,
+  },
+
+  nomeCurso: {
+    type: String,
   },
 
   campus: {
@@ -26,11 +27,6 @@ const CursoSchema = new mongoose.Schema({
     bairro: { type: String },
     cidade: { type: String },
     uf: { type: String },
-  },
-
-  dataRegistro: {
-    type: Date,
-    default: Date.now,
   },
 });
 

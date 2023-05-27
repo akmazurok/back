@@ -1,17 +1,9 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-//TO-DO - schema para armazenar imagens
-
 // Usuario Schema
 const UsuarioSchema = new mongoose.Schema({
-  documento: {
-    type: String,
-    //    unique: true,
-    //    required: true,
-  },
-
-  email: {
+  login: {
     type: String,
     //    unique: true,
     //    required: true,
@@ -23,14 +15,24 @@ const UsuarioSchema = new mongoose.Schema({
     //    select: false,
   },
 
-  acesso: {
+  perfil: {
     type: String,
-    enum: ["Administrador", "Estudante", "Entidade"],
+    enum: ["ESTUDANTE", "ENTIDADE", "ADMINISTRADOR", "ADMINISTRADORGERAL"],
   },
 
-  dataRegistro: {
+  imgPerfil: {
+    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
+    key: { type: String },
+    url: { type: String },
+  },
+
+  dataCadastro: {
     type: Date,
     default: Date.now,
+  },
+
+  perfilAtivo: {
+    type: Boolean,
   },
 });
 
@@ -41,43 +43,23 @@ const EstudanteSchema = new mongoose.Schema({
     ref: "Usuario",
   },
 
-  telefone: {
+  nomeCompleto: {
     type: String,
   },
 
-  endereco: {
-    cep: { type: String },
-    logradouro: { type: String },
-    complemento: { type: String },
-    numero: { type: String },
-    bairro: { type: String },
-    cidade: { type: String },
-    uf: { type: String },
-  },
-
-  situacaoCadastro: {
-    type: String,
-    enum: ["Ativo", "Pendente", "Reprovado"],
-    default: "Pendente",
-  },
-
-  fotoPerfil: {
-    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    key: { type: String },
-    url: { type: String },
-  },
-  
-   declaracaoMatricula: {
-    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    key: { type: String },
-    url: { type: String },
-  },
-
-  nome: {
-    type: String,
+  confirmaNomeSocial: {
+    type: Boolean,
   },
 
   nomeSocial: {
+    type: String,
+  },
+
+  identificacaoGenero: {
+    type: String,
+  },
+
+  estadoCivil: {
     type: String,
   },
 
@@ -85,17 +67,30 @@ const EstudanteSchema = new mongoose.Schema({
     type: Date,
   },
 
-  genero: {
+  rg: {
     type: String,
   },
 
-  curso: {
-    nome: { type: String },
-    instituicao: { type: String },
-    campus: { type: String },
-    turno: { type: String },
-    anoTermino: { type: Date },
-    anoInicio: { type: Date },   
+  rgEmissor: {
+    type: String,
+  },
+
+  email: {
+    type: String,
+  },
+
+  telefone: {
+    type: String,
+  },
+
+  endereco: {
+    cep: { type: String },
+    logradouro: { type: String },
+    numero: { type: String },
+    bairro: { type: String },
+    complemento: { type: String },
+    cidade: { type: String },
+    estado: { type: String },
   },
 
   areasInteresse: {
@@ -104,6 +99,40 @@ const EstudanteSchema = new mongoose.Schema({
 
   experienciasAnteriores: {
     type: String,
+  },
+
+  curso: {
+    instituicao: { type: String },
+    grau: { type: String },
+    curso: { type: String },
+    campus: { type: String },
+    anoInicio: { type: Date },
+    anoConclusao: { type: Date },
+  },
+
+  comprovanteMatricula: {
+    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
+    key: { type: String },
+    url: { type: String },
+  },
+
+  termoDeUso: {
+    type: Boolean,
+  },
+
+  dataAprovacao: {
+    type: Date,
+  },
+
+  statusCadastro: {
+    type: String,
+    enum: ["APROVADO", "REPROVADO", "PENDENTE"],
+    default: "PENDENTE",
+  },
+
+  idAdmin: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
   },
 });
 
@@ -114,16 +143,32 @@ const AdminSchema = new mongoose.Schema({
     ref: "Usuario",
   },
 
-  nome: {
+  nomeCompleto: {
     type: String,
+  },
+
+  confirmaNomeSocial: {
+    type: Boolean,
   },
 
   nomeSocial: {
     type: String,
   },
 
+  identificacaoGenero: {
+    type: String,
+  },
+
   dataNascimento: {
     type: Date,
+  },
+
+  email: {
+    type: String,
+  },
+
+  telefone: {
+    type: String,
   },
 });
 
@@ -134,26 +179,6 @@ const EntidadeSchema = new mongoose.Schema({
     ref: "Usuario",
   },
 
-  telefone: {
-    type: String,
-  },
-
-  endereco: {
-    cep: { type: String },
-    logradouro: { type: String },
-    complemento: { type: String },
-    numero: { type: String },
-    bairro: { type: String },
-    cidade: { type: String },
-    uf: { type: String },
-  },
-
-  situacaoCadastro: {
-    type: String,
-    enum: ["Ativo", "Pendente"],
-    default: "Pendente",
-  },
-
   razaoSocial: {
     type: String,
   },
@@ -162,18 +187,53 @@ const EntidadeSchema = new mongoose.Schema({
     type: String,
   },
 
-  nomeResponsavel: {
+  nomeResponsavelCadastro: {
     type: String,
   },
 
-  cpfResponsavel: {
+  email: {
     type: String,
   },
 
-  fotoPerfil: {
-    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    key: { type: String },
-    url: { type: String },
+  telefone: {
+    type: String,
+  },
+
+  endereco: {
+    cep: { type: String },
+    logradouro: { type: String },
+    numero: { type: String },
+    bairro: { type: String },
+    complemento: { type: String },
+    cidade: { type: String },
+    estado: { type: String },
+  },
+
+  termoDeUso: {
+    type: Boolean,
+  },
+
+  missao: {
+    type: String,
+  },
+
+  perfilVoluntario: {
+    type: String,
+  },
+
+  dataAprovacao: {
+    type: Date,
+  },
+
+  statusCadastro: {
+    type: String,
+    enum: ["APROVADO", "REPROVADO", "PENDENTE"],
+    default: "PENDENTE",
+  },
+
+  idAdmin: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
   },
 });
 
@@ -186,12 +246,12 @@ UsuarioSchema.pre("save", async function (next) {
 
 var Usuario = mongoose.model("Usuario", UsuarioSchema);
 var Estudante = mongoose.model("Estudante", EstudanteSchema);
-var Admin = mongoose.model("Admin", AdminSchema);
+var Administrador = mongoose.model("Administrador", AdminSchema);
 var Entidade = mongoose.model("Entidade", EntidadeSchema);
 
 module.exports = {
   Usuario: Usuario,
   Entidade: Entidade,
   Estudante: Estudante,
-  Admin: Admin,
+  Administrador: Administrador,
 };

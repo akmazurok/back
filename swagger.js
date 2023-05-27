@@ -9,7 +9,7 @@ const doc = {
     title: "API Estudante Voluntario",
     description: "Documentação da API Estudante Voluntário",
   },
-  host: "localhost:2000",
+  host: "localhost:3000",
   basePath: "/",
   schemes: ["http", "https"],
   servers: [

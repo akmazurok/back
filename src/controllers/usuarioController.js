@@ -63,6 +63,9 @@ exports.login = async (req, res) => {
     return res.status(422).send({ message: "Senha inválida" });
   }
 
+  //nome, documento, acesso
+  //fazer validacao para tipo de perfil
+  
   try {
     const secret = process.env.ACCESS_TOKEN_SECRET;
     const token = jwt.sign(

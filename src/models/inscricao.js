@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 // CandidatoVaga Schema
-const CandidatoVagaSchema = new mongoose.Schema({
+const InscricaoSchema = new mongoose.Schema({
   vaga: {
     type: mongoose.Types.ObjectId,
     ref: "Vaga",
@@ -41,4 +41,4 @@ const CandidatoVagaSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("CandidatoVaga", CandidatoVagaSchema);
+module.exports = mongoose.model("Inscricao", InscricaoSchema);

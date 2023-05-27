@@ -2,15 +2,22 @@ const mongoose = require("mongoose");
 
 // Vaga Schema
 const VagaSchema = new mongoose.Schema({
-  titulo: {
+  entidade: {
+    id: { type: mongoose.Types.ObjectId, ref: "Entidade" },
+    nome: { type: String },
+  },
+
+  nomeVaga: {
     type: String,
+  },
+
+  img: {
+    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
+    key: { type: String },
+    url: { type: String },
   },
 
   descricao: {
-    type: String,
-  },
-
-  requisitos: {
     type: String,
   },
 
@@ -18,35 +25,8 @@ const VagaSchema = new mongoose.Schema({
     type: String,
   },
 
-  quantidadeVagas: {
-    type: Number,
-  },
-
-  dataInicio: {
-    type: Date,
-  },
-
-  dataFim: {
-    type: Date,
-  },
-
-  //carga horaria em minutos
-  cargaHoraria: {
-    type: Number,
-  },
-
-  inscritos: {
-    estudante: { type: mongoose.Types.ObjectId, ref: "Estudante" },
-    statusAprovacao: {
-      type: String,
-      enum: ["Inscrito", "Aprovado", "Recusado", "Cancelado"],
-    },
-    candidatoVaga: { type: mongoose.Types.ObjectId, ref: "CandidatoVaga" }
-  },
-
-  entidade: {
-    id: { type: mongoose.Types.ObjectId, ref: "Entidade" },
-    nome: { type: String },
+  requisitos: {
+    type: String,
   },
 
   endereco: {
@@ -59,29 +39,52 @@ const VagaSchema = new mongoose.Schema({
     uf: { type: String },
   },
 
-  statusAprovacao: {
-    type: String,
-    enum: ["Ativa", "Pendente", "Reprovada"],
-    default: "Pendente",
+  dataAberturaVaga: {
+    type: Date,
+  },
+
+  dataFinalizacaoVaga: {
+    type: Date,
+  },
+
+  dataInicioTrabalho: {
+    type: Date,
+  },
+
+  dataEncerramentoTrabalho: {
+    type: Date,
+  },
+
+  horarioInicioTrabalho: {
+    type: Date,
+  },
+
+  horarioEncerramentoTrabalho: {
+    type: Date,
+  },
+
+  numeroVagas: {
+    type: Number,
   },
 
   statusVaga: {
     type: String,
-    enum: ["Aberta", "Andamento", "Finalizada", "Pendente"],
-    default: "Pendente",
+    enum: ["ABERTA", "ANDAMENTO", "CANCELADA", "APROVACAO", "ENCERRADA"],
+    default: "APROVACAO",
   },
 
-  dataPublicacao: {
+  inscricoes: {
+    estudante: { type: mongoose.Types.ObjectId, ref: "Estudante" },
+    statusAprovacao: {
+      type: String,
+      enum: ["Inscrito", "Aprovado", "Recusado", "Cancelado"],
+    },
+    candidatoVaga: { type: mongoose.Types.ObjectId, ref: "CandidatoVaga" },
+  },
+
+  dataAprovacaoVaga: {
     type: Date,
-    default: Date.now,
   },
-
-  imagem: {
-    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    key: { type: String },
-    url: { type: String },
-  },
-  
 });
 
 module.exports = mongoose.model("Vaga", VagaSchema);
