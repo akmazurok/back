@@ -77,13 +77,30 @@ const VagaSchema = new mongoose.Schema({
     estudante: { type: mongoose.Types.ObjectId, ref: "Estudante" },
     statusAprovacao: {
       type: String,
-      enum: ["Inscrito", "Aprovado", "Recusado", "Cancelado"],
+      enum: [
+        "INSCRITO",
+        "APROVADO",
+        "ANDAMENTO",
+        "REPROVADO",
+        "CANCELADO",
+        "ENCERRADO",
+      ],
     },
-    candidatoVaga: { type: mongoose.Types.ObjectId, ref: "CandidatoVaga" },
+    inscricao: { type: mongoose.Types.ObjectId, ref: "Inscricao" },
   },
 
   dataAprovacaoVaga: {
     type: Date,
+  },
+
+  dataCadastro: {
+    type: Date,
+    default: Date.now,
+  },
+
+  idAdmin: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
   },
 });
 

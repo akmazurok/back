@@ -17,10 +17,26 @@ const InscricaoSchema = new mongoose.Schema({
     ref: "Estudante",
   },
 
-  statusVaga: {
+  dataInscricao: {
+    type: Date,
+    default: Date.now,
+  },
+
+  statusInscricao: {
     type: String,
-    enum: ["Aberta", "Andamento", "Finalizada"],
-    default: "Aberta",
+    enum: [
+      "INSCRITO",
+      "APROVADO",
+      "ANDAMENTO",
+      "REPROVADO",
+      "CANCELADO",
+      "ENCERRADO",
+    ],
+    default: "INSCRITO",
+  },
+
+  cargaHoraria: {
+    type: Number,
   },
 
   termoAdesao: {
@@ -28,16 +44,19 @@ const InscricaoSchema = new mongoose.Schema({
     default: false,
   },
 
-  frequencia: {
-    type: String,
+  dataInicioTrabalho: {
+    type: Date,
+  },
+  dataFinalTrabalho: {
+    type: Date,
   },
 
-  avaliacaoEstudante: {
-    type: String,
+  horasDiarias: {
+    type: Number,
   },
 
-  avaliacaoEntidade: {
-    type: String,
+  horasTotais: {
+    type: Number,
   },
 });
 
