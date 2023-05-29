@@ -34,7 +34,7 @@ app.use("/ies", cursos);
 app.use("/estudante", estudante);
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("API Estudante Voluntário");
 });
 
 app.listen(port, () => {

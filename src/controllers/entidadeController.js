@@ -3,7 +3,7 @@ const Entidade = require("../models/usuario").Entidade;
 const Usuario = require("../models/usuario").Usuario;
 const Estudante = require("../models/usuario").Estudante;
 const Vaga = require("../models/vaga");
-const CandidatoVaga = require('../models/candidatoVaga');
+const Inscricao = require('../models/inscricao');
 
 //TO-DO - /ver inscritos /aprovar inscritos
 
@@ -144,7 +144,7 @@ exports.aprovarInscrito = async (req, res, next) => {
 //e a soma da carga horária
 exports.candidatoVaga = async (req, res) => {
   //const {id, vagaid, inscritoid} = req.params;
-  const vaga = new CandidatoVaga(req.params);
+  const vaga = new Inscricao(req.params);
   
   try {
     await vaga.save();
