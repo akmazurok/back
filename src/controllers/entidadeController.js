@@ -3,7 +3,7 @@ const Entidade = require("../models/usuario").Entidade;
 const Usuario = require("../models/usuario").Usuario;
 const Estudante = require("../models/usuario").Estudante;
 const Vaga = require("../models/vaga");
-const Inscricao = require('../models/inscricao');
+const Inscricao = require("../models/inscricao");
 
 //TO-DO - /ver inscritos /aprovar inscritos
 
@@ -36,14 +36,16 @@ exports.listarVagas = async (req, res) => {
 //VISUALIZAR VAGA - OK
 exports.vaga = async (req, res) => {
   try {
-    const vaga = await Vaga.findById(req.params.vagaid);
+    const vaga = await Vaga.findById(req.params.vagaid).populate({
+      path: "inscricoes",
+    });
     res.status(200).send(vaga);
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
-//EDITAR VAGA - OK
+//EDITAR VAGA
 exports.editarVaga = async (req, res) => {
   const idvaga = req.params.vagaid;
   const vaga = req.body;
@@ -60,14 +62,19 @@ exports.editarVaga = async (req, res) => {
 //ENTIDADE POR ID - OK
 exports.entidade = async (req, res) => {
   try {
-    const entidade = await Entidade.findById(req.params.id);
+    const entidade = await Entidade.findById(req.params.id).populate({
+      path: "userid",
+      select: "login",
+      //verificar quais atributos precisa retornar
+    });
+
     res.status(200).send({ entidade });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
-//EDITAR ENTIDADE - OK
+//EDITAR ENTIDADE
 exports.editarEntidade = async (req, res) => {
   const entidade = req.body;
   try {
@@ -80,12 +87,11 @@ exports.editarEntidade = async (req, res) => {
   }
 };
 
-
 //inserir a partir daqui no swagger
 //VISUALIZAR INSCRITOS POR VAGA - TESTAR
 exports.visualizarInscritos = async (req, res) => {
   try {
-    const inscritos = await Vaga.findById(req.params.vagaid , inscritos);
+    const inscritos = await Vaga.findById(req.params.vagaid, inscritos);
     return res.status(200).send(inscritos);
   } catch (error) {
     return res
@@ -100,28 +106,23 @@ exports.visualizarInscrito = async (req, res) => {
     const inscrito = await Estudante.findById(req.params.inscritoid);
     return res.status(200).send(inscrito);
   } catch (error) {
-    return res
-      .status(400)
-      .send({ message: "Não localizado" + error });
+    return res.status(400).send({ message: "Não localizado" + error });
   }
 };
 
 //APROVAR INSCRITO - TESTAR
 exports.aprovarInscrito = async (req, res, next) => {
-	const entidade = req.params.id;
-	const vaga = req.params.vagaid;
-	const inscrito = req.params.inscritoid;
-	
+  const entidade = req.params.id;
+  const vaga = req.params.vagaid;
+  const inscrito = req.params.inscritoid;
+
   try {
-	await Vaga.updateOne({_id: vaga, inscritos: inscritoid} , inscritos);
-	
-	
+    await Vaga.updateOne({ _id: vaga, inscritos: inscritoid }, inscritos);
+
     await Estudante.updateOne({ _id: req.params.id }, entidade);
-    next('route');
+    next("route");
   } catch (error) {
-    return res
-      .status(400)
-      .send({ message: "Não localizado" + error });
+    return res.status(400).send({ message: "Não localizado" + error });
   }
 };
 
@@ -131,9 +132,7 @@ exports.aprovarInscrito = async (req, res, next) => {
     const inscrito = await Estudante.findById(req.params.id);
     return res.status(200).send(inscrito);
   } catch (error) {
-    return res
-      .status(400)
-      .send({ message: "Não localizado" + error });
+    return res.status(400).send({ message: "Não localizado" + error });
   }
 };
 
@@ -145,7 +144,7 @@ exports.aprovarInscrito = async (req, res, next) => {
 exports.candidatoVaga = async (req, res) => {
   //const {id, vagaid, inscritoid} = req.params;
   const vaga = new Inscricao(req.params);
-  
+
   try {
     await vaga.save();
     return res.status(201).send({ message: "Vaga criada com sucesso! ", vaga });
@@ -155,4 +154,3 @@ exports.candidatoVaga = async (req, res) => {
       .send({ message: "Não foi possível cadastrar a vaga: " + error });
   }
 };
-

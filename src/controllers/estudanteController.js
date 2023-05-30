@@ -10,7 +10,11 @@ const Usuario = require("../models/usuario").Usuario;
 //ESTUDANTE POR ID
 exports.estudante = async (req, res) => {
   try {
-    const estudante = await Estudante.findById(req.params.id);
+    const estudante = await Estudante.findById(req.params.id).populate({
+      path: "userid",
+      select: "login",
+      //verificar quais atributos precisa retornar
+    });
     res.status(200).send({ estudante });
   } catch (error) {
     res.status(404).send({ message: "Dados não localizados " + error });
@@ -137,8 +141,8 @@ exports.rescindirTermo = async (req, res) => {
       { _id: req.params.inscricaoid },
       { $set: { termoAdesao: false, statusInscricao: "ENCERRADO"  } }
     );
+    //gera o certificado
     const certificado = await Certificado.create(inscricao);
-
     res
       .status(200)
       .send({
@@ -155,11 +159,11 @@ exports.rescindirTermo = async (req, res) => {
 //LISTAR CERTIFICADOS
 exports.listarCertificados = async (req, res) => {
   try {
-    const inscricoes = await Inscricao.find({ estudante: req.params.id });
-    res.status(200).send({ inscricoes });
+    const certificados = await Certificado.find({ estudante: req.params.id });
+    res.status(200).send({ certificados });
   } catch (error) {
     res
       .status(404)
-      .send({ message: "Não há inscrições " + error }, { inscricoes: null });
+      .send({ message: "Não há certificados " + error }, { certificados: null });
   }
 };

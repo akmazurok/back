@@ -23,7 +23,7 @@ exports.cadastrar = async (req, res) => {
     var cadastro = null;
 
     if (doc.length > 11) {
-      cadastro = new Entidade(req.body);
+      cadastro = new Entidade(req.body);       
     } else {
       cadastro = new Estudante(req.body);
     }
@@ -53,7 +53,7 @@ exports.usuario = async (req, res) => {
 exports.login = async (req, res) => {
   const { login, senha } = req.body;
   const user = await Usuario.findOne({ login: login });
-  const id = user._id;
+  
 
   if (!user) {
     return res.status(404).send({ message: "Usuário não encontrado!" });

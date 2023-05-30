@@ -36,7 +36,7 @@ const VagaSchema = new mongoose.Schema({
     numero: { type: String },
     bairro: { type: String },
     cidade: { type: String },
-    uf: { type: String },
+    estado: { type: String },
   },
 
   dataAberturaVaga: {
@@ -73,21 +73,9 @@ const VagaSchema = new mongoose.Schema({
     default: "APROVACAO",
   },
 
-  inscricoes: {
-    estudante: { type: mongoose.Types.ObjectId, ref: "Estudante" },
-    statusAprovacao: {
-      type: String,
-      enum: [
-        "INSCRITO",
-        "APROVADO",
-        "ANDAMENTO",
-        "REPROVADO",
-        "CANCELADO",
-        "ENCERRADO",
-      ],
-    },
-    inscricao: { type: mongoose.Types.ObjectId, ref: "Inscricao" },
-  },
+  inscricoes: [
+    { inscricao: { type: mongoose.Types.ObjectId, ref: "Inscricao" } },
+  ],
 
   dataAprovacaoVaga: {
     type: Date,
