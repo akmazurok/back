@@ -13,10 +13,9 @@ router.get("/:id/vagas", entidadeController.listarVagas);
 router.get("/:id/:vagaid", entidadeController.vaga);
 router.patch("/:id/:vagaid", entidadeController.editarVaga);
 
-router.get("/:id/:vagaid/inscritos", entidadeController.visualizarInscritos);
 router.get("/:id/:vagaid/:inscritoid", entidadeController.visualizarInscrito);
 router.patch("/:id/:vagaid/:inscritoid", entidadeController.aprovarInscrito);
-router.post("/:id/:vagaid/:inscritoid", entidadeController.candidatoVaga);
+
 
 
 module.exports = router;

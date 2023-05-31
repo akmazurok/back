@@ -3,7 +3,7 @@ const router = express.Router();
 
 const estudanteController = require("../controllers/estudanteController");
 
-router.get("/vagas", estudanteController.listarVagas);
+router.get("/vagas", estudanteController.listarVagas);  
 
 router.get("/:id", estudanteController.estudante);
 router.patch("/:id", estudanteController.editarEstudante);

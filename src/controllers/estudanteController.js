@@ -28,7 +28,7 @@ exports.editarEstudante = async (req, res) => {
     await Estudante.updateOne({ _id: req.params.id }, estudante);
     return res.status(200).send({ message: "Dados alterados com sucesso!" });
   } catch (error) {
-    return res.status(400).send({ message: "Erro ao atualizar" + error });
+    return res.status(500).send({ message: "Erro ao atualizar" + error });
   }
 };
 
@@ -44,29 +44,32 @@ exports.listarVagas = async (req, res) => {
   }
 };
 
-//DETALHES DA VAGA
+//DETALHES DA VAGA - ARRUMAR O LINK PARA PEGAR AS INSCRICOES
 exports.detalhesVaga = async (req, res) => {
   try {
-    const vaga = await Vaga.find({ _id: req.params.vagaid }).where({
-      statusVaga: "ABERTA",
-    });
+    const vaga = await Vaga.find({ _id: req.params.vagaid }).populate({
+      path: "inscricoes",
+      select: "statusInscricao",
+      //verificar quais atributos precisa retornar
+    });;
     res.status(200).send({ vaga });
   } catch (error) {
     res.status(404).send({ message: "Vaga não localizada" + error });
   }
 };
 
+//ARRUMAR FUNCAO
 //SE INSCREVER EM VAGA (arrumar dados que vao na inscricao)
 exports.inscricaoVaga = async (req, res) => {
-  const estudante = req.params.id;
-  const vaga = req.body;
-
+  const estudante = mongoose.Types.ObjectId(req.params);  
+  
   try {
+    const vaga = await Vaga.find({ _id: req.params.vagaid });
     //verificar se o status default está funcionando
     const inscricao = await Inscricao.create(estudante, vaga);
     await Vaga.updateOne(
       { _id: req.params.vagaid },
-      { $push: { inscritos: inscricao } }
+      { $push: { inscricoes: inscricao } }
     );
     res
       .status(200)
@@ -106,11 +109,7 @@ exports.cancelarInscricao = async (req, res) => {
     const inscricao = await Inscricao.updateOne(
       { _id: req.params.inscricaoid },
       { $set: { statusInscricao: "CANCELADO" } }
-    );
-    await Vaga.updateOne(
-      { _id: req.params.vagaid },
-      { $pull: { inscritos: inscricao } }
-    );
+    );  
     res.status(200).send({ message: "Inscrição cancelada com sucesso!" });
   } catch (error) {
     res
