@@ -33,6 +33,7 @@ const UsuarioSchema = new mongoose.Schema({
 
   perfilAtivo: {
     type: Boolean,
+    default: true,
   },
 });
 
@@ -137,7 +138,7 @@ const EstudanteSchema = new mongoose.Schema({
 });
 
 // Admin Schema
-const AdminSchema = new mongoose.Schema({
+const AdministradorSchema = new mongoose.Schema({
   userid: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
@@ -246,7 +247,7 @@ UsuarioSchema.pre("save", async function (next) {
 
 var Usuario = mongoose.model("Usuario", UsuarioSchema);
 var Estudante = mongoose.model("Estudante", EstudanteSchema);
-var Administrador = mongoose.model("Administrador", AdminSchema);
+var Administrador = mongoose.model("Administrador", AdministradorSchema);
 var Entidade = mongoose.model("Entidade", EntidadeSchema);
 
 module.exports = {

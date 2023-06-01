@@ -16,6 +16,6 @@ router.delete("/upload/:id", multer(multerConfig).single("file"), uploadControll
 
 router.get("/:id", usuarioController.usuario);
 router.patch("/:id", usuarioController.editar);
-router.patch("/desativar/:id", usuarioController.desativar);
+router.patch("/:id/desativar", usuarioController.desativar);
 
 module.exports = router;

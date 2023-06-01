@@ -59,9 +59,10 @@ exports.listarVagas = async (req, res) => {
   }
 };
 
- //LISTAR VAGAS ABERTAS
+ //LISTAR VAGAS POR STATUS
 /* exports.listarVagas = async (req, res) => {
   const entidade = mongoose.Types.ObjectId(req.params);
+  var busca = req.param('statusVaga');
   try {
     const vagas = await Vaga.find({ "entidade.id": entidade }).where({
       statusVaga: "ABERTA",

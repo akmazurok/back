@@ -1,18 +1,22 @@
 const Usuario = require("../models/usuario").Usuario;
 const Entidade = require("../models/usuario").Entidade;
 const Estudante = require("../models/usuario").Estudante;
-const Admin = require("../models/usuario").Admin;
+const Administrador = require("../models/usuario").Administrador;
 const Vaga = require("../models/vaga");
 
-//TO-DO - /deletar entidade  /arrumar exclusao
+//TO-DO - /colocar id do admin nas aprovações e a data da aprovação
 
-//RETORNAR TODAS AS VAGAS - OK
+//RETORNAR TODAS AS VAGAS PARA APROVACAO- OK
 exports.listarVagas = async (req, res) => {
   try {
-    const vagas = await Vaga.find().sort("-statusAprovacao");
+    const vagas = await Vaga.find({ statusVaga: "APROVACAO" }).sort({
+      dataCadastro: 1,
+    });
     res.status(200).send({ vagas });
   } catch (error) {
-    res.status(404).send({ message: "Vagas não localizadas" + error });
+    res
+      .status(404)
+      .send({ message: "Não foram encontradas vagas para aprovação" + error });
   }
 };
 
@@ -26,62 +30,51 @@ exports.detalhesVaga = async (req, res) => {
   }
 };
 
-
 //APROVAR VAGA - OK
 exports.aprovarVaga = async (req, res) => {
-  const vaga = req.body;
+  var statusVaga = req.body;  
   try {
-    await Vaga.updateOne({ _id: req.params.vagaid }, vaga);
-    return res
-      .status(200)
-      .send({ message: "Vaga aprovada com sucesso!" });
+    await Vaga.updateOne({ _id: req.params.vagaid }, statusVaga);
+    return res.status(200).send({ message: "Vaga aprovada com sucesso!" })
   } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erro ao atualizar" + error });
+    return res.status(500).send({ message: "Erro ao atualizar" + error });
   }
 };
 
-//RETORNAR TODOS OS USUARIOS - OK
-exports.listarUsuarios = async (req, res) => {
-  try {
-    //retornar sem a senha
-    const usuarios = await Usuario.find({}, { senha: 0 });
-    res.status(200).send({ usuarios });
-  } catch (error) {
-    res.status(404).send({ message: "Usuários não localizados" + error });
-  }
-};
-
-//RETORNAR TODOS AS ENTIDADES - OK
+//RETORNAR TODOS AS ENTIDADES PARA APROVAçÃO - OK
 exports.listarEntidades = async (req, res) => {
   try {
-    //ordena por cadastro pe1ndente
-    const entidades = await Entidade.find({}, { senha: 0 }).sort(
-      "-situacaoCadastro"
-    );
+    const entidades = await Entidade.find(
+      { statusCadastro: "PENDENTE" },
+      { senha: 0 }
+    ).sort({ dataCadastro: 1 });
     res.status(200).send({ entidades });
   } catch (error) {
-    res.status(404).send({ message: "Entidades não localizadas" + error });
+    res.status(404).send({
+      message: "Não foram encontradas Entidades para aprovação" + error,
+    });
   }
 };
 
-//RETORNAR TODOS OS ESTUDANTES - OK
+//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO - OK
 exports.listarEstudantes = async (req, res) => {
   try {
-    const estudantes = await Estudante.find({}, { senha: 0 }).sort(
-      "-situacaoCadastro"
-    );
+    const estudantes = await Estudante.find(
+      { statusCadastro: "PENDENTE" },
+      { senha: 0 }
+    ).sort({ dataCadastro: 1 });
     res.status(200).send({ estudantes });
   } catch (error) {
-    res.status(404).send({ message: "Estudantes não localizados" + error });
+    res.status(404).send({
+      message: "Não foram encontrados Estudantes para aprovação" + error,
+    });
   }
 };
 
 //RETORNAR TODOS OS ADMINS - OK
 exports.listarAdmins = async (req, res) => {
   try {
-    const admins = await Admin.find({}, { senha: 0 });
+    const admins = await Administrador.find({}, { senha: 0 });
     res.status(200).send({ admins });
   } catch (error) {
     res
@@ -93,16 +86,16 @@ exports.listarAdmins = async (req, res) => {
 //CADASTRAR ADMIN - OK
 exports.cadastrar = async (req, res) => {
   //Confere se o cpf ou cnpj ja esta cadastrado
-  const { documento, email, senha, acesso } = req.body;
+  const { login, senha, perfil } = req.body;
 
   try {
-    //  if (await Usuario.findOne({ documento }))
-    //    return res.status(400).send({ error: "Documento já cadastrado" });
-    const usuario = await Usuario.create({ documento, email, senha, acesso });
+    if (await Usuario.findOne({ login }))
+      return res.status(400).send({ error: "CFP já cadastrado" });
+    const usuario = await Usuario.create({ login, senha, perfil });
     usuario.senha = undefined;
     const userid = usuario.id;
 
-    const cadastro = new Admin(req.body);
+    const cadastro = new Administrador(req.body);
     cadastro.userid = userid;
     await cadastro.save();
 
@@ -118,18 +111,18 @@ exports.cadastrar = async (req, res) => {
 exports.admin = async (req, res) => {
   try {
     //Retorna o usuario sem a informacao da senha
-    const admin = await Admin.findOne({ _id: req.params.id });
+    const admin = await Administrador.findOne({ _id: req.params.id });
     res.status(200).send({ admin });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
-//EDITAR ADMIN - OK
+//EDITAR ADMIN
 exports.editar = async (req, res) => {
   const admin = req.body;
   try {
-    await Admin.updateOne({ _id: req.params.id }, admin);
+    await Administrador.updateOne({ _id: req.params.id }, admin);
     return res.status(200).send({ message: "Perfil alterado com sucesso!" });
   } catch (error) {
     return res
@@ -141,7 +134,7 @@ exports.editar = async (req, res) => {
 //EXCLUIR ADMIN
 exports.excluir = async (req, res) => {
   try {
-    await Admin.findByIdAndRemove({ _id: req.params.id });
+    await Administrador.findByIdAndRemove({ _id: req.params.id });
     res.status(200).send({ message: "Cadastro excluído com sucesso." });
   } catch (error) {
     res
@@ -163,12 +156,12 @@ exports.entidade = async (req, res) => {
 
 //APROVAR ENTIDADE - OK
 exports.aprovarEntidade = async (req, res) => {
-  const entidade = req.body;
+  var statusCadastro = req.body;
   try {
-    await Entidade.updateOne({ _id: req.params.entid }, entidade);
+    await Entidade.updateOne({ _id: req.params.entid }, statusCadastro);
     return res
       .status(200)
-      .send({ message: "Status do cadastro: " + entidade. situacaoCadastro });
+      .send({ message: "Status do cadastro: " + statusCadastro.statusCadastro });
   } catch (error) {
     return res
       .status(500)
@@ -189,15 +182,13 @@ exports.estudante = async (req, res) => {
 
 //APROVAR ESTUDANTE - OK
 exports.aprovarEstudante = async (req, res) => {
-  const estudante = req.body;
+  var statusCadastro = req.body;
   try {
-    await Estudante.updateOne({ _id: req.params.estid }, estudante);
+    await Estudante.updateOne({ _id: req.params.estid }, statusCadastro);
     return res
       .status(200)
-      .send({ message: "Status do cadastro: " + estudante. situacaoCadastro });
+      .send({ message: "Status do cadastro: " + statusCadastro.statusCadastro });
   } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erro ao atualizar" + error });
+    return res.status(500).send({ message: "Erro ao atualizar" + error });
   }
 };
