@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 // Vaga Schema
 const VagaSchema = new mongoose.Schema({
-  entidade: {
-    id: { type: mongoose.Types.ObjectId, ref: "Entidade" },    
+  entidadeId: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
   },
 
   nomeVaga: {

@@ -4,7 +4,8 @@
   "description": "Backend projeto Estudante Voluntario",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon  app.js"
+    "start:dev": "nodemon  app.js",
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",

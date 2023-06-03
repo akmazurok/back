@@ -4,7 +4,7 @@ const Estudante = require("../models/usuario").Estudante;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-//TO DO - /checar autorizacao /desativar usuario
+//TO DO - /desativar usuario
 
 //CADASTRAR - OK
 exports.cadastrar = async (req, res) => {
@@ -15,7 +15,7 @@ exports.cadastrar = async (req, res) => {
     if (await Usuario.findOne({ login }))
       return res.status(200).send({ message: "Usuário já cadastrado" });
 
-    const usuario = await Usuario.create({ login, senha, perfil });
+    const usuario = await Usuario.create({ login, senha, perfil, nome });
     usuario.senha = undefined;
     const userid = usuario.id;
 
@@ -30,22 +30,14 @@ exports.cadastrar = async (req, res) => {
     cadastro.userid = userid;
     await cadastro.save();
 
-    return res.status(201).send({ usuario, cadastro });
+    //retorna usuario e estudante/entidade pra mostrar nos testes
+    return res
+      .status(201)
+      .send({ message: "Cadastro realizado com sucesso! ", usuario, cadastro });
   } catch (error) {
     return res
       .status(500)
       .send({ message: "Erro ao realizar o cadastro " + error });
-  }
-};
-
-//USUARIO POR ID - OK
-exports.usuario = async (req, res) => {
-  try {
-    //Retorna o usuario sem a informacao da senha
-    const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
-    res.status(200).send({ usuario });
-  } catch (error) {
-    res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
@@ -57,19 +49,24 @@ exports.login = async (req, res) => {
   if (!user) {
     return res.status(404).send({ message: "Usuário não encontrado!" });
   }
-  const checkPassword = bcrypt.compare(senha, user.senha);
+  const checkPassword = await bcrypt.compare(senha, user.senha);
   if (!checkPassword) {
     return res.status(422).send({ message: "Senha inválida" });
   }
-
+  if (!user.perfilAtivo) {
+    return res.status(200).send({ message: "Usuário com perfil desativado" });
+  }
   try {
-    const secret = process.env.ACCESS_TOKEN_SECRET;
+    const secret = await process.env.ACCESS_TOKEN_SECRET;
     const token = jwt.sign(
       {
         id: user._id,
       },
       secret
     );
+
+    //Retirar a senha
+    user.senha = undefined;
 
     res
       .status(200)
@@ -81,38 +78,11 @@ exports.login = async (req, res) => {
   }
 };
 
-//EDITAR USUARIO
-exports.editar = async (req, res) => {
-  const usuario = req.body;
-
-  try {
-    await Usuario.updateOne({ _id: req.params.id }, usuario);
-
-    return res.status(200).send({ message: "Perfil alterado com sucesso!" });
-  } catch (error) {
-    return res
-      .status(400)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
-  }
-};
-
 //DESATIVAR USUARIO
 exports.desativar = async (req, res) => {
   //usuario precisa digitar a senha pra confirmar a ação
   //const { senha } = req.body;
   const user = await Usuario.findOne({ _id: req.params.id });
-
-  /*  try {
-    const checkPassword = bcrypt.compare(senha, user.senha);
-    if (!checkPassword) {
-      return res.status(422).send({ message: "Senha inválida" });
-    }
-  
-  } catch (error) {
-    return res
-      .status(400)
-      .send({ message: "Não foi possível desativar o perfil " + error });
-  } */
 
   try {
     await Usuario.updateOne(

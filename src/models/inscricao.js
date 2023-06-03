@@ -2,18 +2,17 @@ const mongoose = require("mongoose");
 
 // Inscrição Schema
 const InscricaoSchema = new mongoose.Schema({
-  vaga: {
+  vagaId: {
     type: mongoose.Types.ObjectId,
     ref: "Vaga",
   },
-
-  //já tem referencia da entidade na vaga
-/*   entidade: {
+ 
+  entidadeId: {
     type: mongoose.Types.ObjectId,
     ref: "Entidade",
-  }, */
+  },
 
-  estudante: {
+  estudanteId: {
     type: mongoose.Types.ObjectId,
     ref: "Estudante",
   },
@@ -48,7 +47,8 @@ const InscricaoSchema = new mongoose.Schema({
   dataInicioTrabalho: {
     type: Date,
   },
-  dataFinalTrabalho: {
+  
+  dataEncerramentoTrabalho: {
     type: Date,
   },
 

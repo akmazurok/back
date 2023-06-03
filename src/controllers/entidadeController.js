@@ -1,42 +1,41 @@
 var mongoose = require("mongoose");
 const Entidade = require("../models/usuario").Entidade;
+const Usuario = require("../models/usuario").Usuario;
 const Vaga = require("../models/vaga");
 const Inscricao = require("../models/inscricao");
 
-//TO-DO - 
+//TO-DO -
 
 //ENTIDADE POR ID - OK
 exports.entidade = async (req, res) => {
   try {
-    const entidade = await Entidade.findById(req.params.id).populate({
-      path: "userid",
-      select: "login",
-      //verificar quais atributos precisa retornar
-    });
+    const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
+    const entidade = await Entidade.findOne({ userid: req.params.id });
 
-    res.status(200).send({ entidade });
+    res.status(200).send({ usuario, entidade });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
-//EDITAR ENTIDADE
+//EDITAR ENTIDADE - OK
 exports.editarEntidade = async (req, res) => {
-  const entidade = req.body;
+  const dados = req.body;
   try {
-    await Entidade.updateOne({ _id: req.params.id }, entidade);
+    //altera dados das coleções Usuario e Estudante
+    await Usuario.updateOne({ _id: req.params.id }, dados);
+    await Entidade.updateOne({ userid: req.params.id }, dados);
     return res.status(200).send({ message: "Dados alterados com sucesso!" });
   } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
+    return res.status(500).send({ message: "Erro ao atualizar" + error });
   }
 };
 
 //CADASTRAR VAGA - OK
 exports.cadastrarVaga = async (req, res) => {
+  const entidadeId = mongoose.Types.ObjectId(req.params);
   const vaga = new Vaga(req.body);
-  vaga.entidade = req.params;
+  vaga.entidadeId = entidadeId;
 
   try {
     await vaga.save();
@@ -50,30 +49,44 @@ exports.cadastrarVaga = async (req, res) => {
 
 //LISTAR TODAS AS VAGAS DA ENTIDADE - OK
 exports.listarVagas = async (req, res) => {
-  const entidade = mongoose.Types.ObjectId(req.params);
+  const entidadeId = mongoose.Types.ObjectId(req.params);
   try {
-    const vagas = await Vaga.find({ "entidade.id": entidade });
+    const vagas = await Vaga.find({ entidadeId: entidadeId });
     res.status(200).send(vagas);
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
   }
 };
 
- //LISTAR VAGAS POR STATUS
-/* exports.listarVagas = async (req, res) => {
-  const entidade = mongoose.Types.ObjectId(req.params);
-  var busca = req.param('statusVaga');
+//LISTAR VAGAS ABERTAS - OK
+exports.listarVagasAbertas = async (req, res) => {
+  const entidadeId = mongoose.Types.ObjectId(req.params);
+
   try {
-    const vagas = await Vaga.find({ "entidade.id": entidade }).where({
+    const vagas = await Vaga.find({ entidadeId: entidadeId }).where({
       statusVaga: "ABERTA",
-    });;
+    });
     res.status(200).send(vagas);
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
   }
-}; */
- 
-//VISUALIZAR VAGA - OK
+};
+
+//LISTAR VAGAS EM ANDAMENTO - OK
+exports.listarVagasAndamento = async (req, res) => {
+  const entidadeId = mongoose.Types.ObjectId(req.params);
+
+  try {
+    const vagas = await Vaga.find({ entidadeId: entidadeId }).where({
+      statusVaga: "ANDAMENTO",
+    });
+    res.status(200).send(vagas);
+  } catch (error) {
+    res.status(404).send({ message: "Vagas não localizadas" + error });
+  }
+};
+
+//VISUALIZAR DETALHES DA VAGA - OK
 exports.vaga = async (req, res) => {
   try {
     const vaga = await Vaga.findById(req.params.vagaid).populate({
@@ -85,13 +98,16 @@ exports.vaga = async (req, res) => {
   }
 };
 
-//EDITAR VAGA
-exports.editarVaga = async (req, res) => {
-  const idvaga = req.params.vagaid;
-  const vaga = req.body;
+//CANCELAR VAGA - OK
+exports.cancelarVaga = async (req, res) => {
   try {
-    await Vaga.updateOne({ _id: idvaga }, vaga);
-    return res.status(200).send({ message: "Vaga alterada com sucesso!" });
+    const vaga = await Vaga.findById(req.params.vagaid);
+    if (vaga.statusVaga == "ANDAMENTO") {
+      return res.status(422).send({ message: "Não é possível cancelar vagas em andamento!" });
+    }
+    vaga.statusVaga = "CANCELADA";
+    vaga.save();
+    return res.status(200).send({ message: "Vaga cancelada com sucesso!" });
   } catch (error) {
     return res
       .status(500)
@@ -134,7 +150,8 @@ exports.aprovarInscrito = async (req, res, next) => {
     await Inscricao.updateOne({ _id: req.params.inscritoid }, statusInscricao);
     return res.status(200).send({ message: "Inscrição avaliada com sucesso!" });
   } catch (error) {
-    return res.status(500).send({ message: "Erro ao realizar ao atualizar" + error  });
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
   }
 };
-

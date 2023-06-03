@@ -6,7 +6,7 @@ const Vaga = require("../models/vaga");
 
 //TO-DO - /colocar id do admin nas aprovações e a data da aprovação
 
-//RETORNAR TODAS AS VAGAS PARA APROVACAO- OK
+//RETORNAR TODAS AS VAGAS PARA APROVACAO
 exports.listarVagas = async (req, res) => {
   try {
     const vagas = await Vaga.find({ statusVaga: "APROVACAO" }).sort({
@@ -20,7 +20,7 @@ exports.listarVagas = async (req, res) => {
   }
 };
 
-//RETORNAR VAGA POR ID - OK
+//RETORNAR VAGA POR ID
 exports.detalhesVaga = async (req, res) => {
   try {
     const vaga = await Vaga.find({ _id: req.params.vagaid });
@@ -30,7 +30,7 @@ exports.detalhesVaga = async (req, res) => {
   }
 };
 
-//APROVAR VAGA - OK
+//APROVAR VAGA
 exports.aprovarVaga = async (req, res) => {
   var statusVaga = req.body;  
   try {
@@ -41,7 +41,7 @@ exports.aprovarVaga = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS AS ENTIDADES PARA APROVAçÃO - OK
+//RETORNAR TODOS AS ENTIDADES PARA APROVAçÃO
 exports.listarEntidades = async (req, res) => {
   try {
     const entidades = await Entidade.find(
@@ -56,7 +56,7 @@ exports.listarEntidades = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO - OK
+//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO
 exports.listarEstudantes = async (req, res) => {
   try {
     const estudantes = await Estudante.find(
@@ -71,7 +71,7 @@ exports.listarEstudantes = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS OS ADMINS - OK
+//RETORNAR TODOS OS ADMINS
 exports.listarAdmins = async (req, res) => {
   try {
     const admins = await Administrador.find({}, { senha: 0 });
@@ -83,7 +83,7 @@ exports.listarAdmins = async (req, res) => {
   }
 };
 
-//CADASTRAR ADMIN - OK
+//CADASTRAR ADMIN
 exports.cadastrar = async (req, res) => {
   //Confere se o cpf ou cnpj ja esta cadastrado
   const { login, senha, perfil } = req.body;
@@ -107,7 +107,7 @@ exports.cadastrar = async (req, res) => {
   }
 };
 
-//ADMIN POR ID - OK
+//ADMIN POR ID
 exports.admin = async (req, res) => {
   try {
     //Retorna o usuario sem a informacao da senha
@@ -143,10 +143,10 @@ exports.excluir = async (req, res) => {
   }
 };
 
-//VER DETALHES ENTIDADE - OK
+//VER DETALHES ENTIDADE
 exports.entidade = async (req, res) => {
   try {
-    //Retorna o usuario sem a informacao da senha
+   
     const entidade = await Entidade.findOne({ _id: req.params.entid });
     res.status(200).send({ entidade });
   } catch (error) {
@@ -154,7 +154,7 @@ exports.entidade = async (req, res) => {
   }
 };
 
-//APROVAR ENTIDADE - OK
+//APROVAR ENTIDADE
 exports.aprovarEntidade = async (req, res) => {
   var statusCadastro = req.body;
   try {
@@ -169,10 +169,10 @@ exports.aprovarEntidade = async (req, res) => {
   }
 };
 
-//VER DETALHES ESTUDANTE - OK
+//VER DETALHES ESTUDANTE
 exports.estudante = async (req, res) => {
   try {
-    //Retorna o usuario sem a informacao da senha
+   
     const estudante = await Estudante.findOne({ _id: req.params.estid });
     res.status(200).send({ estudante });
   } catch (error) {
@@ -180,7 +180,7 @@ exports.estudante = async (req, res) => {
   }
 };
 
-//APROVAR ESTUDANTE - OK
+//APROVAR ESTUDANTE
 exports.aprovarEstudante = async (req, res) => {
   var statusCadastro = req.body;
   try {
