@@ -5,7 +5,7 @@ const Certificado = require("../models/certificado");
 const Estudante = require("../models/usuario").Estudante;
 const Usuario = require("../models/usuario").Usuario;
 
-//TO-DO
+//TO-DO - /inscricao vaga  /detalhes da inscricao /termo de adesao /certificados /download certificado
 
 //ESTUDANTE POR ID - OK
 exports.estudante = async (req, res) => {
@@ -22,6 +22,7 @@ exports.estudante = async (req, res) => {
 //EDITAR ESTUDANTE - OK
 exports.editarEstudante = async (req, res) => {
   const dados = req.body;
+ 
   try {
     //altera dados das coleções Usuario e Estudante
     await Usuario.updateOne({ _id: req.params.id }, dados);
@@ -55,10 +56,7 @@ exports.detalhesVaga = async (req, res) => {
   }
 };
 
-
-//**********ARRUMAR ********* */
-
-//INSCREVER-SE EM VAGA
+//INSCREVER-SE EM VAGA **********ARRUMAR *********
 exports.inscricaoVaga = async (req, res) => {
   const estudanteId = mongoose.Types.ObjectId(req.params.id);
 //ver como pegar os dados da vaga pra salvar na inscricao
@@ -84,10 +82,10 @@ exports.inscricaoVaga = async (req, res) => {
   }
 };
 
-//LISTAR INSCRICOES
+//LISTAR INSCRICOES - OK
 exports.listarInscricoes = async (req, res) => {
   try {
-    const inscricoes = await Inscricao.find({ estudante: req.params.id });
+    const inscricoes = await Inscricao.find({ estudanteId: req.params.id });
     res.status(200).send({ inscricoes });
   } catch (error) {
     res
@@ -159,7 +157,7 @@ exports.rescindirTermo = async (req, res) => {
 //LISTAR CERTIFICADOS
 exports.listarCertificados = async (req, res) => {
   try {
-    const certificados = await Certificado.find({ estudante: req.params.id });
+    const certificados = await Certificado.find({ estudanteId: req.params.id });
     res.status(200).send({ certificados });
   } catch (error) {
     res

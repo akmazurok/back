@@ -2,6 +2,17 @@ const mongoose = require("mongoose");
 
 // Certificado Schema
 const CertificadoSchema = new mongoose.Schema({
+  estudanteId: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
+  }, 
+  
+  inscricaoId: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
+  },
+   
+
   nomeVaga: {
     type: String,
   },

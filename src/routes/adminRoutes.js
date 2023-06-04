@@ -13,13 +13,11 @@ router.get("/:id", adminController.admin);
 router.patch("/:id", adminController.editar);
 router.delete("/:id", adminController.excluir);
 
-
 router.get("/vagas/:vagaid", adminController.detalhesVaga);
-router.patch("/vagas/:vagaid", adminController.aprovarVaga);
-
+router.patch("/vagas/:vagaid/:id", adminController.validarVaga);
 router.get("/entidades/:entid", adminController.entidade);
-router.patch("/entidades/:entid", adminController.aprovarEntidade);
+router.patch("/entidades/:entid/:id", adminController.validarEntidade);
 router.get("/estudantes/:estid", adminController.estudante);
-router.patch("/estudantes/:estid", adminController.aprovarEstudante);
+router.patch("/estudantes/:estid/:id", adminController.validarEstudante);
 
 module.exports = router;

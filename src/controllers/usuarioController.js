@@ -4,7 +4,7 @@ const Estudante = require("../models/usuario").Estudante;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-//TO DO - /desativar usuario
+//TO DO - /desativar usuario  /recuperar senha
 
 //CADASTRAR - OK
 exports.cadastrar = async (req, res) => {

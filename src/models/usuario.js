@@ -10,12 +10,12 @@ const UsuarioSchema = new mongoose.Schema({
   },
 
   senha: {
-    type: String, 
-   // select: false,
+    type: String,
+    // select: false,
   },
 
   nome: {
-    type: String,   
+    type: String,
   },
 
   perfil: {
@@ -138,6 +138,10 @@ const EstudanteSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
   },
+
+  comnentario: {
+    type: String,
+  },
 });
 
 // Admin Schema
@@ -238,6 +242,10 @@ const EntidadeSchema = new mongoose.Schema({
   idAdmin: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
+  },
+
+  comnentario: {
+    type: String,
   },
 });
 

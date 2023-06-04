@@ -86,6 +86,10 @@ const VagaSchema = new mongoose.Schema({
     default: Date.now,
   },
 
+  comentario: {
+    type: String,
+  },
+
   idAdmin: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
