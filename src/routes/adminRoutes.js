@@ -9,9 +9,16 @@ router.get("/admins", adminController.listarAdmins);
 router.get("/vagas", adminController.listarVagas);
 router.post("/cadastro", adminController.cadastrar);
 
+//rotas de alteração pelo própio usuário admin
 router.get("/:id", adminController.admin);
-router.patch("/:id", adminController.editar);
-router.delete("/:id", adminController.excluir);
+router.patch("/:id", adminController.editarPerfil);
+
+//rotas para de gerenciamento de administradores
+router.get("/:adminid", adminController.visualizarAdmin);
+router.patch("/:adminid", adminController.editarAdmin);
+router.delete("/:adminid", adminController.excluirAdmin);
+router.patch("/:adminid/promover", adminController.promoverAdmin);
+router.patch("/:adminid/rebaixar", adminController.rebaixarAdmin);
 
 router.get("/vagas/:vagaid", adminController.detalhesVaga);
 router.patch("/vagas/:vagaid/:id", adminController.validarVaga);

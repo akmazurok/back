@@ -7,6 +7,30 @@ const Vaga = require("../models/vaga");
 
 //TO-DO - /promover
 
+//VISUALIZAR PERFIL - passando id de usuario - OK
+exports.admin = async (req, res) => {
+  try {
+    const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
+    const admin = await Administrador.findOne({ userid: req.params.id });
+    res.status(200).send({ admin, usuario });
+  } catch (error) {
+    res.status(404).send({ message: "Dados não encontrados " + error });
+  }
+};
+
+//EDITAR PERFIL - passando id de usuario - OK
+exports.editarPerfil = async (req, res) => {
+  const dados = req.body;
+  try {
+    //altera dados das coleções Usuario e Administrador
+    await Usuario.updateOne({ _id: req.params.id }, dados);
+    await Administrador.updateOne({ userid: req.params.id }, dados);
+    return res.status(200).send({ message: "Dados alterados com sucesso!" });
+  } catch (error) {
+    return res.status(500).send({ message: "Erro ao atualizar" + error });
+  }
+};
+
 //RETORNAR TODAS AS VAGAS PARA APROVACAO - OK
 exports.listarVagas = async (req, res) => {
   try {
@@ -162,12 +186,12 @@ exports.listarAdmins = async (req, res) => {
 
 //CADASTRAR ADMIN - OK
 exports.cadastrar = async (req, res) => {
-  const { login, senha, perfil } = req.body;
+  const { login, senha, perfil, nome } = req.body;
 
   try {
     if (await Usuario.findOne({ login }))
       return res.status(400).send({ error: "CFP já cadastrado" });
-    const usuario = await Usuario.create({ login, senha, perfil });
+    const usuario = await Usuario.create({ login, senha, perfil, nome });
     usuario.senha = undefined;
     const userid = usuario.id;
 
@@ -175,7 +199,10 @@ exports.cadastrar = async (req, res) => {
     cadastro.userid = userid;
     await cadastro.save();
 
-    return res.status(201).send({ usuario, cadastro });
+    // retorna usuario e admin pra mostrar nos testes
+    return res
+      .status(201)
+      .send({ message: "Cadastro realizado com sucesso! ", usuario, cadastro });
   } catch (error) {
     return res
       .status(500)
@@ -183,29 +210,30 @@ exports.cadastrar = async (req, res) => {
   }
 };
 
-//ADMIN POR ID
-exports.admin = async (req, res) => {
+//ADMIN POR ID - passando id do admin - OK
+exports.visualizarAdmin = async (req, res) => {
   try {
-    const entidade = await Entidade.findOne({ _id: req.params.entid }).populate(
-      "userid",
-      "login perfil dataCadastro"
-    );
-
-    const admin = await Administrador.findOne({ _id: req.params.id }).populate(
-      "userid",
-      "login perfil dataCadastro"
-    );
+    const admin = await Administrador.findOne({
+      _id: req.params.adminid,
+    }).populate("userid", "login perfil dataCadastro nome");
     res.status(200).send({ admin });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }
 };
 
-//EDITAR ADMIN
-exports.editar = async (req, res) => {
-  const admin = req.body;
+//EDITAR ADMIN - passando id do admin - OK
+exports.editarAdmin = async (req, res) => {
+  const dados = req.body;
   try {
-    await Administrador.updateOne({ _id: req.params.id }, admin);
+    //altera dados das coleções Usuario e Administrador
+    const admin = await Administrador.findOneAndUpdate(
+      { _id: req.params.adminid },
+      dados
+    );
+    var userid = mongoose.Types.ObjectId(admin.userid);
+    await Usuario.findOneAndUpdate({ _id: userid }, dados);
+
     return res.status(200).send({ message: "Perfil alterado com sucesso!" });
   } catch (error) {
     return res
@@ -214,14 +242,57 @@ exports.editar = async (req, res) => {
   }
 };
 
-//EXCLUIR ADMIN
-exports.excluir = async (req, res) => {
+//EXCLUIR ADMIN - passando id do admin - OK
+exports.excluirAdmin = async (req, res) => {
   try {
-    await Administrador.findByIdAndRemove({ _id: req.params.id });
+    const admin = await Administrador.findOneAndRemove({
+      _id: req.params.adminid,
+    });
+    var userid = mongoose.Types.ObjectId(admin.userid);
+    await Usuario.findOneAndRemove({ _id: userid });
+
     res.status(200).send({ message: "Cadastro excluído com sucesso." });
   } catch (error) {
     res
       .status(500)
       .send({ message: "Não foi possível excluir o Administrador " + error });
+  }
+};
+
+//PROMOVER ADMIN - passando id do admin
+exports.promoverAdmin = async (req, res) => {
+  try {
+    const admin = await Administrador.findOne({ _id: req.params.adminid });
+    var userid = mongoose.Types.ObjectId(admin.userid);
+    await Usuario.findOneAndUpdate(
+      { _id: userid },
+      { perfil: "ADMINISTRADORGERAL" }
+    );
+    return res
+      .status(200)
+      .send({ message: "Administrador promovido com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
+
+//REBAIXAR ADMIN - passando id do admin
+exports.rebaixarAdmin = async (req, res) => {
+  try {
+    const admin = await Administrador.findOne({ _id: req.params.adminid });
+    var userid = mongoose.Types.ObjectId(admin.userid);
+    await Usuario.findOneAndUpdate(
+      { _id: userid },
+      { perfil: "ADMINISTRADOR" }
+    );
+    return res
+      .status(200)
+      .send({ message: "Administrador rebaixado com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
   }
 };
