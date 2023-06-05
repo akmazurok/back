@@ -53,7 +53,10 @@ exports.login = async (req, res) => {
   if (!checkPassword) {
     return res.status(422).send({ message: "Senha inválida" });
   }
-  if (!user.perfilAtivo) {
+   if (user.statusPerfil == "PENDENTE") {
+    return res.status(200).send({ message: "Usuário com perfil em análise" });
+  }
+  if (user.statusPerfil == "DESATIVADO") {
     return res.status(200).send({ message: "Usuário com perfil desativado" });
   }
   try {
@@ -87,7 +90,7 @@ exports.desativar = async (req, res) => {
   try {
     await Usuario.updateOne(
       { _id: req.params.id },
-      { $set: { perfilAtivo: false } }
+      { $set: { statusPerfil: "DESATIVADO" } }
     );
     return res.status(200).send({ message: "Perfil alterado com sucesso!" });
   } catch (error) {

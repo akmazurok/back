@@ -79,8 +79,8 @@ exports.validarVaga = async (req, res) => {
 //RETORNAR TODOS AS ENTIDADES PARA APROVAçÃO - OK
 exports.listarEntidades = async (req, res) => {
   try {
-    const entidades = await Entidade.find(
-      { statusCadastro: "PENDENTE" },
+    const entidades = await Usuario.find(
+      { perfil: "ENTIDADE", statusPerfil: "PENDENTE"},
       { senha: 0 }
     ).sort({ dataCadastro: 1 });
     res.status(200).send({ entidades });
