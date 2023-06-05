@@ -8,7 +8,7 @@ const Usuario = require("../models/usuario").Usuario;
 //TO-DO - /inscricao vaga  /detalhes da inscricao /termo de adesao /certificados /download certificado
 
 //ESTUDANTE POR ID - OK
-exports.estudante = async (req, res) => {
+exports.getPerfilEstudante = async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
     const estudante = await Estudante.findOne({ userid: req.params.id });
@@ -20,7 +20,7 @@ exports.estudante = async (req, res) => {
 };
 
 //EDITAR ESTUDANTE - OK
-exports.editarEstudante = async (req, res) => {
+exports.setPerfilEstudante = async (req, res) => {
   const dados = req.body;
  
   try {

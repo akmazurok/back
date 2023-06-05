@@ -7,7 +7,7 @@ const Inscricao = require("../models/inscricao");
 //TO-DO -
 
 //ENTIDADE POR ID - OK
-exports.entidade = async (req, res) => {
+exports.getPerfilEntidade = async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
     const entidade = await Entidade.findOne({ userid: req.params.id });
@@ -19,7 +19,7 @@ exports.entidade = async (req, res) => {
 };
 
 //EDITAR ENTIDADE - OK
-exports.editarEntidade = async (req, res) => {
+exports.setPerfilEntidade = async (req, res) => {
   const dados = req.body;
   try {
     //altera dados das coleções Usuario e Estudante

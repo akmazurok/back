@@ -6,8 +6,8 @@ const estudanteController = require("../controllers/estudanteController");
 router.get("/vagas", estudanteController.listarVagas);
 router.get("/vagas/:vagaid", estudanteController.detalhesVaga);   
 
-router.get("/:id", estudanteController.estudante);
-router.patch("/:id", estudanteController.editarEstudante);
+router.get("/:id", estudanteController.getPerfilEstudante);
+router.patch("/:id", estudanteController.setPerfilEstudante);
 
 router.get("/:id/inscricoes", estudanteController.listarInscricoes);
 router.get("/:id/certificados", estudanteController.listarCertificados);

@@ -3,8 +3,8 @@ const express = require("express");
 const router = express.Router();
 const entidadeController = require("../controllers/entidadeController");
 
-router.get("/:id", entidadeController.entidade);
-router.patch("/:id", entidadeController.editarEntidade);
+router.get("/:id", entidadeController.getPerfilEntidade);
+router.patch("/:id", entidadeController.setPerfilEntidade);
 
 router.post("/:id/cadastrarvaga", entidadeController.cadastrarVaga);
 router.get("/:id/vagas", entidadeController.listarVagas);
