@@ -28,15 +28,7 @@ const IntituicaoSchema = new mongoose.Schema({
   telefone: {
     type: String,
   },
-
-  cursos: [
-    {
-      id: { type: mongoose.Types.ObjectId, ref: "Curso" },
-      grau: { type: String },
-      nomeCurso: { type: String },
-      campus: { type: String },
-    },
-  ],
+ 
 });
 
 module.exports = mongoose.model("Instituicao", IntituicaoSchema);
