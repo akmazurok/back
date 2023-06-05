@@ -45,7 +45,6 @@ exports.visualizarIes = async function (req, res) {
 //EXCLUI IES POR ID - ********ARRUMAR******
 exports.excluirIes = async function (req, res) {
   try {
-    await Curso.find().where({ instituicao: req.params.iesid }).deleteMany();
     const ies = await Instituicao.findOneAndRemove({ _id: req.params.iesid });
     //  await Instituicao.findByIdAndRemove({ _id: req.params.id });
     res
@@ -85,7 +84,11 @@ exports.cadastrarCurso = async (req, res) => {
 exports.listarCursos = async (req, res) => {
   try {
     const instituicao = await Instituicao.findOne({ _id: req.params.iesid });
-    res.status(200).send(instituicao.cursos);
+    const id = mongoose.Types.ObjectId(instituicao.id);
+    console.log(id);
+    const cursos = await Curso.find().where({ instituicao: id });
+
+    res.status(200).send(cursos);
   } catch (error) {
     res
       .status(500)
@@ -108,14 +111,7 @@ exports.visualizarCurso = async function (req, res) {
 //EXCLUI CURSO POR ID - *********ARRUMAR********
 exports.excluirCurso = async function (req, res) {
   try {
-    const curso = await Curso.findOneAndRemove({ _id: req.params.cursoid });
-    const instituicao = mongoose.Types.ObjectId(curso.instituicao);
-    console.log(instituicao);
-    await Instituicao.updateOne(
-      { _id: instituicao },
-      { $pull: { "cursos": curso } }
-    );
-    console.log(curso);
+    await Curso.findOneAndRemove({ _id: req.params.cursoid });
     res.status(200).send({ message: "Curso excluído com sucesso." });
   } catch (error) {
     res
