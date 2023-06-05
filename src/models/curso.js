@@ -26,7 +26,7 @@ const CursoSchema = new mongoose.Schema({
     numero: { type: String },
     bairro: { type: String },
     cidade: { type: String },
-    uf: { type: String },
+    estado: { type: String },
   },
 });
 

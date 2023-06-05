@@ -82,7 +82,7 @@ exports.inscricaoVaga = async (req, res) => {
   }
 };
 
-//LISTAR INSCRICOES - OK
+//LISTAR INSCRICOES
 exports.listarInscricoes = async (req, res) => {
   try {
     const inscricoes = await Inscricao.find({ estudanteId: req.params.id });

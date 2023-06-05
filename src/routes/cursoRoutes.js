@@ -5,12 +5,11 @@ const cursoController = require("../controllers/cursoController");
 
 router.post("/", cursoController.cadastrarIes);
 router.get("/", cursoController.listarIes);
-router.get("/:id", cursoController.buscarIes);
-router.delete("/:id", cursoController.excluirIes);
-//router.put("/ies/:id", cursoController.cadastrarCurso);
-router.get("/:id/cursos", cursoController.listarCursos);
-router.post("/:id/cadastrarcurso", cursoController.addCurso);
-router.get("/curso/:id", cursoController.buscarCurso);
-router.delete("curso/:id", cursoController.excluirCurso);
+router.get("/:iesid", cursoController.visualizarIes);
+router.delete("/:iesid", cursoController.excluirIes);
+router.get("/:iesid/cursos", cursoController.listarCursos);
+router.post("/:iesid/cadastrarcurso", cursoController.cadastrarCurso);
+router.get("/curso/:cursoid", cursoController.visualizarCurso);
+router.delete("/curso/:cursoid", cursoController.excluirCurso);
 
 module.exports = router;

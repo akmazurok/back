@@ -8,7 +8,7 @@ const Vaga = require("../models/vaga");
 //TO-DO - /promover
 
 //VISUALIZAR PERFIL - passando id de usuario - OK
-exports.admin = async (req, res) => {
+exports.getPerfilAdmin = async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
     const admin = await Administrador.findOne({ userid: req.params.id });
@@ -19,7 +19,7 @@ exports.admin = async (req, res) => {
 };
 
 //EDITAR PERFIL - passando id de usuario - OK
-exports.editarPerfil = async (req, res) => {
+exports.setPerfilAdmin = async (req, res) => {
   const dados = req.body;
   try {
     //altera dados das coleções Usuario e Administrador
