@@ -15,7 +15,7 @@ exports.cadastrar = async (req, res) => {
     if (await Usuario.findOne({ login }))
       return res.status(200).send({ message: "Usuário já cadastrado" });
 
-    const usuario = await Usuario.create({ login, senha, perfil, nome });
+    const usuario = await Usuario.create({ login, senha, perfil, nome, statusPerfil });
     usuario.senha = undefined;
     const userid = usuario.id;
 

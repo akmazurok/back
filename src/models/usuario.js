@@ -34,9 +34,10 @@ const UsuarioSchema = new mongoose.Schema({
     default: Date.now,
   },
 
-  perfilAtivo: {
-    type: Boolean,
-    default: true,
+  statusPerfil: {
+    type: String,
+    enum: ["APROVADO", "REPROVADO", "PENDENTE", "DESATIVADO"],
+    default: "PENDENTE",
   },
 });
 
@@ -128,18 +129,12 @@ const EstudanteSchema = new mongoose.Schema({
     type: Date,
   },
 
-  statusCadastro: {
-    type: String,
-    enum: ["APROVADO", "REPROVADO", "PENDENTE"],
-    default: "PENDENTE",
-  },
-
   idAdmin: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
   },
 
-  comnentario: {
+  comentario: {
     type: String,
   },
 });
@@ -233,18 +228,12 @@ const EntidadeSchema = new mongoose.Schema({
     type: Date,
   },
 
-  statusCadastro: {
-    type: String,
-    enum: ["APROVADO", "REPROVADO", "PENDENTE"],
-    default: "PENDENTE",
-  },
-
   idAdmin: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
   },
 
-  comnentario: {
+  comentario: {
     type: String,
   },
 });
