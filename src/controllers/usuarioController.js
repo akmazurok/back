@@ -6,6 +6,21 @@ const jwt = require("jsonwebtoken");
 
 //TO DO - /desativar usuario  /recuperar senha
 
+//VERIFICAR SE O LOGIN ESTÁ CADASTRADO
+exports.verificarLogin = async (req, res) => {
+  const { login } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({ login });
+    if (usuario.statusPerfil == "APROVADO" || "PENDENTE")
+      return res.status(200).send(true);
+    if (usuario.statusPerfil == "REPROVADO")
+      return res.status(200).send(false);
+  } catch (error) {
+    return res.status(404).send(false);
+  }
+};
+
 //CADASTRAR - OK
 exports.cadastrar = async (req, res) => {
   const { login, senha, perfil } = req.body;
@@ -15,7 +30,13 @@ exports.cadastrar = async (req, res) => {
     if (await Usuario.findOne({ login }))
       return res.status(200).send({ message: "Usuário já cadastrado" });
 
-    const usuario = await Usuario.create({ login, senha, perfil, nome, statusPerfil });
+    const usuario = await Usuario.create({
+      login,
+      senha,
+      perfil,
+      nome,
+      statusPerfil,
+    });
     usuario.senha = undefined;
     const userid = usuario.id;
 
@@ -53,8 +74,8 @@ exports.login = async (req, res) => {
   if (!checkPassword) {
     return res.status(422).send({ message: "Senha inválida" });
   }
-   if (user.statusPerfil == "PENDENTE") {
-    return res.status(200).send({ message: "Usuário com perfil em análise" });
+  if (user.statusPerfil == "PENDENTE") {
+    return res.status(200).send({ message: "Usuário com perfil em análise", statusPerfil: user.statusPerfil });
   }
   if (user.statusPerfil == "DESATIVADO") {
     return res.status(200).send({ message: "Usuário com perfil desativado" });

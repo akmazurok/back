@@ -5,7 +5,7 @@ const Estudante = require("../models/usuario").Estudante;
 const Administrador = require("../models/usuario").Administrador;
 const Vaga = require("../models/vaga");
 
-//TO-DO - /promover
+//TO-DO - 
 
 //VISUALIZAR PERFIL - passando id de usuario - OK
 exports.getPerfilAdmin = async (req, res) => {
@@ -83,6 +83,7 @@ exports.listarEntidades = async (req, res) => {
       { perfil: "ENTIDADE", statusPerfil: "PENDENTE"},
       { senha: 0 }
     ).sort({ dataCadastro: 1 });
+    
     res.status(200).send({ entidades });
   } catch (error) {
     res.status(404).send({
