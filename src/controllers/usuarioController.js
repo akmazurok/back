@@ -23,7 +23,7 @@ exports.verificarLogin = async (req, res) => {
 
 //CADASTRAR - OK
 exports.cadastrar = async (req, res) => {
-  const { login, senha, perfil } = req.body;
+  const { login, senha, perfil, nome } = req.body;
 
   try {
     //Confere se o cpf ou cnpj ja esta cadastrado
@@ -34,8 +34,7 @@ exports.cadastrar = async (req, res) => {
       login,
       senha,
       perfil,
-      nome,
-      statusPerfil,
+      nome    
     });
     usuario.senha = undefined;
     const userid = usuario.id;

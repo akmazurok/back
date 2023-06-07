@@ -82,6 +82,7 @@ const EstudanteSchema = new mongoose.Schema({
 
   email: {
     type: String,
+    unique: true,
   },
 
   telefone: {
@@ -168,6 +169,7 @@ const AdministradorSchema = new mongoose.Schema({
 
   email: {
     type: String,
+    unique: true,
   },
 
   telefone: {
