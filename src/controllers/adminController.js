@@ -186,7 +186,7 @@ exports.listarAdmins = async (req, res) => {
 };
 
 //CADASTRAR ADMIN - OK
-exports.cadastrar = async (req, res) => {
+exports.cadastrarAdmin = async (req, res) => {
   const { login, senha, perfil, nome } = req.body;
 
   try {

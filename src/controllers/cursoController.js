@@ -1,6 +1,7 @@
+var mongoose = require("mongoose");
 const Instituicao = require("../models/instituicao");
 const Curso = require("../models/curso");
-const { default: mongoose } = require("mongoose");
+
 
 //TO DO - arrumar excluir curso e excluir ies
 

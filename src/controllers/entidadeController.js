@@ -87,7 +87,7 @@ exports.listarVagasAndamento = async (req, res) => {
 };
 
 //VISUALIZAR DETALHES DA VAGA - OK
-exports.vaga = async (req, res) => {
+exports.detalheVaga = async (req, res) => {
   try {
     const vaga = await Vaga.findById(req.params.vagaid).populate({
       path: "inscricoes",

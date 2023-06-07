@@ -10,10 +10,10 @@ router.post("/:id/cadastrarvaga", entidadeController.cadastrarVaga);
 router.get("/:id/vagas", entidadeController.listarVagas);
 router.get("/:id/vagas-abertas", entidadeController.listarVagasAbertas);
 router.get("/:id/vagas-andamento", entidadeController.listarVagasAndamento);
-router.get("/:id/:vagaid", entidadeController.vaga);
+router.get("/:id/:vagaid", entidadeController.detalheVaga);
 router.patch("/:id/:vagaid/cancelar", entidadeController.cancelarVaga);
 
-router.get("/:id/:vagaid/:inscritoid", entidadeController.visualizarInscrito);
+router.get("/:id/:vagaid/:inscritoid", entidadeController.visualizarInscrito);  
 router.patch("/:id/:vagaid/:inscritoid", entidadeController.aprovarInscrito);
 
 module.exports = router;
