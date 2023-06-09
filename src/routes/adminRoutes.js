@@ -22,7 +22,7 @@ router.patch("/:adminid/rebaixar", adminController.rebaixarAdmin);
 
 router.get("/vagas/:vagaid", adminController.detalhesVaga);
 router.patch("/vagas/:vagaid/:id", adminController.validarVaga);
-router.get("/entidades/:entid", adminController.entidade);p
+router.get("/entidades/:entid", adminController.entidade);  
 router.patch("/entidades/:entid/:id", adminController.validarEntidade);
 router.get("/estudantes/:estid", adminController.estudante);
 router.patch("/estudantes/:estid/:id", adminController.validarEstudante);

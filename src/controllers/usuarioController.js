@@ -4,20 +4,24 @@ const Estudante = require("../models/usuario").Estudante;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-//TO DO - /desativar usuario  /recuperar senha
 
-//VERIFICAR SE O LOGIN ESTÁ CADASTRADO
+//VERIFICAR SE O LOGIN ESTÁ CADASTRADO - funcionando no postmnan
 exports.verificarLogin = async (req, res) => {
   const { login } = req.body;
+  console.log(login);
+  var cadastro = false;
+  var usuario = null;
 
   try {
-    const usuario = await Usuario.findOne({ login });
-    if (usuario.statusPerfil == "APROVADO" || "PENDENTE")
-      return res.status(200).send(true);
-    if (usuario.statusPerfil == "REPROVADO")
-      return res.status(200).send(false);
+    if ((usuario = await Usuario.findOne({ login }).select("statusPerfil"))) {
+      if (usuario.statusPerfil == "PENDENTE" || "APROVADO") cadastro = true;
+      if (usuario.statusPerfil == "DESATIVADO") cadastro = true;
+      if (usuario.statusPerfil == "REPROVADO") cadastro = false;
+      return res.status(200).send({ cadastro, usuario });
+    }
+    return res.status(404).send({ message: "Não encontrado", cadastro });
   } catch (error) {
-    return res.status(404).send(false);
+    return res.status(400).send({ message: "Erro" + error });
   }
 };
 
@@ -34,7 +38,7 @@ exports.cadastrar = async (req, res) => {
       login,
       senha,
       perfil,
-      nome    
+      nome,
     });
     usuario.senha = undefined;
     const userid = usuario.id;
@@ -74,7 +78,10 @@ exports.login = async (req, res) => {
     return res.status(422).send({ message: "Senha inválida" });
   }
   if (user.statusPerfil == "PENDENTE") {
-    return res.status(200).send({ message: "Usuário com perfil em análise", statusPerfil: user.statusPerfil });
+    return res.status(200).send({
+      message: "Usuário com perfil em análise",
+      statusPerfil: user.statusPerfil,
+    });
   }
   if (user.statusPerfil == "DESATIVADO") {
     return res.status(200).send({ message: "Usuário com perfil desativado" });
@@ -101,10 +108,8 @@ exports.login = async (req, res) => {
   }
 };
 
-//DESATIVAR USUARIO
+//DESATIVAR USUARIO - ok
 exports.desativar = async (req, res) => {
-  //usuario precisa digitar a senha pra confirmar a ação
-  //const { senha } = req.body;
   const user = await Usuario.findOne({ _id: req.params.id });
 
   try {
@@ -112,10 +117,27 @@ exports.desativar = async (req, res) => {
       { _id: req.params.id },
       { $set: { statusPerfil: "DESATIVADO" } }
     );
-    return res.status(200).send({ message: "Perfil alterado com sucesso!" });
+    return res.status(200).send({ message: "Perfil desativado com sucesso!" });
   } catch (error) {
     return res
       .status(400)
       .send({ message: "Não foi possível desativar o perfil " + error });
+  }
+};
+
+//REATIVAR USUARIO - ok
+exports.reativar = async (req, res) => {
+  const { login } = req.body;
+
+  try {
+    await Usuario.updateOne(
+      { login: login },
+      { $set: { statusPerfil: "APROVADO" } }
+    );
+    return res.status(200).send({ message: "Perfil reativado com sucesso!" });
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ message: "Não foi possível reativar o perfil " + error });
   }
 };
