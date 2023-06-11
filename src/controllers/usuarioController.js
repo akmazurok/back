@@ -14,7 +14,7 @@ exports.verificarLogin = async (req, res) => {
 
   try {
     if ((usuario = await Usuario.findOne({ login }).select("statusPerfil"))) {
-      if (usuario.statusPerfil == "PENDENTE" || "APROVADO") cadastro = true;
+      if (usuario.statusPerfil == "PENDENTE" || usuario.statusPerfil == "APROVADO") cadastro = true;
       if (usuario.statusPerfil == "DESATIVADO") cadastro = true;
       if (usuario.statusPerfil == "REPROVADO") cadastro = false;
       return res.status(200).send({ cadastro, usuario });
