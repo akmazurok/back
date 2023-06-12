@@ -7,7 +7,7 @@ const uploadController = require("../controllers/uploadController");
 
 router.post("/cadastro", usuarioController.cadastrar);
 router.post("/login", usuarioController.login);
-router.get("/verificarLogin", usuarioController.verificarLogin);
+router.post("/verificarLogin", usuarioController.verificarLogin);
 router.patch("/reativar", usuarioController.reativar);
 
 //upload de imagens e arquivos

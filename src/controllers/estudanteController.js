@@ -22,7 +22,7 @@ exports.getPerfilEstudante = async (req, res) => {
 //EDITAR ESTUDANTE - OK
 exports.setPerfilEstudante = async (req, res) => {
   const dados = req.body;
- 
+
   try {
     //altera dados das coleções Usuario e Estudante
     await Usuario.updateOne({ _id: req.params.id }, dados);
@@ -36,7 +36,7 @@ exports.setPerfilEstudante = async (req, res) => {
 //LISTAR TODAS AS VAGAS ABERTAS - OK
 exports.listarVagas = async (req, res) => {
   try {
-    const vagas = await Vaga.find({ statusVaga: "ABERTA" });
+    const vagas = await Vaga.find({ statusVaga: "ABERTA" }).populate({ path: "entidadeId", select: "nome" });
     res.status(200).send({ vagas });
   } catch (error) {
     res
@@ -49,8 +49,11 @@ exports.listarVagas = async (req, res) => {
 exports.detalhesVaga = async (req, res) => {
   try {
     //mostra os detalhes da vaga, escondendo o campo inscricoes
-    const vaga = await Vaga.find({ _id: req.params.vagaid } , '-inscricoes').populate({path: 'entidadeId', select: 'nome'});
-    res.status(200).send({ vaga });
+    const vaga = await Vaga.find(
+      { _id: req.params.vagaid },
+      "-inscricoes"
+    ).populate({ path: "entidadeId", select: "nome" });
+    res.status(200).send(vaga);
   } catch (error) {
     res.status(404).send({ message: "Vaga não localizada" + error });
   }
@@ -59,8 +62,8 @@ exports.detalhesVaga = async (req, res) => {
 //INSCREVER-SE EM VAGA **********ARRUMAR *********
 exports.inscricaoVaga = async (req, res) => {
   const estudanteId = mongoose.Types.ObjectId(req.params.id);
-//ver como pegar os dados da vaga pra salvar na inscricao
-//arrumar carga horária (provavelmente arrumar na classe Vaga)
+  //ver como pegar os dados da vaga pra salvar na inscricao
+  //arrumar carga horária (provavelmente arrumar na classe Vaga)
   try {
     const vaga = await Vaga.find({ _id: req.params.vagaid });
     const inscricao = new Inscricao();
