@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 // Vaga Schema
 const VagaSchema = new mongoose.Schema({
+
   entidadeId: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",

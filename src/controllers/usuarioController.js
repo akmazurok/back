@@ -70,6 +70,8 @@ exports.login = async (req, res) => {
   const { login, senha } = req.body;
   const user = await Usuario.findOne({ login: login });
 
+  console.log(user)
+
   if (!user) {
     return res.status(404).send({ message: "Usuário não encontrado!" });
   }

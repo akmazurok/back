@@ -5,10 +5,9 @@ exports.uploadArquivo = async (req, res) => {
   const{ originalname: name, size, key, location: url = ""} = req.file;
   try {
     const imagem = await Arquivo.create({ 
-      name,
-      size,
-      key,
-      url
+      file,
+      fileName,
+      contentType
     });
     return res.status(201).send(imagem);
   } catch (error) {

@@ -9,11 +9,11 @@ const Usuario = require("../models/usuario").Usuario;
 
 //ESTUDANTE POR ID - OK
 exports.getPerfilEstudante = async (req, res) => {
+
   try {
-    const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
     const estudante = await Estudante.findOne({ userid: req.params.id });
 
-    res.status(200).send({ usuario, estudante });
+    res.status(200).send({ estudante });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
   }

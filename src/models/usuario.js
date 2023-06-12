@@ -118,8 +118,9 @@ const EstudanteSchema = new mongoose.Schema({
 
   comprovanteMatricula: {
     id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    key: { type: String },
-    url: { type: String },
+    contentType: { type: String },
+    file: { type: String },
+    fileName: { type: String },
   },
 
   termoDeUso: {
