@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 // Notificacao Schema
 const NotificacaoSchema = new mongoose.Schema({
-  destinatario: {
-    id: { type: mongoose.Types.ObjectId, ref: "Usuario" },
-    nome: { type: String },
+  idRemetente: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
   },
 
-  remetente: {
-    id: { type: mongoose.Types.ObjectId, ref: "Usuario" },
-    nome: { type: String },
+  idDestinatario: {
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
   },
 
   titulo: {

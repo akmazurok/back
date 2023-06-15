@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 const Entidade = require("../models/usuario").Entidade;
+const Estudante = require("../models/usuario").Estudante;
 const Usuario = require("../models/usuario").Usuario;
 const Vaga = require("../models/vaga");
 const Inscricao = require("../models/inscricao");
@@ -51,7 +52,9 @@ exports.cadastrarVaga = async (req, res) => {
 exports.listarVagas = async (req, res) => {
   const entidadeId = mongoose.Types.ObjectId(req.params);
   try {
-    const vagas = await Vaga.find({ entidadeId: entidadeId });
+    const vagas = await Vaga.find({ entidadeId: entidadeId }).sort({
+      dataCadastro: 1,
+    });
     res.status(200).send(vagas);
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
@@ -63,9 +66,13 @@ exports.listarVagasAbertas = async (req, res) => {
   const entidadeId = mongoose.Types.ObjectId(req.params);
 
   try {
-    const vagas = await Vaga.find({ entidadeId: entidadeId }).where({
-      statusVaga: "ABERTA",
-    });
+    const vagas = await Vaga.find({ entidadeId: entidadeId })
+      .where({
+        statusVaga: "ABERTA",
+      })
+      .sort({
+        dataCadastro: 1,
+      });
     res.status(200).send(vagas);
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
@@ -77,9 +84,31 @@ exports.listarVagasAndamento = async (req, res) => {
   const entidadeId = mongoose.Types.ObjectId(req.params);
 
   try {
-    const vagas = await Vaga.find({ entidadeId: entidadeId }).where({
-      statusVaga: "ANDAMENTO",
-    });
+    const vagas = await Vaga.find({ entidadeId: entidadeId })
+      .where({
+        statusVaga: "ANDAMENTO",
+      })
+      .sort({
+        dataCadastro: 1,
+      });
+    res.status(200).send(vagas);
+  } catch (error) {
+    res.status(404).send({ message: "Vagas não localizadas" + error });
+  }
+};
+
+//LISTAR VAGAS EM APROVAÇÃO - OK
+exports.listarVagasAprovacao = async (req, res) => {
+  const entidadeId = mongoose.Types.ObjectId(req.params);
+
+  try {
+    const vagas = await Vaga.find({ entidadeId: entidadeId })
+      .where({
+        statusVaga: "APROVACAO",
+      })
+      .sort({
+        dataCadastro: -1,
+      });
     res.status(200).send(vagas);
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
@@ -91,6 +120,13 @@ exports.detalheVaga = async (req, res) => {
   try {
     const vaga = await Vaga.findById(req.params.vagaid).populate({
       path: "inscricoes",
+      populate: {
+        path: "estudanteId",
+        select: "_id nomeCompleto nomeSocial ",
+        populate: {
+          path: "curso"
+        }
+      }
     });
     res.status(200).send(vaga);
   } catch (error) {
@@ -98,12 +134,32 @@ exports.detalheVaga = async (req, res) => {
   }
 };
 
+//VISUALIZAR DETALHES DO INSCRITO - OK
+exports.visualizarInscrito = async (req, res) => {
+  try {    
+    const inscrito = await Estudante.findOne({ userid: req.params.inscritoid });
+    console.log(inscrito);
+    return res.status(200).send(inscrito);
+  } catch (error) {
+    return res.status(404).send({ message: "Não localizado" + error });
+  }
+};
+
+
+
+
+
+//-------------ARRUMAR----------
+
+
 //CANCELAR VAGA - OK
 exports.cancelarVaga = async (req, res) => {
   try {
     const vaga = await Vaga.findById(req.params.vagaid);
     if (vaga.statusVaga == "ANDAMENTO") {
-      return res.status(422).send({ message: "Não é possível cancelar vagas em andamento!" });
+      return res
+        .status(422)
+        .send({ message: "Não é possível cancelar vagas em andamento!" });
     }
     vaga.statusVaga = "CANCELADA";
     vaga.save();
@@ -112,34 +168,6 @@ exports.cancelarVaga = async (req, res) => {
     return res
       .status(500)
       .send({ message: "Erro ao realizar ao atualizar" + error });
-  }
-};
-
-//-------------ARRUMAR----------
-
-//inserir a partir daqui no swagger
-//VISUALIZAR INSCRITOS POR VAGA - JÁ APARECE NO VISUALIZAR VAGA
-/* exports.visualizarInscritos = async (req, res) => {
-  try {
-    const inscritos = await Vaga.findById(req.params.vagaid, inscritos);
-    return res.status(200).send(inscritos);
-  } catch (error) {
-    return res
-      .status(400)
-      .send({ message: "Não há inscritos para a vaga" + error });
-  }
-}; */
-
-//VISUALIZAR DETALHES DO INSCRITO - TESTAR
-exports.visualizarInscrito = async (req, res) => {
-  try {
-    const inscrito = await Inscricao.findById(req.params.inscritoid).populate({
-      path: "estudante",
-      //verificar quais atributos precisa retornar
-    });
-    return res.status(200).send(inscrito);
-  } catch (error) {
-    return res.status(404).send({ message: "Não localizado" + error });
   }
 };
 

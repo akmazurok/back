@@ -4,7 +4,6 @@ const Estudante = require("../models/usuario").Estudante;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-
 //VERIFICAR SE O LOGIN ESTÁ CADASTRADO - funcionando no postmnan
 exports.verificarLogin = async (req, res) => {
   const { login } = req.body;
@@ -14,7 +13,11 @@ exports.verificarLogin = async (req, res) => {
 
   try {
     if ((usuario = await Usuario.findOne({ login }).select("statusPerfil"))) {
-      if (usuario.statusPerfil == "PENDENTE" || usuario.statusPerfil == "APROVADO") cadastro = true;
+      if (
+        usuario.statusPerfil == "PENDENTE" ||
+        usuario.statusPerfil == "APROVADO"
+      )
+        cadastro = true;
       if (usuario.statusPerfil == "DESATIVADO") cadastro = true;
       if (usuario.statusPerfil == "REPROVADO") cadastro = false;
       return res.status(200).send({ cadastro, usuario });
@@ -68,16 +71,14 @@ exports.cadastrar = async (req, res) => {
 //LOGIN - OK
 exports.login = async (req, res) => {
   const { login, senha } = req.body;
-  const user = await Usuario.findOne({ login: login });
-
-  console.log(user)
+  const user = await Usuario.findOne({ login: login });  
 
   if (!user) {
     return res.status(404).send({ message: "Usuário não encontrado!" });
   }
   const checkPassword = await bcrypt.compare(senha, user.senha);
   if (!checkPassword) {
-    return res.status(422).send({ message: "Senha inválida" });
+    return res.status(401).send({ message: "Senha inválida" });
   }
   if (user.statusPerfil == "PENDENTE") {
     return res.status(200).send({
@@ -89,13 +90,8 @@ exports.login = async (req, res) => {
     return res.status(200).send({ message: "Usuário com perfil desativado" });
   }
   try {
-    const secret = await process.env.ACCESS_TOKEN_SECRET;
-    const token = jwt.sign(
-      {
-        id: user._id,
-      },
-      secret
-    );
+    const secret = process.env.ACCESS_TOKEN_SECRET;
+    const token = jwt.sign({ id: user._id }, secret, { expiresIn: 86400 });
 
     //Retirar a senha
     user.senha = undefined;
