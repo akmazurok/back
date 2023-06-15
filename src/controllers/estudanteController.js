@@ -5,11 +5,10 @@ const Certificado = require("../models/certificado");
 const Estudante = require("../models/usuario").Estudante;
 const Usuario = require("../models/usuario").Usuario;
 
-//TO-DO - /inscricao vaga  /detalhes da inscricao /termo de adesao /certificados /download certificado
+//TO-DO - /termo de adesao /certificados /download certificado
 
 //ESTUDANTE POR ID - OK
 exports.getPerfilEstudante = async (req, res) => {
-
   try {
     const estudante = await Estudante.findOne({ userid: req.params.id });
 
@@ -36,8 +35,11 @@ exports.setPerfilEstudante = async (req, res) => {
 //LISTAR TODAS AS VAGAS ABERTAS - OK
 exports.listarVagas = async (req, res) => {
   try {
-    const vagas = await Vaga.find({ statusVaga: "ABERTA" }).populate({ path: "entidadeId", select: "nome" });
-    res.status(200).send({ vagas });
+    const vagas = await Vaga.find({ statusVaga: "ABERTA" }).populate({
+      path: "entidadeId",
+      select: "nome",
+    });
+    res.status(200).send(vagas);
   } catch (error) {
     res
       .status(404)
@@ -45,8 +47,27 @@ exports.listarVagas = async (req, res) => {
   }
 };
 
-//DETALHES DA VAGA - OK
+/***- ARRUMAR */
+//BUSCA DE VAGAS PELO NOME DA VAGA OU DA ENTIDADE 
+exports.buscarVagas = async (req, res) => {
+  try {
+    const vagas = await Vaga.find({ statusVaga: "ABERTA" }).populate({
+      path: "entidadeId",
+      select: "nome",
+    });
+
+    res.status(200).send(vagas);
+  } catch (error) {
+    res
+      .status(404)
+      .send({ message: "Vagas não localizadas" + error }, { vagas: null });
+  }
+};
+
+//DETALHES DA VAGA -  to-do //verificar se está inscrito na vaga
 exports.detalhesVaga = async (req, res) => {
+  // const estudanteId = req.params.id;}
+
   try {
     //mostra os detalhes da vaga, escondendo o campo inscricoes
     const vaga = await Vaga.find(
@@ -59,25 +80,32 @@ exports.detalhesVaga = async (req, res) => {
   }
 };
 
-//INSCREVER-SE EM VAGA **********ARRUMAR *********
+//INSCREVER-SE EM VAGA ok
 exports.inscricaoVaga = async (req, res) => {
   const estudanteId = mongoose.Types.ObjectId(req.params.id);
-  //ver como pegar os dados da vaga pra salvar na inscricao
-  //arrumar carga horária (provavelmente arrumar na classe Vaga)
+  const vagaId = mongoose.Types.ObjectId(req.params.vagaid);
+
   try {
-    const vaga = await Vaga.find({ _id: req.params.vagaid });
+    //verifica se está inscrito na vaga
+    const busca = await Inscricao.find({ vagaId, estudanteId });
+    if (busca.length > 0)
+      return res
+        .status(422)
+        .send({ message: "Você já possui inscrição nesta vaga.", busca });
+
+    //criar a inscricao
     const inscricao = new Inscricao();
     inscricao.estudanteId = estudanteId;
-    inscricao.entidadeId = mongoose.Types.ObjectId(vaga.entidadeId);
+    inscricao.vagaId = vagaId;
     inscricao.save();
 
+    //adiciona a inscricao na vaga para consulta da Entidade
     await Vaga.updateOne(
       { _id: req.params.vagaid },
       { $push: { inscricoes: inscricao } }
     );
-    res
-      .status(200)
-      .send({ message: "Inscrição realizada com sucesso! ", inscricao });
+
+    res.status(200).send({ message: "Inscrição realizada com sucesso!" });
   } catch (error) {
     res
       .status(500)
@@ -85,10 +113,19 @@ exports.inscricaoVaga = async (req, res) => {
   }
 };
 
-//LISTAR INSCRICOES
+//LISTAR INSCRICOES - OK
 exports.listarInscricoes = async (req, res) => {
   try {
-    const inscricoes = await Inscricao.find({ estudanteId: req.params.id });
+    const inscricoes = await Inscricao.find({
+      estudanteId: req.params.id,
+    }).populate({
+      path: "vagaId",
+      populate: {
+        path: "entidadeId",
+        select: "nome",
+      },
+    }).sort({dataInscricao: -1});
+
     res.status(200).send({ inscricoes });
   } catch (error) {
     res
@@ -97,7 +134,7 @@ exports.listarInscricoes = async (req, res) => {
   }
 };
 
-//DETALHES DA INSCRICAO
+//DETALHES DA INSCRICAO - OK
 exports.detalhesInscricao = async (req, res) => {
   try {
     const inscricao = await Inscricao.find({ _id: req.params.inscricaoid });
@@ -107,13 +144,14 @@ exports.detalhesInscricao = async (req, res) => {
   }
 };
 
-//CANCELAR INSCRICAO
+//CANCELAR INSCRICAO - OK
 exports.cancelarInscricao = async (req, res) => {
   try {
     const inscricao = await Inscricao.updateOne(
       { _id: req.params.inscricaoid },
       { $set: { statusInscricao: "CANCELADO" } }
     );
+
     res.status(200).send({ message: "Inscrição cancelada com sucesso!" });
   } catch (error) {
     res
@@ -122,7 +160,8 @@ exports.cancelarInscricao = async (req, res) => {
   }
 };
 
-//ACEITAR TERMO DE ADESAO
+//***ARRUMAR*****/
+//ACEITAR TERMO DE ADESAO - arrumar na entidade primeiro
 exports.aceitarTermo = async (req, res) => {
   try {
     await Inscricao.updateOne(
@@ -137,6 +176,7 @@ exports.aceitarTermo = async (req, res) => {
   }
 };
 
+//***ARRUMAR*****/
 //RESCINDIR TERMO DE ADESAO - arrumar dados para inserir no certificado
 exports.rescindirTermo = async (req, res) => {
   try {
@@ -157,7 +197,8 @@ exports.rescindirTermo = async (req, res) => {
   }
 };
 
-//LISTAR CERTIFICADOS
+//***ARRUMAR*****/
+//LISTAR CERTIFICADOS - arrumar
 exports.listarCertificados = async (req, res) => {
   try {
     const certificados = await Certificado.find({ estudanteId: req.params.id });

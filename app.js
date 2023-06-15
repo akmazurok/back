@@ -14,6 +14,7 @@ const entidade = require("./src/routes/entidadeRoutes");
 const cursos = require("./src/routes/cursoRoutes");
 const estudante = require("./src/routes/estudanteRoutes")
 const vagas = require("./src/routes/vagasRoutes");
+const notificacao = require("./src/routes/notificacaoRoutes");
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use("/entidade", entidade);
 app.use("/ies", cursos);
 app.use("/estudante", estudante);
 app.use("/vagas", vagas);
+app.use("/notificacao", notificacao);
 
 app.get("/", (req, res) => {
   res.send("API Estudante Voluntário");

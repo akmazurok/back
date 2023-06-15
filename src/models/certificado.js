@@ -12,7 +12,6 @@ const CertificadoSchema = new mongoose.Schema({
     ref: "Usuario",
   },
    
-
   nomeVaga: {
     type: String,
   },
@@ -36,6 +35,10 @@ const CertificadoSchema = new mongoose.Schema({
   cargaHoraria: {
     type: Number,
   },
+
+  codigoVerificacao:{
+    type: String
+  }
 });
 
 module.exports = mongoose.model("Certificado", CertificadoSchema);

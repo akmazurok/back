@@ -95,6 +95,10 @@ const VagaSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
   },
+
+  inscrito: {
+    type: Boolean,
+  }
 });
 
 module.exports = mongoose.model("Vaga", VagaSchema);

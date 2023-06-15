@@ -7,11 +7,6 @@ const InscricaoSchema = new mongoose.Schema({
     ref: "Vaga",
   },
  
-  entidadeId: {
-    type: mongoose.Types.ObjectId,
-    ref: "Entidade",
-  },
-
   estudanteId: {
     type: mongoose.Types.ObjectId,
     ref: "Estudante",
@@ -49,6 +44,14 @@ const InscricaoSchema = new mongoose.Schema({
   },
   
   dataEncerramentoTrabalho: {
+    type: Date,
+  },
+  
+  horarioInicioTrabalho: {
+    type: Date,
+  },
+  
+  horarioEncerramentoTrabalho: {
     type: Date,
   },
 
