@@ -6,7 +6,13 @@ const InscricaoSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Vaga",
   },
- 
+
+  userId:{
+    type: mongoose.Types.ObjectId,
+    ref: "Usuario",
+  },
+
+  //passar referencia da coleção estudante pra poder pegar os dados de curso
   estudanteId: {
     type: mongoose.Types.ObjectId,
     ref: "Estudante",

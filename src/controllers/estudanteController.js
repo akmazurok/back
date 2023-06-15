@@ -81,11 +81,12 @@ exports.detalhesVaga = async (req, res) => {
 };
 
 //INSCREVER-SE EM VAGA ok
-exports.inscricaoVaga = async (req, res) => {
-  const estudanteId = mongoose.Types.ObjectId(req.params.id);
+exports.inscricaoVaga = async (req, res) => { 
   const vagaId = mongoose.Types.ObjectId(req.params.vagaid);
 
   try {
+    //passa o id da coleção estudante pra salvar na inscrição
+    const estudanteId = await Estudante.findOne({ userid: req.params.id }).select('_id');
     //verifica se está inscrito na vaga
     const busca = await Inscricao.find({ vagaId, estudanteId });
     if (busca.length > 0)
@@ -95,17 +96,19 @@ exports.inscricaoVaga = async (req, res) => {
 
     //criar a inscricao
     const inscricao = new Inscricao();
+    inscricao.userId =  req.params.id;
     inscricao.estudanteId = estudanteId;
-    inscricao.vagaId = vagaId;
-    inscricao.save();
-
+    inscricao.vagaId = vagaId;   
+    inscricao.save();    
+   
+    
     //adiciona a inscricao na vaga para consulta da Entidade
     await Vaga.updateOne(
       { _id: req.params.vagaid },
       { $push: { inscricoes: inscricao } }
     );
 
-    res.status(200).send({ message: "Inscrição realizada com sucesso!" });
+    res.status(200).send({ message: "Inscrição realizada com sucesso!", inscricao });
   } catch (error) {
     res
       .status(500)
@@ -117,7 +120,7 @@ exports.inscricaoVaga = async (req, res) => {
 exports.listarInscricoes = async (req, res) => {
   try {
     const inscricoes = await Inscricao.find({
-      estudanteId: req.params.id,
+      userId: req.params.id,
     }).populate({
       path: "vagaId",
       populate: {

@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 // Vaga Schema
 const VagaSchema = new mongoose.Schema({
-
   entidadeId: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
@@ -74,9 +74,10 @@ const VagaSchema = new mongoose.Schema({
     default: "APROVACAO",
   },
 
-  inscricoes: [
-    { inscricao: { type: mongoose.Types.ObjectId, ref: "Inscricao" } },
-  ],
+  inscricoes: [{
+    type: Schema.Types.ObjectId, ref: "Inscricao"
+  }
+ ],
 
   dataAprovacaoVaga: {
     type: Date,
@@ -98,7 +99,7 @@ const VagaSchema = new mongoose.Schema({
 
   inscrito: {
     type: Boolean,
-  }
+  },
 });
 
 module.exports = mongoose.model("Vaga", VagaSchema);
