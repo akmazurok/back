@@ -3,6 +3,13 @@ const mongoose = require("mongoose");
 // Vaga Schema
 const VagaSchema = new mongoose.Schema({
 
+  imagemVaga: {
+    // id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
+    contentType: { type: String },
+    file: { type: String },
+    fileName: { type: String },
+  },
+
   entidadeId: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
@@ -22,12 +29,20 @@ const VagaSchema = new mongoose.Schema({
     type: String,
   },
 
-  auxilio: {
+  descricaoAuxilio:{
     type: String,
+  },
+
+  auxilio: {
+    type: Boolean,
   },
 
   requisitos: {
     type: String,
+  },
+
+  utilizarEnderecoEntidade: {
+    type: Boolean,
   },
 
   endereco: {
@@ -53,15 +68,15 @@ const VagaSchema = new mongoose.Schema({
   },
 
   dataEncerramentoTrabalho: {
-    type: Date,
+    type: String,
   },
 
   horarioInicioTrabalho: {
-    type: Date,
+    type: String,
   },
 
   horarioEncerramentoTrabalho: {
-    type: Date,
+    type: String,
   },
 
   numeroVagas: {
@@ -89,6 +104,10 @@ const VagaSchema = new mongoose.Schema({
 
   comentario: {
     type: String,
+  },
+
+  termoCondicao: {
+    type: Boolean,
   },
 
   idAdmin: {
