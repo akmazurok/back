@@ -5,9 +5,9 @@ const Estudante = require("../models/usuario").Estudante;
 const Administrador = require("../models/usuario").Administrador;
 const Vaga = require("../models/vaga");
 
-//TO-DO - 
+//TO-DO -
 
-//VISUALIZAR PERFIL - passando id de usuario - OK
+//VISUALIZAR PERFIL - passando id de usuario
 exports.getPerfilAdmin = async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
@@ -18,7 +18,7 @@ exports.getPerfilAdmin = async (req, res) => {
   }
 };
 
-//EDITAR PERFIL - passando id de usuario - OK
+//EDITAR PERFIL - passando id de usuario
 exports.setPerfilAdmin = async (req, res) => {
   const dados = req.body;
   try {
@@ -31,12 +31,17 @@ exports.setPerfilAdmin = async (req, res) => {
   }
 };
 
-//RETORNAR TODAS AS VAGAS PARA APROVACAO - OK
+//RETORNAR TODAS AS VAGAS PARA APROVACAO
 exports.listarVagas = async (req, res) => {
   try {
-    const vagas = await Vaga.find({ statusVaga: "APROVACAO" }).sort({
-      dataCadastro: 1,
-    });
+    const vagas = await Vaga.find({ statusVaga: "APROVACAO" })
+      .populate({
+        path: "entidadeId",
+        select: "nome",
+      })
+      .sort({
+        dataCadastro: 1,
+      });
     res.status(200).send({ vagas });
   } catch (error) {
     res
@@ -59,31 +64,34 @@ exports.detalhesVaga = async (req, res) => {
   }
 };
 
-//VALIDAR VAGA - ok
+//VALIDAR VAGA - OK
 exports.validarVaga = async (req, res) => {
-  var { statusVaga, comentario } = req.body;
+  var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
+  var statusVaga;
   var dataAprovacaoVaga = Date();
+
+  avaliacao == 1 ? (statusVaga = "ABERTA") : (statusVaga = "REPROVADA");
 
   try {
     await Vaga.updateOne(
       { _id: req.params.vagaid },
       { statusVaga, comentario, idAdmin, dataAprovacaoVaga }
     );
-    return res.status(200).send({ message: "Status da vaga: " + statusVaga });
+    return res.status(200).send({ message: "Vaga avaliada com sucesso" });
   } catch (error) {
     return res.status(500).send({ message: "Erro ao atualizar" + error });
   }
 };
 
-//RETORNAR TODOS AS ENTIDADES PARA APROVAçÃO - OK
+//RETORNAR TODOS AS ENTIDADES PARA APROVAçÃO
 exports.listarEntidades = async (req, res) => {
   try {
     const entidades = await Usuario.find(
-      { perfil: "ENTIDADE", statusPerfil: "PENDENTE"},
+      { perfil: "ENTIDADE", statusPerfil: "PENDENTE" },
       { senha: 0 }
     ).sort({ dataCadastro: 1 });
-    
+
     res.status(200).send({ entidades });
   } catch (error) {
     res.status(404).send({
@@ -92,7 +100,7 @@ exports.listarEntidades = async (req, res) => {
   }
 };
 
-//VER DETALHES ENTIDADE - OK
+//VER DETALHES ENTIDADE
 exports.entidade = async (req, res) => {
   try {
     const entidade = await Entidade.findOne({ _id: req.params.entid }).populate(
@@ -105,7 +113,7 @@ exports.entidade = async (req, res) => {
   }
 };
 
-//VALIDAR ENTIDADE - OK
+//VALIDAR ENTIDADE
 exports.validarEntidade = async (req, res) => {
   var { statusCadastro, comentario } = req.body;
   var idAdmin = req.params.id;
@@ -127,14 +135,21 @@ exports.validarEntidade = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO - OK
+//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO
 exports.listarEstudantes = async (req, res) => {
+  var status = "PENDENTE";
   try {
-    const estudantes = await Estudante.find(
-      { statusCadastro: "PENDENTE" },
-      { senha: 0 }
-    ).sort({ dataCadastro: 1 });
-    res.status(200).send({ estudantes });
+    const est = await Estudante.find()
+      .populate({
+        path: "userid",
+        select: "statusPerfil",
+      })
+      .sort({ dataCadastro: 1 });
+    console.log(est);
+    const estudantes = est.filter((item) => item.userid.statusPerfil == "PENDENTE");
+  
+    console.log(estudantes);
+    res.status(200).send({ est });
   } catch (error) {
     res.status(404).send({
       message: "Não foram encontrados Estudantes para aprovação" + error,
@@ -147,7 +162,10 @@ exports.estudante = async (req, res) => {
   try {
     const estudante = await Estudante.findOne({
       _id: req.params.estid,
-    }).populate("userid", "login perfil dataCadastro");
+    }).populate({
+      path: "userid",
+      select: "login dataCadastro statusPerfil",
+    });
     res.status(200).send({ estudante });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
@@ -156,24 +174,29 @@ exports.estudante = async (req, res) => {
 
 //VALIDAR ESTUDANTE - OK
 exports.validarEstudante = async (req, res) => {
-  var { statusCadastro, comentario } = req.body;
+  var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
   var dataAprovacao = Date();
 
+  avaliacao == 1 ? (statusPerfil = "APROVADO") : (statusPerfil = "REPROVADO");
+
   try {
-    await Estudante.updateOne(
+    const estudante = await Estudante.findByIdAndUpdate(
       { _id: req.params.estid },
-      { statusCadastro, comentario, idAdmin, dataAprovacao }
+      { comentario, idAdmin, dataAprovacao }
     );
+
+    await Usuario.findOneAndUpdate({ _id: estudante.userid }, { statusPerfil });
+
     return res.status(200).send({
-      message: "Status do cadastro: " + statusCadastro,
+      message: "Estudante avaliado com sucesso",
     });
   } catch (error) {
     return res.status(500).send({ message: "Erro ao atualizar" + error });
   }
 };
 
-//RETORNAR TODOS OS ADMINS - OK
+//RETORNAR TODOS OS ADMINS
 exports.listarAdmins = async (req, res) => {
   try {
     const admins = await Administrador.find({}, { senha: 0 });
@@ -185,7 +208,7 @@ exports.listarAdmins = async (req, res) => {
   }
 };
 
-//CADASTRAR ADMIN - OK
+//CADASTRAR ADMIN
 exports.cadastrarAdmin = async (req, res) => {
   const { login, senha, perfil, nome } = req.body;
 
@@ -211,7 +234,7 @@ exports.cadastrarAdmin = async (req, res) => {
   }
 };
 
-//ADMIN POR ID - passando id do admin - OK
+//ADMIN POR ID - passando id do admin
 exports.visualizarAdmin = async (req, res) => {
   try {
     const admin = await Administrador.findOne({
@@ -223,7 +246,7 @@ exports.visualizarAdmin = async (req, res) => {
   }
 };
 
-//EDITAR ADMIN - passando id do admin - OK
+//EDITAR ADMIN - passando id do admin
 exports.editarAdmin = async (req, res) => {
   const dados = req.body;
   try {
@@ -243,7 +266,7 @@ exports.editarAdmin = async (req, res) => {
   }
 };
 
-//EXCLUIR ADMIN - passando id do admin - OK
+//EXCLUIR ADMIN - passando id do admin
 exports.excluirAdmin = async (req, res) => {
   try {
     const admin = await Administrador.findOneAndRemove({
