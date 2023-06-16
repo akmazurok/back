@@ -31,7 +31,7 @@ exports.setPerfilAdmin = async (req, res) => {
   }
 };
 
-//RETORNAR TODAS AS VAGAS PARA APROVACAO
+//RETORNAR TODAS AS VAGAS PARA APROVACAO - OK
 exports.listarVagas = async (req, res) => {
   try {
     const vagas = await Vaga.find({ statusVaga: "APROVACAO" })
@@ -84,14 +84,16 @@ exports.validarVaga = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS AS ENTIDADES PARA APROVAçÃO
+//RETORNAR TODOS AS ENTIDADES PARA APROVAÇÃO - OK
 exports.listarEntidades = async (req, res) => {
   try {
-    const entidades = await Usuario.find(
+    const usuarios = await Usuario.find(
       { perfil: "ENTIDADE", statusPerfil: "PENDENTE" },
       { senha: 0 }
     ).sort({ dataCadastro: 1 });
-
+    const entidades = await Entidade.find({
+      userid: usuarios.map((user) => user._id),
+    });
     res.status(200).send({ entidades });
   } catch (error) {
     res.status(404).send({
@@ -100,12 +102,14 @@ exports.listarEntidades = async (req, res) => {
   }
 };
 
-//VER DETALHES ENTIDADE
+//VER DETALHES ENTIDADE - OK
 exports.entidade = async (req, res) => {
   try {
     const entidade = await Entidade.findOne({ _id: req.params.entid }).populate(
-      "userid",
-      "login perfil dataCadastro"
+      {
+        path: "userid",
+        select: "login dataCadastro statusPerfil",
+      }
     );
     res.status(200).send({ entidade });
   } catch (error) {
@@ -113,20 +117,23 @@ exports.entidade = async (req, res) => {
   }
 };
 
-//VALIDAR ENTIDADE
+//VALIDAR ENTIDADE - OK
 exports.validarEntidade = async (req, res) => {
-  var { statusCadastro, comentario } = req.body;
+  var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
   var dataAprovacao = Date();
 
+  avaliacao == 1 ? (statusPerfil = "APROVADO") : (statusPerfil = "REPROVADO");
+
   try {
-    console.log(statusCadastro);
-    await Entidade.updateOne(
+    const entidade = await Entidade.findByIdAndUpdate(
       { _id: req.params.entid },
-      { statusCadastro, comentario, idAdmin, dataAprovacao }
+      { comentario, idAdmin, dataAprovacao }
     );
+    await Usuario.findOneAndUpdate({ _id: entidade.userid }, { statusPerfil });
+
     return res.status(200).send({
-      message: "Status do cadastro: " + statusCadastro,
+      message: "Entidade avaliada com sucesso",
     });
   } catch (error) {
     return res
@@ -135,21 +142,18 @@ exports.validarEntidade = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO
+//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO - OK
 exports.listarEstudantes = async (req, res) => {
-  var status = "PENDENTE";
   try {
-    const est = await Estudante.find()
-      .populate({
-        path: "userid",
-        select: "statusPerfil",
-      })
-      .sort({ dataCadastro: 1 });
-    console.log(est);
-    const estudantes = est.filter((item) => item.userid.statusPerfil == "PENDENTE");
-  
-    console.log(estudantes);
-    res.status(200).send({ est });
+    const usuarios = await Usuario.find(
+      { perfil: "ESTUDANTE", statusPerfil: "PENDENTE" },
+      { senha: 0 }
+    ).sort({ dataCadastro: 1 });
+    const estudantes = await Estudante.find({
+      userid: usuarios.map((user) => user._id),
+    });
+
+    res.status(200).send({ estudantes });
   } catch (error) {
     res.status(404).send({
       message: "Não foram encontrados Estudantes para aprovação" + error,
@@ -185,7 +189,6 @@ exports.validarEstudante = async (req, res) => {
       { _id: req.params.estid },
       { comentario, idAdmin, dataAprovacao }
     );
-
     await Usuario.findOneAndUpdate({ _id: estudante.userid }, { statusPerfil });
 
     return res.status(200).send({
@@ -196,10 +199,21 @@ exports.validarEstudante = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS OS ADMINS
+//RETORNAR TODOS OS ADMINS - OK
 exports.listarAdmins = async (req, res) => {
+  const busca = ["ADMINISTRADOR", "ADMINISTRADORGERAL"];
   try {
-    const admins = await Administrador.find({}, { senha: 0 });
+    const usuarios = await Usuario.find(
+      { perfil: { $in: busca } },
+      { senha: 0 }
+    ).sort({ dataCadastro: 1 });
+    const admins = await Administrador.find({
+      userid: usuarios.map((user) => user._id),
+    }).populate({
+      path: "userid",
+      select: "login perfil statusPerfil",
+    });
+
     res.status(200).send({ admins });
   } catch (error) {
     res
@@ -266,8 +280,48 @@ exports.editarAdmin = async (req, res) => {
   }
 };
 
-//EXCLUIR ADMIN - passando id do admin
-exports.excluirAdmin = async (req, res) => {
+//PROMOVER ADMIN - passando id do usuario admin
+exports.promoverAdmin = async (req, res) => {
+  try {
+    await Usuario.findOneAndUpdate(
+      { _id: req.params.adminid },
+      { perfil: "ADMINISTRADORGERAL" }
+    );
+    return res
+      .status(200)
+      .send({ message: "Administrador promovido com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
+
+//REBAIXAR ADMIN - passando id do uusario admin
+exports.rebaixarAdmin = async (req, res) => {
+  var comentario = req.body.comentario;
+  console.log(comentario);
+  try {
+    await Usuario.findOneAndUpdate(
+      { _id: req.params.adminid },
+      { perfil: "ADMINISTRADOR" }
+    );
+    await Administrador.findOneAndUpdate(
+      { userid: req.params.adminid },
+      { comentario: comentario }
+    );
+    return res
+      .status(200)
+      .send({ message: "Administrador rebaixado com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
+
+//EXCLUIR ADMIN - passando id do admin - SEM USO
+/* exports.excluirAdmin = async (req, res) => {
   try {
     const admin = await Administrador.findOneAndRemove({
       _id: req.params.adminid,
@@ -281,42 +335,4 @@ exports.excluirAdmin = async (req, res) => {
       .status(500)
       .send({ message: "Não foi possível excluir o Administrador " + error });
   }
-};
-
-//PROMOVER ADMIN - passando id do admin
-exports.promoverAdmin = async (req, res) => {
-  try {
-    const admin = await Administrador.findOne({ _id: req.params.adminid });
-    var userid = mongoose.Types.ObjectId(admin.userid);
-    await Usuario.findOneAndUpdate(
-      { _id: userid },
-      { perfil: "ADMINISTRADORGERAL" }
-    );
-    return res
-      .status(200)
-      .send({ message: "Administrador promovido com sucesso!" });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
-  }
-};
-
-//REBAIXAR ADMIN - passando id do admin
-exports.rebaixarAdmin = async (req, res) => {
-  try {
-    const admin = await Administrador.findOne({ _id: req.params.adminid });
-    var userid = mongoose.Types.ObjectId(admin.userid);
-    await Usuario.findOneAndUpdate(
-      { _id: userid },
-      { perfil: "ADMINISTRADOR" }
-    );
-    return res
-      .status(200)
-      .send({ message: "Administrador rebaixado com sucesso!" });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
-  }
-};
+}; */

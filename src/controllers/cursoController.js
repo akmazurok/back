@@ -5,7 +5,7 @@ const Curso = require("../models/curso");
 
 //TO DO - arrumar excluir curso e excluir ies
 
-//CADASTRAR INSTITUICAO - OK
+//CADASTRAR INSTITUICAO
 exports.cadastrarIes = async (req, res) => {
   try {
     const ies = await Instituicao.create(req.body);
@@ -22,7 +22,7 @@ exports.cadastrarIes = async (req, res) => {
 //LISTAR IES - OK
 exports.listarIes = async function (req, res) {
   try {
-    const instituicoes = await Instituicao.find();
+    const instituicoes = await Instituicao.find().sort({nome: "asc"});
     res.status(200).send({ instituicoes });
   } catch (error) {
     res
@@ -87,7 +87,7 @@ exports.listarCursos = async (req, res) => {
     const instituicao = await Instituicao.findOne({ _id: req.params.iesid });
     const id = mongoose.Types.ObjectId(instituicao.id);
     console.log(id);
-    const cursos = await Curso.find().where({ instituicao: id });
+    const cursos = await Curso.find().where({ instituicao: id }).sort({nome: "asc"});
 
     res.status(200).send(cursos);
   } catch (error) {
