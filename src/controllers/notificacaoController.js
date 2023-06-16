@@ -37,8 +37,7 @@ exports.listarNotificacoes = async (req, res) => {
 };
 
 //DESTINATÁRIO EXCLUI NOTIFICAÇÕES - OK
-exports.excluirNotificacao = async (req, res) => {
-  console.log("entrou");
+exports.excluirNotificacao = async (req, res) => { 
   try {
     await Notificacao.findByIdAndRemove({ _id: req.params.id });
     res.status(200).send({ message: "Notificação excluída com sucesso." });

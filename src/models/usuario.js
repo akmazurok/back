@@ -185,6 +185,11 @@ const AdministradorSchema = new mongoose.Schema({
   telefone: {
     type: String,
   },
+
+  comentario: {
+    type: String,
+  },
+  
 });
 
 // Entidade Schema

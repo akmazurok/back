@@ -5,9 +5,9 @@ const Estudante = require("../models/usuario").Estudante;
 const Administrador = require("../models/usuario").Administrador;
 const Vaga = require("../models/vaga");
 
-//TO-DO - 
+//TO-DO -
 
-//VISUALIZAR PERFIL - passando id de usuario - OK
+//VISUALIZAR PERFIL - passando id de usuario
 exports.getPerfilAdmin = async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
@@ -18,7 +18,7 @@ exports.getPerfilAdmin = async (req, res) => {
   }
 };
 
-//EDITAR PERFIL - passando id de usuario - OK
+//EDITAR PERFIL - passando id de usuario
 exports.setPerfilAdmin = async (req, res) => {
   const dados = req.body;
   try {
@@ -34,9 +34,14 @@ exports.setPerfilAdmin = async (req, res) => {
 //RETORNAR TODAS AS VAGAS PARA APROVACAO - OK
 exports.listarVagas = async (req, res) => {
   try {
-    const vagas = await Vaga.find({ statusVaga: "APROVACAO" }).sort({
-      dataCadastro: 1,
-    });
+    const vagas = await Vaga.find({ statusVaga: "APROVACAO" })
+      .populate({
+        path: "entidadeId",
+        select: "nome",
+      })
+      .sort({
+        dataCadastro: 1,
+      });
     res.status(200).send({ vagas });
   } catch (error) {
     res
@@ -59,31 +64,36 @@ exports.detalhesVaga = async (req, res) => {
   }
 };
 
-//VALIDAR VAGA - ok
+//VALIDAR VAGA - OK
 exports.validarVaga = async (req, res) => {
-  var { statusVaga, comentario } = req.body;
+  var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
+  var statusVaga;
   var dataAprovacaoVaga = Date();
+
+  avaliacao == 1 ? (statusVaga = "ABERTA") : (statusVaga = "REPROVADA");
 
   try {
     await Vaga.updateOne(
       { _id: req.params.vagaid },
       { statusVaga, comentario, idAdmin, dataAprovacaoVaga }
     );
-    return res.status(200).send({ message: "Status da vaga: " + statusVaga });
+    return res.status(200).send({ message: "Vaga avaliada com sucesso" });
   } catch (error) {
     return res.status(500).send({ message: "Erro ao atualizar" + error });
   }
 };
 
-//RETORNAR TODOS AS ENTIDADES PARA APROVAçÃO - OK
+//RETORNAR TODOS AS ENTIDADES PARA APROVAÇÃO - OK
 exports.listarEntidades = async (req, res) => {
   try {
-    const entidades = await Usuario.find(
-      { perfil: "ENTIDADE", statusPerfil: "PENDENTE"},
+    const usuarios = await Usuario.find(
+      { perfil: "ENTIDADE", statusPerfil: "PENDENTE" },
       { senha: 0 }
     ).sort({ dataCadastro: 1 });
-    
+    const entidades = await Entidade.find({
+      userid: usuarios.map((user) => user._id),
+    });
     res.status(200).send({ entidades });
   } catch (error) {
     res.status(404).send({
@@ -96,8 +106,10 @@ exports.listarEntidades = async (req, res) => {
 exports.entidade = async (req, res) => {
   try {
     const entidade = await Entidade.findOne({ _id: req.params.entid }).populate(
-      "userid",
-      "login perfil dataCadastro"
+      {
+        path: "userid",
+        select: "login dataCadastro statusPerfil",
+      }
     );
     res.status(200).send({ entidade });
   } catch (error) {
@@ -107,18 +119,21 @@ exports.entidade = async (req, res) => {
 
 //VALIDAR ENTIDADE - OK
 exports.validarEntidade = async (req, res) => {
-  var { statusCadastro, comentario } = req.body;
+  var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
   var dataAprovacao = Date();
 
+  avaliacao == 1 ? (statusPerfil = "APROVADO") : (statusPerfil = "REPROVADO");
+
   try {
-    console.log(statusCadastro);
-    await Entidade.updateOne(
+    const entidade = await Entidade.findByIdAndUpdate(
       { _id: req.params.entid },
-      { statusCadastro, comentario, idAdmin, dataAprovacao }
+      { comentario, idAdmin, dataAprovacao }
     );
+    await Usuario.findOneAndUpdate({ _id: entidade.userid }, { statusPerfil });
+
     return res.status(200).send({
-      message: "Status do cadastro: " + statusCadastro,
+      message: "Entidade avaliada com sucesso",
     });
   } catch (error) {
     return res
@@ -130,10 +145,14 @@ exports.validarEntidade = async (req, res) => {
 //RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO - OK
 exports.listarEstudantes = async (req, res) => {
   try {
-    const estudantes = await Estudante.find(
-      { statusCadastro: "PENDENTE" },
+    const usuarios = await Usuario.find(
+      { perfil: "ESTUDANTE", statusPerfil: "PENDENTE" },
       { senha: 0 }
     ).sort({ dataCadastro: 1 });
+    const estudantes = await Estudante.find({
+      userid: usuarios.map((user) => user._id),
+    });
+
     res.status(200).send({ estudantes });
   } catch (error) {
     res.status(404).send({
@@ -147,7 +166,10 @@ exports.estudante = async (req, res) => {
   try {
     const estudante = await Estudante.findOne({
       _id: req.params.estid,
-    }).populate("userid", "login perfil dataCadastro");
+    }).populate({
+      path: "userid",
+      select: "login dataCadastro statusPerfil",
+    });
     res.status(200).send({ estudante });
   } catch (error) {
     res.status(404).send({ message: "Dados não encontrados " + error });
@@ -156,17 +178,21 @@ exports.estudante = async (req, res) => {
 
 //VALIDAR ESTUDANTE - OK
 exports.validarEstudante = async (req, res) => {
-  var { statusCadastro, comentario } = req.body;
+  var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
   var dataAprovacao = Date();
 
+  avaliacao == 1 ? (statusPerfil = "APROVADO") : (statusPerfil = "REPROVADO");
+
   try {
-    await Estudante.updateOne(
+    const estudante = await Estudante.findByIdAndUpdate(
       { _id: req.params.estid },
-      { statusCadastro, comentario, idAdmin, dataAprovacao }
+      { comentario, idAdmin, dataAprovacao }
     );
+    await Usuario.findOneAndUpdate({ _id: estudante.userid }, { statusPerfil });
+
     return res.status(200).send({
-      message: "Status do cadastro: " + statusCadastro,
+      message: "Estudante avaliado com sucesso",
     });
   } catch (error) {
     return res.status(500).send({ message: "Erro ao atualizar" + error });
@@ -175,8 +201,19 @@ exports.validarEstudante = async (req, res) => {
 
 //RETORNAR TODOS OS ADMINS - OK
 exports.listarAdmins = async (req, res) => {
+  const busca = ["ADMINISTRADOR", "ADMINISTRADORGERAL"];
   try {
-    const admins = await Administrador.find({}, { senha: 0 });
+    const usuarios = await Usuario.find(
+      { perfil: { $in: busca } },
+      { senha: 0 }
+    ).sort({ dataCadastro: 1 });
+    const admins = await Administrador.find({
+      userid: usuarios.map((user) => user._id),
+    }).populate({
+      path: "userid",
+      select: "login perfil statusPerfil",
+    });
+
     res.status(200).send({ admins });
   } catch (error) {
     res
@@ -185,7 +222,7 @@ exports.listarAdmins = async (req, res) => {
   }
 };
 
-//CADASTRAR ADMIN - OK
+//CADASTRAR ADMIN
 exports.cadastrarAdmin = async (req, res) => {
   const { login, senha, perfil, nome } = req.body;
 
@@ -211,7 +248,7 @@ exports.cadastrarAdmin = async (req, res) => {
   }
 };
 
-//ADMIN POR ID - passando id do admin - OK
+//ADMIN POR ID - passando id do admin
 exports.visualizarAdmin = async (req, res) => {
   try {
     const admin = await Administrador.findOne({
@@ -223,7 +260,7 @@ exports.visualizarAdmin = async (req, res) => {
   }
 };
 
-//EDITAR ADMIN - passando id do admin - OK
+//EDITAR ADMIN - passando id do admin
 exports.editarAdmin = async (req, res) => {
   const dados = req.body;
   try {
@@ -243,8 +280,48 @@ exports.editarAdmin = async (req, res) => {
   }
 };
 
-//EXCLUIR ADMIN - passando id do admin - OK
-exports.excluirAdmin = async (req, res) => {
+//PROMOVER ADMIN - passando id do usuario admin
+exports.promoverAdmin = async (req, res) => {
+  try {
+    await Usuario.findOneAndUpdate(
+      { _id: req.params.adminid },
+      { perfil: "ADMINISTRADORGERAL" }
+    );
+    return res
+      .status(200)
+      .send({ message: "Administrador promovido com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
+
+//REBAIXAR ADMIN - passando id do uusario admin
+exports.rebaixarAdmin = async (req, res) => {
+  var comentario = req.body.comentario;
+  console.log(comentario);
+  try {
+    await Usuario.findOneAndUpdate(
+      { _id: req.params.adminid },
+      { perfil: "ADMINISTRADOR" }
+    );
+    await Administrador.findOneAndUpdate(
+      { userid: req.params.adminid },
+      { comentario: comentario }
+    );
+    return res
+      .status(200)
+      .send({ message: "Administrador rebaixado com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
+
+//EXCLUIR ADMIN - passando id do admin - SEM USO
+/* exports.excluirAdmin = async (req, res) => {
   try {
     const admin = await Administrador.findOneAndRemove({
       _id: req.params.adminid,
@@ -258,42 +335,4 @@ exports.excluirAdmin = async (req, res) => {
       .status(500)
       .send({ message: "Não foi possível excluir o Administrador " + error });
   }
-};
-
-//PROMOVER ADMIN - passando id do admin
-exports.promoverAdmin = async (req, res) => {
-  try {
-    const admin = await Administrador.findOne({ _id: req.params.adminid });
-    var userid = mongoose.Types.ObjectId(admin.userid);
-    await Usuario.findOneAndUpdate(
-      { _id: userid },
-      { perfil: "ADMINISTRADORGERAL" }
-    );
-    return res
-      .status(200)
-      .send({ message: "Administrador promovido com sucesso!" });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
-  }
-};
-
-//REBAIXAR ADMIN - passando id do admin
-exports.rebaixarAdmin = async (req, res) => {
-  try {
-    const admin = await Administrador.findOne({ _id: req.params.adminid });
-    var userid = mongoose.Types.ObjectId(admin.userid);
-    await Usuario.findOneAndUpdate(
-      { _id: userid },
-      { perfil: "ADMINISTRADOR" }
-    );
-    return res
-      .status(200)
-      .send({ message: "Administrador rebaixado com sucesso!" });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
-  }
-};
+}; */
