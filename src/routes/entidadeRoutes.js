@@ -13,8 +13,11 @@ router.get("/:id/vagas-andamento", entidadeController.listarVagasAndamento);
 router.get("/:id/vagas-aprovacao", entidadeController.listarVagasAprovacao);
 router.get("/:id/:vagaid", entidadeController.detalheVaga);
 router.patch("/:id/:vagaid/cancelar", entidadeController.cancelarVaga);
+router.patch("/:id/:vagaid/finalizar", entidadeController.finalizarInscricaoVaga);
+router.patch("/:id/:inscricaoid/aprovar", entidadeController.aprovarInscrito);
+router.patch("/:id/:inscricaoid/reprovar", entidadeController.reprovarInscrito);
 
 router.get("/:id/:vagaid/:inscritoid", entidadeController.visualizarInscrito);
-router.patch("/:id/:vagaid/:inscritoid", entidadeController.aprovarInscrito);
+
 
 module.exports = router;

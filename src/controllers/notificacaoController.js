@@ -19,9 +19,10 @@ exports.gerarNotificacao = async (req, res) => {
 
 //DESTINATÁRIO LISTA NOTIFICAÇÕES RECEBIDAS - OK
 exports.listarNotificacoes = async (req, res) => {
+ 
   try {
     const notificacoes = await Notificacao.find({
-      destinatario: req.params.idusuario,
+      idDestinatario: req.params.idUsuario,
     }).populate({
       path: "idRemetente",
       select: "nome",

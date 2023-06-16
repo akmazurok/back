@@ -124,9 +124,9 @@ exports.detalheVaga = async (req, res) => {
         path: "estudanteId",
         select: "_id nomeCompleto nomeSocial ",
         populate: {
-          path: "curso"
-        }
-      }
+          path: "curso",
+        },
+      },
     });
     res.status(200).send(vaga);
   } catch (error) {
@@ -136,23 +136,63 @@ exports.detalheVaga = async (req, res) => {
 
 //VISUALIZAR DETALHES DO INSCRITO - OK
 exports.visualizarInscrito = async (req, res) => {
-  try {    
+  try {
     const inscrito = await Estudante.findOne({ userid: req.params.inscritoid });
-    console.log(inscrito);
     return res.status(200).send(inscrito);
   } catch (error) {
     return res.status(404).send({ message: "Não localizado" + error });
   }
 };
 
+//APROVAR INSCRITO - OK
+exports.aprovarInscrito = async (req, res) => {
+  try {
+    await Inscricao.updateOne(
+      { _id: req.params.inscricaoid },
+      { $set: { statusInscricao: "APROVADO" } }
+    );
+    return res.status(200).send({ message: "Inscrição aprovada com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
 
+//REPROVAR INSCRITO - OK
+exports.reprovarInscrito = async (req, res) => {
+  try {
+    await Inscricao.updateOne(
+      { _id: req.params.inscricaoid },
+      { $set: { statusInscricao: "REPROVADO" } }
+    );
+    return res
+      .status(200)
+      .send({ message: "Inscrição reprovada com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
 
+exports.finalizarInscricaoVaga = async (req, res) => { 
+  try {
+    await Vaga.findByIdAndUpdate(
+      { _id: req.params.vagaid },
+      { $set: { statusVaga: "ANDAMENTO" } }
+    );
+    return res
+      .status(200)
+      .send({ message: "Período de inscrição finalizado com sucesso!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Erro ao realizar ao atualizar" + error });
+  }
+};
 
-
-//-------------ARRUMAR----------
-
-
-//CANCELAR VAGA - OK
+//CANCELAR VAGA - TESTAR
 exports.cancelarVaga = async (req, res) => {
   try {
     const vaga = await Vaga.findById(req.params.vagaid);
@@ -164,19 +204,6 @@ exports.cancelarVaga = async (req, res) => {
     vaga.statusVaga = "CANCELADA";
     vaga.save();
     return res.status(200).send({ message: "Vaga cancelada com sucesso!" });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Erro ao realizar ao atualizar" + error });
-  }
-};
-
-//APROVAR OU REPROVAR
-exports.aprovarInscrito = async (req, res, next) => {
-  const statusInscricao = req.body;
-  try {
-    await Inscricao.updateOne({ _id: req.params.inscritoid }, statusInscricao);
-    return res.status(200).send({ message: "Inscrição avaliada com sucesso!" });
   } catch (error) {
     return res
       .status(500)
