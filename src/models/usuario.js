@@ -39,10 +39,19 @@ const UsuarioSchema = new mongoose.Schema({
     enum: ["APROVADO", "REPROVADO", "PENDENTE", "DESATIVADO"],
     default: "PENDENTE",
   },
+
+  email: {
+    type: String,
+    unique: true,
+  },
+
+
+
+
 });
 
 // Estudante Schema
-const EstudanteSchema = new mongoose.Schema({
+const EstudanteSchema = new mongoose.Schema({                                                               
   userid: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
@@ -244,13 +253,18 @@ const EntidadeSchema = new mongoose.Schema({
   comentario: {
     type: String,
   },
+
+  perfilVonluntario:{
+    type: String,
+  },
+  
 });
 
 //usando bcrypt para a senha
 UsuarioSchema.pre("save", async function (next) {
   const hash = await bcrypt.hash(this.senha, 10);
   this.senha = hash;
-  next();
+  next(); 
 });
 
 var Usuario = mongoose.model("Usuario", UsuarioSchema);
