@@ -25,6 +25,10 @@ const IntituicaoSchema = new mongoose.Schema({
     estado: { type: String },
   },
 
+  email: {
+    type: String,
+  },
+
   telefone: {
     type: String,
   },

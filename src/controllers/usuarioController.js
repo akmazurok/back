@@ -3,8 +3,9 @@ const Entidade = require("../models/usuario").Entidade;
 const Estudante = require("../models/usuario").Estudante;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { RefreshToken, BlackList } = require("../models/token");
 
-//VERIFICAR SE O LOGIN ESTÁ CADASTRADO - funcionando no postmnan
+//VERIFICAR SE O LOGIN ESTÁ CADASTRADO - funcionando no postman
 exports.verificarLogin = async (req, res) => {
   const { login } = req.body;
   console.log(login);
@@ -71,7 +72,7 @@ exports.cadastrar = async (req, res) => {
 //LOGIN - OK
 exports.login = async (req, res) => {
   const { login, senha } = req.body;
-  const user = await Usuario.findOne({ login: login });  
+  const user = await Usuario.findOne({ login: login });
 
   if (!user) {
     return res.status(404).send({ message: "Usuário não encontrado!" });
@@ -89,16 +90,32 @@ exports.login = async (req, res) => {
   if (user.statusPerfil == "DESATIVADO") {
     return res.status(200).send({ message: "Usuário com perfil desativado" });
   }
+
+  //const userRef = JSON.stringify(user._id);
+ // await RefreshToken.findByIdAndDelete({ userid: userRef });
+
   try {
     const secret = process.env.ACCESS_TOKEN_SECRET;
-    const token = jwt.sign({ id: user._id }, secret, { expiresIn: 86400 });
+    const token = jwt.sign({ id: user._id }, secret, { expiresIn: 60 }); //testar se expira
+    const refresh = jwt.sign(
+      { id: user._id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    //await RefreshToken.create({ refresh, userId: user._id });
 
     //Retirar a senha
     user.senha = undefined;
 
     res
       .status(200)
-      .send({ message: "Autenticação realizada com sucesso!", token, user });
+      .send({
+        message: "Autenticação realizada com sucesso!",
+        token,
+        refresh,
+        user,
+      });
   } catch (error) {
     res
       .status(500)
@@ -137,5 +154,74 @@ exports.reativar = async (req, res) => {
     return res
       .status(400)
       .send({ message: "Não foi possível reativar o perfil " + error });
+  }
+};
+
+exports.verificarToken = async (req, res) => {
+  const token = req.headers.authorization;
+
+  try {
+    if (await BlackList.findOne({ token }))
+      return res.status(400).send({ message: "Token inválido" });
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
+      if (err) return res.status(401).send({ message: "Token expirado" });
+      req.userId = decode.userId;
+      next();
+    });
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ message: "Não foi possivel realizar a busca" });
+  }
+};
+
+exports.refreshToken = async (req, res) => {
+  const refresh = req.headers.authorization;
+  try {
+    const busca = await RefreshToken.findOne({ refresh });
+    if (!busca) return res.status(404).send({ message: "Sessão expirada" });
+
+    const userid = busca?.userId;
+
+    jwt.verify(
+      refresh,
+      process.env.REFRESH_TOKEN_SECRET,
+      async (err, decode) => {
+        if (err) return res.status(400).send({ message: "Sessão expirada" });
+
+        if (decode) await RefreshToken.findOneAndDelete({ refresh });
+        const newToken = jwt.sign({ userid }, process.env.ACCESS_TOKEN_SECRET, {
+          expiresIn: 3600,
+        });
+        const newRefresh = jwt.sign(
+          { id: user._id },
+          process.env.REFRESH_TOKEN_SECRET,
+          { expiresIn: "7d" }
+        );
+
+        await RefreshToken.create({ refresh: newRefresh }, userid);
+
+        return res
+          .status(200)
+          .send({ message: "Sessão renovada", newToken, newRefresh });
+      }
+    );
+  } catch (error) {
+    return res
+      .status(400)
+      .send({ message: "Não foi possível renovar a sessão", error });
+  }
+};
+
+exports.logout = async (req, res) => {
+  const token = req.headers.authorization;
+  try {
+    await BlackList.create({ token });
+    return res
+      .status(200)
+      .send({ message: "Usuário desconectado com sucesso!" });
+  } catch (error) {
+    return res.status(400).send({ message: "Não foi possível desconectar" });
   }
 };

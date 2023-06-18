@@ -68,6 +68,11 @@ const InscricaoSchema = new mongoose.Schema({
   horasTotais: {
     type: Number,
   },
+
+  termoAdesaoId: {
+    type: mongoose.Types.ObjectId,
+    ref: "TermoAdesao",
+  },
 });
 
 module.exports = mongoose.model("Inscricao", InscricaoSchema);

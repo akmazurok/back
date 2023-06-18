@@ -2,13 +2,19 @@ var mongoose = require("mongoose");
 const Instituicao = require("../models/instituicao");
 const Curso = require("../models/curso");
 
+//TO DO
 
-//TO DO - arrumar excluir curso e excluir ies
-
-//CADASTRAR INSTITUICAO
+//CADASTRAR INSTITUICAO - OK
 exports.cadastrarIes = async (req, res) => {
+  const cnpj = req.body.cnpj;
   try {
+    if (await Instituicao.find({cnpj: cnpj})) {
+      console.log("achou");
+      return res.status(422).send({ message: "CNPJ já cadastrado" });
+    }
+
     const ies = await Instituicao.create(req.body);
+
     return res
       .status(201)
       .send({ message: "Instituição cadastrada com sucesso: ", ies });
@@ -22,7 +28,7 @@ exports.cadastrarIes = async (req, res) => {
 //LISTAR IES - OK
 exports.listarIes = async function (req, res) {
   try {
-    const instituicoes = await Instituicao.find().sort({nome: "asc"});
+    const instituicoes = await Instituicao.find().sort({ nome: "asc" });
     res.status(200).send({ instituicoes });
   } catch (error) {
     res
@@ -43,11 +49,14 @@ exports.visualizarIes = async function (req, res) {
   }
 };
 
-//EXCLUI IES POR ID - ********ARRUMAR******
+//EXCLUI IES POR ID - OK
 exports.excluirIes = async function (req, res) {
   try {
-    const ies = await Instituicao.findOneAndRemove({ _id: req.params.iesid });
-    //  await Instituicao.findByIdAndRemove({ _id: req.params.id });
+    const iesId = req.params.iesid;
+
+    await Curso.deleteMany({ instituicao: iesId });
+    const ies = await Instituicao.findByIdAndRemove({ _id: req.params.iesid });
+  
     res
       .status(200)
       .send({ message: "Instituição " + ies.nome + " excluída com sucesso." });
@@ -58,18 +67,12 @@ exports.excluirIes = async function (req, res) {
   }
 };
 
-//CADASTRAR CURSO NA COLECAO CURSOS E ADD NA IES - OK
+//CADASTRAR CURSO - OK
 exports.cadastrarCurso = async (req, res) => {
+  const { nomeCurso, grau } = req.body;
   const instituicao = req.params.iesid;
   try {
-    const curso = await Curso.create(req.body);
-    curso.instituicao = instituicao;
-    curso.save();
-    await Instituicao.updateOne(
-      { _id: instituicao },
-      { $push: { cursos: curso } }
-    );
-
+    const curso = await Curso.create({ instituicao, nomeCurso, grau });
     return res.status(201).send({
       message: "Curso " + curso.nomeCurso + " cadastrado com sucesso! ",
       curso,
@@ -86,9 +89,9 @@ exports.listarCursos = async (req, res) => {
   try {
     const instituicao = await Instituicao.findOne({ _id: req.params.iesid });
     const id = mongoose.Types.ObjectId(instituicao.id);
-    console.log(id);
-    const cursos = await Curso.find().where({ instituicao: id }).sort({nome: "asc"});
-
+    const cursos = await Curso.find()
+      .where({ instituicao: id })
+      .sort({ nome: "asc" });
     res.status(200).send(cursos);
   } catch (error) {
     res
@@ -97,19 +100,7 @@ exports.listarCursos = async (req, res) => {
   }
 };
 
-//RETORNA CURSO POR ID - OK
-exports.visualizarCurso = async function (req, res) {
-  try {
-    const curso = await Curso.findOne({ _id: req.params.cursoid });
-    res.status(200).send({ curso });
-  } catch (error) {
-    res.status(404).send({
-      message: "Curso " + req.params.nome + " não localizado: " + error,
-    });
-  }
-};
-
-//EXCLUI CURSO POR ID - *********ARRUMAR********
+//EXCLUI CURSO POR ID - O
 exports.excluirCurso = async function (req, res) {
   try {
     await Curso.findOneAndRemove({ _id: req.params.cursoid });
@@ -120,3 +111,15 @@ exports.excluirCurso = async function (req, res) {
       .send({ message: "Não foi possível excluir o curso: " + error });
   }
 };
+
+//RETORNA CURSO POR ID - Não utilizado
+/* exports.visualizarCurso = async function (req, res) {
+  try {
+    const curso = await Curso.findOne({ _id: req.params.cursoid });
+    res.status(200).send({ curso });
+  } catch (error) {
+    res.status(404).send({
+      message: "Curso " + req.params.nome + " não localizado: " + error,
+    });
+  }
+}; */
