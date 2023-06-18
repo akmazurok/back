@@ -35,14 +35,14 @@ const InscricaoSchema = new mongoose.Schema({
     ],
     default: "INSCRITO",
   },
-
-  cargaHoraria: {
-    type: Number,
-  },
-
+  
   termoAdesao: {
     type: Boolean,
     default: false,
+  },
+
+  cargaHorariaDia: {
+    type: Number,
   },
 
   dataInicioTrabalho: {

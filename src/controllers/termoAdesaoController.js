@@ -96,7 +96,8 @@ exports.rescindirTermo = async (req, res) => {
     );
     await Inscricao.findByIdAndUpdate(
       { _id: termo.idInscricao },
-      { $set: { statusInscricao: 'ENCERRADO' } }
+      { $set: { statusInscricao: 'ENCERRADO' } },
+      { $set: { dataEncerramentoTrabalho: Date.now() } }
     );
 
     //gerar certificado 
