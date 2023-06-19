@@ -8,13 +8,11 @@ const Curso = require("../models/curso");
 exports.cadastrarIes = async (req, res) => {
   const cnpj = req.body.cnpj;
   try {
-    if (await Instituicao.find({cnpj: cnpj})) {
+    if (await Instituicao.find({ cnpj: cnpj })) {
       console.log("achou");
       return res.status(422).send({ message: "CNPJ já cadastrado" });
     }
-
     const ies = await Instituicao.create(req.body);
-
     return res
       .status(201)
       .send({ message: "Instituição cadastrada com sucesso: ", ies });
@@ -49,6 +47,21 @@ exports.visualizarIes = async function (req, res) {
   }
 };
 
+//EDITAR IES
+exports.editarIes = async function (req, res) {
+  try {
+    const instituicao = await Instituicao.findByIdAndUpdate(
+      { _id: req.params.iesid },
+      req.body
+    );
+    res.status(200).send({ instituicao });
+  } catch (error) {
+    res.status(404).send({
+      message: "Instituição " + req.params.nome + " não localizada: " + error,
+    });
+  }
+};
+
 //EXCLUI IES POR ID - OK
 exports.excluirIes = async function (req, res) {
   try {
@@ -56,7 +69,7 @@ exports.excluirIes = async function (req, res) {
 
     await Curso.deleteMany({ instituicao: iesId });
     const ies = await Instituicao.findByIdAndRemove({ _id: req.params.iesid });
-  
+
     res
       .status(200)
       .send({ message: "Instituição " + ies.nome + " excluída com sucesso." });

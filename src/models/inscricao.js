@@ -41,9 +41,9 @@ const InscricaoSchema = new mongoose.Schema({
     default: false,
   },
 
-  cargaHorariaDia: {
+ /*  cargaHorariaDia: {
     type: Number,
-  },
+  }, */
 
   dataInicioTrabalho: {
     type: Date,
@@ -65,9 +65,9 @@ const InscricaoSchema = new mongoose.Schema({
     type: Number,
   },
 
-  horasTotais: {
+ /*  horasTotais: {
     type: Number,
-  },
+  }, */
 
   termoAdesaoId: {
     type: mongoose.Types.ObjectId,
