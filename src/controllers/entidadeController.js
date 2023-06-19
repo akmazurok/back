@@ -21,7 +21,9 @@ exports.getPerfilEntidade = async (req, res) => {
 
 //EDITAR ENTIDADE - OK
 exports.setPerfilEntidade = async (req, res) => {
+  console.log('chegou');
   const dados = req.body;
+  console.log(dados);
   try {
     //altera dados das coleções Usuario e Estudante
     await Usuario.updateOne({ _id: req.params.id }, dados);

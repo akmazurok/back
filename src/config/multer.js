@@ -35,7 +35,7 @@ const storageTypes = {
   }),
 };
 
-module.exports = {
+module.exports = {  
   dest: path.resolve(__dirname, "../", "..", "tmp", "uploads"),
   //tipo de storage
   storage: storageTypes['s3'],

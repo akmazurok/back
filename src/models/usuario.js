@@ -24,9 +24,7 @@ const UsuarioSchema = new mongoose.Schema({
   },
 
   imgPerfil: {
-    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    key: { type: String },
-    url: { type: String },
+    file: { type: String },
   },
 
   dataCadastro: {

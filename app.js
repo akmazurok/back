@@ -24,8 +24,8 @@ const port = process.env.PORT || 3000;
 connectToDatabase();
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({limit: "10mb", extended: true}));
+app.use(bodyParser.urlencoded({ extended: true, parameterLimit: 100000,limit: "10mb" }));
 app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use("/files", express.static(__dirname + "/tmp/uploads")
 );
