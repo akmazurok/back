@@ -45,6 +45,7 @@ const VagaSchema = new mongoose.Schema({
     type: Boolean,
   },
 
+  
   endereco: {
     cep: { type: String },
     logradouro: { type: String },
@@ -70,6 +71,8 @@ const VagaSchema = new mongoose.Schema({
   dataEncerramentoTrabalho: {
     type: String,
   },
+  
+  diasTrabalho: [{ type: String }],
 
   horarioInicioTrabalho: {
     type: String,

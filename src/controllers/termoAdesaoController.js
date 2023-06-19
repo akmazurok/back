@@ -4,6 +4,8 @@ const Estudante = require("../models/usuario").Estudante;
 const TermoAdesao = require("../models/termoAdesao");
 const Inscricao = require("../models/inscricao");
 const Vaga = require("../models/vaga");
+const Certificado = require("../models/certificado");
+const termoAdesao = require("../models/termoAdesao");
 
 //GERAR TERMO DE ADESAO - OK
 exports.gerarTermo = async (req, res) => {
@@ -57,7 +59,7 @@ exports.visualizarTermo = async (req, res) => {
       })
       .select("razaoSocial nomeFantasia telefone email endereco");
     const vaga = await Vaga.findOne({ _id: termo.idVaga }).select(
-      "nomeVaga descricao requisitos dataInicioTrabalho dataEncerramentoTrabalho horarioInicioTrabalho horarioEncerramentoTrabalho"
+      "nomeVaga descricao requisitos dataInicioTrabalho dataEncerramentoTrabalho diasTrabalho horarioInicioTrabalho horarioEncerramentoTrabalho"
     );
     res.status(200).send({ termo, estudante, entidade, vaga });
   } catch (error) {
@@ -94,18 +96,49 @@ exports.rescindirTermo = async (req, res) => {
       { _id: req.params.termoid },
       { $set: { rescisaoTermo: Date.now() } }
     );
-    await Inscricao.findByIdAndUpdate(
+    const inscricao = await Inscricao.findByIdAndUpdate(
       { _id: termo.idInscricao },
-      { $set: { statusInscricao: 'ENCERRADO' } },
+      { $set: { statusInscricao: "ENCERRADO" } },
       { $set: { dataEncerramentoTrabalho: Date.now() } }
     );
 
-    //gerar certificado 
+    console.log(inscricao);
 
-    res.status(200).send({ message: "Termo de Adesão rescindido com sucesso!" });
+    //dados para certificado
+    const nomeEntidade = await Entidade.findById(termoAdesao.idEntidade).select(
+      "razaoSocial"
+    );
+    console.log(nomeEntidade);
+    const nomeEstudante = await Estudante.findById(
+      termoAdesao.idEstudante
+    ).select("nomeCompleto");
+    console.log(nomeEstudante);
+
+    //const horasTotais = calcularHoras(inscricao);
+
+  /*   const certificado = new Certificado(nomeEntidade, nomeEstudante, horasTotais);
+    certificado.idInscricao = termo.idInscricao;
+    certificado.idEstudante = termo.idEstudante;
+    certificado.dataInicio = inscricao.dataInicioTrabalho;
+    certificado.dataFim = inscricao.dataEncerramentoTrabalho;
+    certificado.save();    */
+
+    res
+      .status(200)
+      .send({ message: "Termo de Adesão rescindido com sucesso!" });
   } catch (error) {
     res
       .status(500)
       .send({ message: "Não foi possível completar a operação" + error });
   }
 };
+
+function calcularHoras(inscricao) {
+  var dataInicio = inscricao.dataInicioTrabalho;
+  var dataFim = inscricao.dataEncerramentoTrabalho;
+  var diasTrabalho = inscricao.diasTrabalho;
+  var horasTotais = null;
+
+  //calcular horas totais
+  return horasTotais;
+}

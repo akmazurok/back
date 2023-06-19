@@ -38,12 +38,7 @@ exports.cadastrar = async (req, res) => {
     if (await Usuario.findOne({ login }))
       return res.status(200).send({ message: "Usuário já cadastrado" });
 
-    const usuario = await Usuario.create({
-      login,
-      senha,
-      perfil,
-      nome,
-    });
+    const usuario = await Usuario.create({ login, senha, perfil, nome });
     usuario.senha = undefined;
     const userid = usuario.id;
 
@@ -92,7 +87,7 @@ exports.login = async (req, res) => {
   }
 
   //const userRef = JSON.stringify(user._id);
- // await RefreshToken.findByIdAndDelete({ userid: userRef });
+  // await RefreshToken.findByIdAndDelete({ userid: userRef });
 
   try {
     const secret = process.env.ACCESS_TOKEN_SECRET;
@@ -108,14 +103,12 @@ exports.login = async (req, res) => {
     //Retirar a senha
     user.senha = undefined;
 
-    res
-      .status(200)
-      .send({
-        message: "Autenticação realizada com sucesso!",
-        token,
-        refresh,
-        user,
-      });
+    res.status(200).send({
+      message: "Autenticação realizada com sucesso!",
+      token,
+      refresh,
+      user,
+    });
   } catch (error) {
     res
       .status(500)

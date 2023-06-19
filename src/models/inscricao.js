@@ -7,7 +7,7 @@ const InscricaoSchema = new mongoose.Schema({
     ref: "Vaga",
   },
 
-  userId:{
+  userId: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
   },
@@ -35,39 +35,31 @@ const InscricaoSchema = new mongoose.Schema({
     ],
     default: "INSCRITO",
   },
-  
+
   termoAdesao: {
     type: Boolean,
     default: false,
   },
 
- /*  cargaHorariaDia: {
-    type: Number,
-  }, */
-
   dataInicioTrabalho: {
     type: Date,
   },
-  
+
   dataEncerramentoTrabalho: {
     type: Date,
   },
-  
+
+  diasTrabalho: [{ type: String }],
+
   horarioInicioTrabalho: {
     type: Date,
   },
-  
+
   horarioEncerramentoTrabalho: {
     type: Date,
   },
 
-  horasDiarias: {
-    type: Number,
-  },
-
- /*  horasTotais: {
-    type: Number,
-  }, */
+  diasTrabalho: [{ type: String }],
 
   termoAdesaoId: {
     type: mongoose.Types.ObjectId,

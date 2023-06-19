@@ -224,20 +224,28 @@ exports.listarAdmins = async (req, res) => {
 
 //CADASTRAR ADMIN
 exports.cadastrarAdmin = async (req, res) => {
-  const { login, senha, perfil, nome } = req.body;
+  const { login, senha, nome , perfil } = req.body; 
+  const statusPerfil = 'APROVADO';
 
   try {
+    //Confere se o cpf ou cnpj ja esta cadastrado
     if (await Usuario.findOne({ login }))
-      return res.status(400).send({ error: "CFP já cadastrado" });
-    const usuario = await Usuario.create({ login, senha, perfil, nome });
+      return res.status(200).send({ message: "Usuário já cadastrado" });
+
+    const usuario = await Usuario.create({
+      login,
+      senha,
+      perfil,
+      nome,
+      statusPerfil
+    });
     usuario.senha = undefined;
-    const userid = usuario.id;
+    const userid = usuario.id;    
 
-    const cadastro = new Administrador(req.body);
-    cadastro.userid = userid;
+    var cadastro = new Administrador(req.body);
+    cadastro.userid = userid;    
     await cadastro.save();
-
-    // retorna usuario e admin pra mostrar nos testes
+    
     return res
       .status(201)
       .send({ message: "Cadastro realizado com sucesso! ", usuario, cadastro });

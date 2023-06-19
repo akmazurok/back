@@ -2,27 +2,23 @@ const mongoose = require("mongoose");
 
 // Certificado Schema
 const CertificadoSchema = new mongoose.Schema({
-  estudanteId: {
+  idEstudante: {
     type: mongoose.Types.ObjectId,
     ref: "Usuario",
-  }, 
-  
-  inscricaoId: {
+  },
+
+  idInscricao: {
     type: mongoose.Types.ObjectId,
     ref: "Inscricao",
   },
-   
-  nomeVaga: {
-    type: String,
-  },
 
-  nomeEntidade: {
+  nomeVaga: {
     type: String,
   },
 
   nomeEstudante: {
     type: String,
-  },
+  },  
 
   dataInicio: {
     type: Date,
@@ -36,9 +32,9 @@ const CertificadoSchema = new mongoose.Schema({
     type: Number,
   },
 
-  codigoVerificacao:{
-    type: String
-  }
+  codigoVerificacao: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("Certificado", CertificadoSchema);

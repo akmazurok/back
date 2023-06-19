@@ -34,11 +34,20 @@ exports.setPerfilEstudante = async (req, res) => {
 
 //LISTAR TODAS AS VAGAS ABERTAS - OK
 exports.listarVagas = async (req, res) => {
+  const estudante = "6476ac7e092e887c0eaa96c6";
   try {
-    const vagas = await Vaga.find({ statusVaga: "ABERTA" }).populate({
-      path: "entidadeId",
-      select: "nome",
-    });
+    const vagas = await Vaga.find({ statusVaga: "ABERTA" })
+      .populate({
+        path: "inscricoes",
+        select: "userId",
+      })
+      .populate({
+        path: "entidadeId",
+        select: "nome",
+      });
+
+    //arrumar funcao para mostrar em quais vagas o estudante tem inscricao
+    
     res.status(200).send(vagas);
   } catch (error) {
     res
@@ -48,7 +57,7 @@ exports.listarVagas = async (req, res) => {
 };
 
 /***- ARRUMAR */
-//BUSCA DE VAGAS PELO NOME DA VAGA OU DA ENTIDADE 
+//BUSCA DE VAGAS PELO NOME DA VAGA OU DA ENTIDADE
 exports.buscarVagas = async (req, res) => {
   try {
     const vagas = await Vaga.find({ statusVaga: "ABERTA" }).populate({
@@ -81,12 +90,14 @@ exports.detalhesVaga = async (req, res) => {
 };
 
 //INSCREVER-SE EM VAGA ok
-exports.inscricaoVaga = async (req, res) => { 
+exports.inscricaoVaga = async (req, res) => {
   const vagaId = mongoose.Types.ObjectId(req.params.vagaid);
 
   try {
     //passa o id da coleção estudante pra salvar na inscrição
-    const estudanteId = await Estudante.findOne({ userid: req.params.id }).select('_id');
+    const estudanteId = await Estudante.findOne({
+      userid: req.params.id,
+    }).select("_id");
     //verifica se está inscrito na vaga
     const busca = await Inscricao.find({ vagaId, estudanteId });
     if (busca.length > 0)
@@ -94,25 +105,27 @@ exports.inscricaoVaga = async (req, res) => {
         .status(422)
         .send({ message: "Você já possui inscrição nesta vaga.", busca });
 
-    const vaga =  await Vaga.findById(req.params.vagaid);
+    const vaga = await Vaga.findById(req.params.vagaid);
 
     //criar a inscricao
     const inscricao = new Inscricao();
-    inscricao.userId =  req.params.id;
+    inscricao.userId = req.params.id;
     inscricao.estudanteId = estudanteId;
     inscricao.vagaId = vagaId;
     inscricao.dataInicioTrabalho = vaga.dataInicioTrabalho;
     inscricao.dataEncerramentoTrabalho = vaga.dataEncerramentoTrabalho;
-    inscricao.save();    
-   
-    
+    inscricao.diasTrabalho = vaga.diasTrabalho;
+    inscricao.save();
+
     //adiciona a inscricao na vaga para consulta da Entidade
     await Vaga.updateOne(
       { _id: req.params.vagaid },
       { $push: { inscricoes: inscricao } }
     );
 
-    res.status(200).send({ message: "Inscrição realizada com sucesso!", inscricao });
+    res
+      .status(200)
+      .send({ message: "Inscrição realizada com sucesso!", inscricao });
   } catch (error) {
     res
       .status(500)
@@ -125,13 +138,15 @@ exports.listarInscricoes = async (req, res) => {
   try {
     const inscricoes = await Inscricao.find({
       userId: req.params.id,
-    }).populate({
-      path: "vagaId",
-      populate: {
-        path: "entidadeId",
-        select: "nome",
-      },
-    }).sort({dataInscricao: -1});
+    })
+      .populate({
+        path: "vagaId",
+        populate: {
+          path: "entidadeId",
+          select: "nome",
+        },
+      })
+      .sort({ dataInscricao: -1 });
 
     res.status(200).send({ inscricoes });
   } catch (error) {
@@ -167,7 +182,6 @@ exports.cancelarInscricao = async (req, res) => {
   }
 };
 
-//***ARRUMAR*****/
 //ACEITAR TERMO DE ADESAO - arrumar na entidade primeiro
 exports.aceitarTermo = async (req, res) => {
   try {
@@ -183,7 +197,6 @@ exports.aceitarTermo = async (req, res) => {
   }
 };
 
-//***ARRUMAR*****/
 //RESCINDIR TERMO DE ADESAO - arrumar dados para inserir no certificado
 exports.rescindirTermo = async (req, res) => {
   try {
