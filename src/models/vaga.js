@@ -27,12 +27,12 @@ const VagaSchema = new mongoose.Schema({
     type: String,
   },
 
-  descricaoAuxilio:{
-    type: String,
-  },
-
   auxilio: {
     type: Boolean,
+  },
+
+  descricaoAuxilio: {
+    type: String,
   },
 
   requisitos: {
@@ -87,10 +87,12 @@ const VagaSchema = new mongoose.Schema({
     default: "APROVACAO",
   },
 
-  inscricoes: [{
-    type: Schema.Types.ObjectId, ref: "Inscricao"
-  }
- ],
+  inscricoes: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Inscricao",
+    },
+  ],
 
   dataAprovacaoVaga: {
     type: Date,

@@ -9,7 +9,7 @@ const CertificadoSchema = new mongoose.Schema({
   
   inscricaoId: {
     type: mongoose.Types.ObjectId,
-    ref: "Usuario",
+    ref: "Inscricao",
   },
    
   nomeVaga: {

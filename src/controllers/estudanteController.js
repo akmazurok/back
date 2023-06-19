@@ -94,11 +94,15 @@ exports.inscricaoVaga = async (req, res) => {
         .status(422)
         .send({ message: "Você já possui inscrição nesta vaga.", busca });
 
+    const vaga =  await Vaga.findById(req.params.vagaid);
+
     //criar a inscricao
     const inscricao = new Inscricao();
     inscricao.userId =  req.params.id;
     inscricao.estudanteId = estudanteId;
-    inscricao.vagaId = vagaId;   
+    inscricao.vagaId = vagaId;
+    inscricao.dataInicioTrabalho = vaga.dataInicioTrabalho;
+    inscricao.dataEncerramentoTrabalho = vaga.dataEncerramentoTrabalho;
     inscricao.save();    
    
     
