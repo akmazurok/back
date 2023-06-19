@@ -4,11 +4,8 @@ const { Schema } = mongoose;
 // Vaga Schema
 const VagaSchema = new mongoose.Schema({
 
-  imagemVaga: {
-    // id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    contentType: { type: String },
+  imgVaga: {
     file: { type: String },
-    fileName: { type: String },
   },
 
   entidadeId: {
