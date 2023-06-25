@@ -1,4 +1,7 @@
 var mongoose = require("mongoose");
+
+const nodemailer = require('nodemailer');
+
 const Notificacao = require("../models/notificacao");
 
 //GERAR NOTIFICAÇÂO - OK

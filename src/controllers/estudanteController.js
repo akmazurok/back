@@ -34,21 +34,38 @@ exports.setPerfilEstudante = async (req, res) => {
 
 //LISTAR TODAS AS VAGAS ABERTAS - OK
 exports.listarVagas = async (req, res) => {
-  const estudante = "6476ac7e092e887c0eaa96c6";
+  const id = parseInt(req.params.id);
+  const pagina = parseInt(req.params.pagina);
+  let limit = 5;
+  let skipPage = limit * (pagina - 1);
+
+  //Buscar o Id do Estudante a partir do ID do usuário
+  const estudanteId = await Estudante.findOne({
+    userid: req.params.id,
+  }).select("_id");
+
+  //Verificando todas as vagas que o estudante está inscrito
+  const busca = await Inscricao.find({estudanteId }).select('_id');
+
   try {
-    const vagas = await Vaga.find({ statusVaga: "ABERTA" })
-      .populate({
+    //$nin a gente filtra para ele não trazer aqueles dados que possuem aquele id no caso da vaga
+    const tamanhoVagas = await Vaga.find({ statusVaga: "ABERTA", "inscricoes": {$nin: busca},}).populate({
+      path: "inscricoes",
+      select: "userId",
+    });
+
+    const vagas = await Vaga.find({ statusVaga: "ABERTA", "inscricoes": {$nin: busca},}).populate({
         path: "inscricoes",
         select: "userId",
       })
       .populate({
         path: "entidadeId",
         select: "nome",
-      });
+      }).skip(skipPage).limit(limit);
 
     //arrumar funcao para mostrar em quais vagas o estudante tem inscricao
     
-    res.status(200).send(vagas);
+    res.status(200).send({vagas: vagas, tamanhoPagina: tamanhoVagas.length});
   } catch (error) {
     res
       .status(404)
@@ -91,6 +108,7 @@ exports.detalhesVaga = async (req, res) => {
 
 //INSCREVER-SE EM VAGA ok
 exports.inscricaoVaga = async (req, res) => {
+  
   const vagaId = mongoose.Types.ObjectId(req.params.vagaid);
 
   try {
@@ -99,7 +117,13 @@ exports.inscricaoVaga = async (req, res) => {
       userid: req.params.id,
     }).select("_id");
     //verifica se está inscrito na vaga
+    console.log("Vaga id: " + vagaId);
+    console.log("Estudante Id: " + estudanteId);
+    const estudante = await Estudante.find({estudanteId});
     const busca = await Inscricao.find({ vagaId, estudanteId });
+    console.log('Busca vaga begin');
+    console.log(busca);
+    console.log('Busca vaga end');
     if (busca.length > 0)
       return res
         .status(422)

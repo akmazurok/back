@@ -1,6 +1,7 @@
 const Usuario = require("../models/usuario").Usuario;
 const Entidade = require("../models/usuario").Entidade;
 const Estudante = require("../models/usuario").Estudante;
+const crypto = require('crypto');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { RefreshToken, BlackList } = require("../models/token");
@@ -8,7 +9,7 @@ const { RefreshToken, BlackList } = require("../models/token");
 //VERIFICAR SE O LOGIN ESTÁ CADASTRADO - funcionando no postman
 exports.verificarLogin = async (req, res) => {
   const { login } = req.body;
-  console.log(login);
+  console.log('chegou aqui');
   var cadastro = false;
   var usuario = null;
 
@@ -64,10 +65,38 @@ exports.cadastrar = async (req, res) => {
   }
 };
 
+//Esqueci minha senha
+exports.esqueciSenha = async (req,res) => {
+  const { login } = req.body;
+
+  try{
+    const user = await Usuario.findOne({ login: login });
+
+    const token = crypto.randomBytes(20).toString('hex');
+
+    const now = new Date();
+
+    now.setHours(now.getHours() + 1);
+
+    await Usuario.findByIdAndUpdate(user._id, {
+      '$set': {
+        resetSenhaToken: token,
+        resetSenhaExpires: now
+      }
+    });
+
+    console.log(token, now);
+
+  }catch(error){
+    return res.status(404).send({ message: "Usuário não encontrado!" });
+  }
+};
+
 //LOGIN - OK
 exports.login = async (req, res) => {
   const { login, senha } = req.body;
   const user = await Usuario.findOne({ login: login });
+  
 
   if (!user) {
     return res.status(404).send({ message: "Usuário não encontrado!" });
@@ -83,13 +112,11 @@ exports.login = async (req, res) => {
     });
   }
   if (user.statusPerfil == "DESATIVADO") {
-    return res.status(200).send({ message: "Usuário com perfil desativado" });
+    return res.status(200).send({ message: "Usuário com perfil desativado", statusPerfil: user.statusPerfil });
   }
 
-  //const userRef = JSON.stringify(user._id);
-  // await RefreshToken.findByIdAndDelete({ userid: userRef });
-
   try {
+
     const secret = process.env.ACCESS_TOKEN_SECRET;
     const token = jwt.sign({ id: user._id }, secret, { expiresIn: 60 }); //testar se expira
     const refresh = jwt.sign(
@@ -101,8 +128,7 @@ exports.login = async (req, res) => {
     //await RefreshToken.create({ refresh, userId: user._id });
 
     //Retirar a senha
-    user.senha = undefined;
-
+    user.senha = undefined;      
     res.status(200).send({
       message: "Autenticação realizada com sucesso!",
       token,

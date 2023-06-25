@@ -3,8 +3,8 @@ const router = express.Router();
 
 const estudanteController = require("../controllers/estudanteController");
 
-router.get("/vagas", estudanteController.listarVagas);
-router.get("/vagas/:vagaid", estudanteController.detalhesVaga);   
+router.get("/vagas/:pagina/:id", estudanteController.listarVagas);
+router.get("/detalheVaga/:vagaid", estudanteController.detalhesVaga);   
 
 router.get("/:id", estudanteController.getPerfilEstudante);
 router.patch("/:id", estudanteController.setPerfilEstudante);

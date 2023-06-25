@@ -51,13 +51,55 @@ exports.cadastrarVaga = async (req, res) => {
 };
 
 //LISTAR TODAS AS VAGAS DA ENTIDADE - OK
-exports.listarVagas = async (req, res) => {
-  const entidadeId = mongoose.Types.ObjectId(req.params);
+exports.filtrarVagas = async (req, res) => {
+  const filtro = req.params.filtro;
+
+  const id = req.params.id;
+  const pagina = parseInt(req.params.pagina);
+
+  let limit = 3;
+  let skip = limit * (pagina - 1);
+
   try {
-    const vagas = await Vaga.find({ entidadeId: entidadeId }).sort({
-      dataCadastro: 1,
+
+      //Busca a quantidade de vagas
+      // const tamanhoVagas = await Vaga.find({ entidadeId: id, statusVaga: filtro, nomeVaga: filtro, requisitos: filtro,
+      //   descricao: filtro}).sort({
+      //   dataCadastro: 1,
+      // });
+      //Buscar vagas de acordo com o que for filtrado
+      if(filtro.length > 0){
+       const vagas = await Vaga.find({ entidadeId: id, statusVaga: filtro, nomeVaga: filtro, requisitos: filtro,
+       descricao: filtro}).skip(skip).limit(limit);
+      }else{
+        const tamanhoVagas = await Vaga.find({ entidadeId: id }).sort({
+          dataCadastro: 1,
+      });
+       const vagas = await Vaga.find({ entidadeId: id }).skip(skip).limit(limit);
+       res.status(200).send({vagas:vagas, total: tamanhoVagas.length});
+      }
+
+    res.status(200).send({vagas:vagas, total: tamanhoVagas.length});
+  } catch (error) {
+    res.status(404).send({ message: "Vagas não localizadas" + error });
+  }
+};
+
+//LISTAR TODAS AS VAGAS DA ENTIDADE - OK
+exports.listarVagas = async (req, res) => {
+  const id = req.params.id;
+  const pagina = parseInt(req.params.pagina);
+
+  let limit = 5;
+  let skip = limit * (pagina - 1);
+  try {
+
+      //Busca a quantidade de vagas
+    const tamanhoVagas = await Vaga.find({ entidadeId: id }).sort({
+        dataCadastro: 1,
     });
-    res.status(200).send(vagas);
+     const vagas = await Vaga.find({ entidadeId: id }).skip(skip).limit(limit);
+    res.status(200).send({vagas:vagas, total: tamanhoVagas.length});
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
   }
@@ -65,17 +107,25 @@ exports.listarVagas = async (req, res) => {
 
 //LISTAR VAGAS ABERTAS - OK
 exports.listarVagasAbertas = async (req, res) => {
-  const entidadeId = mongoose.Types.ObjectId(req.params);
+  const id = req.params.id;
+  const pagina = parseInt(req.params.pagina);
+
+  let vagas;
+  let tamanhoVagas;
+  let limit = 5;
+  let skip = limit * (pagina - 1);
 
   try {
-    const vagas = await Vaga.find({ entidadeId: entidadeId })
-      .where({
-        statusVaga: "ABERTA",
-      })
-      .sort({
-        dataCadastro: 1,
-      });
-    res.status(200).send(vagas);
+
+    if(pagina == 10000){
+      vagas = await Vaga.find({ entidadeId: id }).where({ statusVaga: "ABERTA", }).sort({ dataCadastro: 1,});
+      tamanhoVagas = vagas;
+      }else{
+      //Busca a quantidade de vagas
+      tamanhoVagas = await Vaga.find({ entidadeId: id }).where({statusVaga: "ABERTA",}).sort({dataCadastro: 1,});
+      vagas = await Vaga.find({ entidadeId: id }).where({statusVaga: "ABERTA"}).skip(skip).limit(limit);
+      }
+    res.status(200).send({vagas:vagas, total: tamanhoVagas.length});
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
   }
@@ -83,35 +133,70 @@ exports.listarVagasAbertas = async (req, res) => {
 
 //LISTAR VAGAS EM ANDAMENTO - OK
 exports.listarVagasAndamento = async (req, res) => {
-  const entidadeId = mongoose.Types.ObjectId(req.params);
+  const id = req.params.id;
+  const pagina = parseInt(req.params.pagina);
+
+  let vagas;
+  let tamanhoVagas;
+
+  let limit = 5;
+  let skip = limit * (pagina - 1);
 
   try {
-    const vagas = await Vaga.find({ entidadeId: entidadeId })
-      .where({
-        statusVaga: "ANDAMENTO",
-      })
-      .sort({
-        dataCadastro: 1,
-      });
-    res.status(200).send(vagas);
+
+    //Se valor For igual a 10000 ele retorna os valores sem filtros
+    if(pagina == 10000){
+      vagas = await Vaga.find({ entidadeId: id }).where({ statusVaga: "ANDAMENTO", }).sort({ dataCadastro: 1,});
+      tamanhoVagas = vagas;
+      }else{
+      //Busca a quantidade de vagas
+      tamanhoVagas = await Vaga.find({ entidadeId: id }).where({statusVaga: "ANDAMENTO",}).sort({dataCadastro: 1,});
+      vagas = await Vaga.find({ entidadeId: id }).where({statusVaga: "ANDAMENTO"}).skip(skip).limit(limit);
+      }
+
+    res.status(200).send({vagas:vagas, total: tamanhoVagas.length});
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
   }
 };
 
 //LISTAR VAGAS EM APROVAÇÃO - OK
-exports.listarVagasAprovacao = async (req, res) => {
-  const entidadeId = mongoose.Types.ObjectId(req.params);
+exports.listarVagasCanceladas = async (req, res) => {
+  const id = req.params.id;
+
+  let vagas;
 
   try {
-    const vagas = await Vaga.find({ entidadeId: entidadeId })
-      .where({
-        statusVaga: "APROVACAO",
-      })
-      .sort({
-        dataCadastro: -1,
-      });
-    res.status(200).send(vagas);
+     vagas = await Vaga.find({ entidadeId: id }).where({ statusVaga: "CANCELADA", }).sort({ dataCadastro: -1,});
+
+    res.status(200).send({vagas});
+  } catch (error) {
+
+    res.status(404).send({ message: "Vagas não localizadas" + error });
+  }
+};
+
+//LISTAR VAGAS EM APROVAÇÃO - OK
+exports.listarVagasAprovacao = async (req, res) => {
+  const id = req.params.id;
+  const pagina = parseInt(req.params.pagina);
+
+  let vagas;
+  let tamanhoVagas;
+
+  let limit = 5;
+  let skip = limit * (pagina - 1);
+
+  try {
+    //Se valor For igual a 10000 ele retorna os valores sem filtros
+    if(pagina == 10000){
+     vagas = await Vaga.find({ entidadeId: id }).where({ statusVaga: "APROVACAO", }).sort({ dataCadastro: -1,});
+     tamanhoVagas = vagas;
+    }else{
+      tamanhoVagas = await Vaga.find({ entidadeId: id }).where({statusVaga: "APROVACAO",}).sort({dataCadastro: -1,});
+      vagas = await Vaga.find({ entidadeId: id }).where({statusVaga: "APROVACAO"}).skip(skip).limit(limit);      
+    }
+    res.status(200).send({vagas:vagas, total: tamanhoVagas.length});
   } catch (error) {
     res.status(404).send({ message: "Vagas não localizadas" + error });
   }

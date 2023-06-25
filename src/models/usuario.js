@@ -14,6 +14,16 @@ const UsuarioSchema = new mongoose.Schema({
     // select: false,
   },
 
+  resetSenhaToken: {
+    type: String,
+    // select: false,
+  },
+
+  resetSenhaExpires: {
+    type: Date,
+    // select: false,
+  },
+
   nome: {
     type: String,
   },
