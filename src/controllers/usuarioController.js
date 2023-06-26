@@ -1,6 +1,7 @@
 const Usuario = require("../models/usuario").Usuario;
 const Entidade = require("../models/usuario").Entidade;
 const Estudante = require("../models/usuario").Estudante;
+const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -9,7 +10,7 @@ const { RefreshToken, BlackList } = require("../models/token");
 //VERIFICAR SE O LOGIN ESTÁ CADASTRADO - funcionando no postman
 exports.verificarLogin = async (req, res) => {
   const { login } = req.body;
-  console.log('chegou aqui');
+  
   var cadastro = false;
   var usuario = null;
 
@@ -67,29 +68,69 @@ exports.cadastrar = async (req, res) => {
 
 //Esqueci minha senha
 exports.esqueciSenha = async (req,res) => {
+  // const { login } = req.body;
   const { login } = req.body;
+  // console.log(login);
 
   try{
-    const user = await Usuario.findOne({ login: login });
+    const usuario = await Usuario.findOne({ login });
+    const estudante = await Estudante.findOne({ userid: usuario._id});
 
-    const token = crypto.randomBytes(20).toString('hex');
-
-    const now = new Date();
-
-    now.setHours(now.getHours() + 1);
-
-    await Usuario.findByIdAndUpdate(user._id, {
-      '$set': {
-        resetSenhaToken: token,
-        resetSenhaExpires: now
+    console.log(estudante.email)
+  
+    // console.log(estudante);
+    const transport = nodemailer.createTransport({
+      host: 'smtp-mail.outlook.com',
+      port: 587,
+      secure: false,
+      auth: {
+          user: 'testeparaotcc@outlook.com',
+          pass: 'Ufpr@123',
       }
-    });
+  });
 
-    console.log(token, now);
+  novaSenha = Math.random().toString(36).substring(0, 7);
 
-  }catch(error){
-    return res.status(404).send({ message: "Usuário não encontrado!" });
-  }
+  transport.sendMail({
+    from: 'Estudante Voluntário <testeparaotcc@outlook.com>',
+    to: 'gustavoachinitz@gmail.com',
+    subject: 'Nova Senha - Estudante Voluntário',
+    html: `
+        <h1>Olá, ${usuario.nome}! </h1>        
+        <p>Recebemos sua solicitação para alterar sua senha.</p>
+        <p>Por gentileza, acesse a página e clique no menu a esquerda em Perfil, após isso vá até o final da página e crie uma nova senha.</p>
+        <p>Sua senha atual é: <b>${novaSenha}</b></p>
+    `,
+}).then(
+    () => {
+        return res.status(200).send({ message: 'E-mail eviado com sucesso!'});
+    }
+).catch(
+    (err) => {
+        console.log('Erro ao enviar e-mail: ' + err);
+    }
+)
+    
+  //    const user = 1;
+
+  //   const token = crypto.randomBytes(20).toString('hex');
+
+  //   const now = new Date();
+
+  //   now.setHours(now.getHours() + 1);
+
+  //   await Usuario.findByIdAndUpdate(user._id, {
+  //     '$set': {
+  //       resetSenhaToken: token,
+  //       resetSenhaExpires: now
+  //     }
+  //   });
+
+  //   console.log(token, now);
+
+   }catch(error){
+     return res.status(404).send({ message: "Usuário não encontrado!" });
+   }
 };
 
 //LOGIN - OK
