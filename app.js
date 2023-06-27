@@ -16,6 +16,7 @@ const estudante = require("./src/routes/estudanteRoutes")
 const vagas = require("./src/routes/vagasRoutes");
 const notificacao = require("./src/routes/notificacaoRoutes");
 const termo = require("./src/routes/termoAdesaoRoutes");
+const certificado = require("./src/routes/certificadoRoutes");
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/estudante", estudante);
 app.use("/vagas", vagas);
 app.use("/notificacao", notificacao);
 app.use("/termo", termo);
+app.use("/certificado", certificado);
 
 app.get("/", (req, res) => {
   res.send("API Estudante Voluntário");
