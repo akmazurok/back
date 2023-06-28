@@ -3,6 +3,8 @@ const router = express.Router();
 
 const certificadoController = require("../controllers/certificadoController");
 
-router.get("/gerarCertificado", certificadoController.gerarCertificado);
+router.get("/:id/:idCertificado/gerarCertificado", certificadoController.gerarCertificado);
+router.get("/:id/listarCertificado", certificadoController.listarCertificados);
+router.get("/:codigo/validarCertificado", certificadoController.validarCertificado);
 
 module.exports = router;

@@ -96,32 +96,48 @@ exports.rescindirTermo = async (req, res) => {
       { _id: req.params.termoid },
       { $set: { rescisaoTermo: Date.now() } }
     );
-    const inscricao = await Inscricao.findByIdAndUpdate(
+    
+    let inscricao = null;
+
+    await Inscricao.findByIdAndUpdate(
       { _id: termo.idInscricao },
-      { $set: { statusInscricao: "ENCERRADO" } },
-      { $set: { dataEncerramentoTrabalho: Date.now() } }
+      { $set: { statusInscricao: "ENCERRADO", dataEncerramentoTrabalho: Date.now() } }
     );
 
     console.log(inscricao);
 
+    inscricao = await Inscricao.findById(termo.idInscricao);
+
+    //Aqui vem o certificado
+
+    console.log(inscricao);
+
     //dados para certificado
-    const nomeEntidade = await Entidade.findById(termoAdesao.idEntidade).select(
+    const nomeEntidade = await Entidade.findById(termo.idEntidade).select(
       "razaoSocial"
     );
     console.log(nomeEntidade);
     const nomeEstudante = await Estudante.findById(
-      termoAdesao.idEstudante
+      termo.idEstudante
     ).select("nomeCompleto");
     console.log(nomeEstudante);
 
-    //const horasTotais = calcularHoras(inscricao);
+    //Vai gerar um código de verificação
+    let codigoVerificacao = novaSenha = Math.random().toString(36).substring(0, 12);
+    console.log(codigoVerificacao);
 
-  /*   const certificado = new Certificado(nomeEntidade, nomeEstudante, horasTotais);
+    const horasTotais = 20;
+    const certificado = new Certificado();
+    certificado.nomeEntidade = nomeEntidade;
+    certificado.nomeEstudante = nomeEstudante;
+    certificado.cargaHoraria = horasTotais;
     certificado.idInscricao = termo.idInscricao;
     certificado.idEstudante = termo.idEstudante;
+    certificado.idEntidade = termo.idEntidade;
     certificado.dataInicio = inscricao.dataInicioTrabalho;
     certificado.dataFim = inscricao.dataEncerramentoTrabalho;
-    certificado.save();    */
+    certificado.codigoVerificacao = codigoVerificacao;
+    certificado.save();
 
     res
       .status(200)

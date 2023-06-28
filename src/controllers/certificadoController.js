@@ -1,13 +1,104 @@
 var mongoose = require("mongoose");
 const Certificado = require("../models/certificado");
 
+const Estudante = require("../models/usuario").Estudante;
+
 //import PDFPrinter from "pdfmake";
 
 const PDFPrinter = require('pdfmake');
 const fs = require('fs');
 
+exports.validarCertificado = async(req,res) => {
+  console.log('Certificado validado');
+  const codigo = req.body.codigo;
+  try {
+  const certificado = await Certificado.find({codigoVerificacao: codigo}).populate({
+    path: "idInscricao",
+    select: "vagaId",
+    populate: {
+      path: "vagaId",
+      select: "nomeVaga"
+    }
+  }).populate({
+    path: "idEntidade",
+    select: "razaoSocial nomeFantasia userid",
+    populate: {
+      path: "userid",
+      select: "login"
+    }
+  });
+  const estudante = await Estudante.findOne({_id: certificado.idEstudante});
+
+  let nome = estudante.nomeCompleto;
+  let nomeVaga = certificado.idInscricao.vagaId.nomeVaga;
+  let nomeEntidade = certificado.idEntidade.razaoSocial;
+  let cnpj = formataCNPJ(certificado.idEntidade.userid.login);
+  let cargaHoraria = certificado.cargaHoraria;
+  let dataInicio = certificado.dataInicio.toLocaleDateString("pt-BR");
+  let dataFim = certificado.dataFim.toLocaleDateString("pt-BR");
+
+    res.status(200).send({ nome, nomeVaga, nomeEntidade, cnpj, cargaHoraria, dataInicio, dataFim, message: 'Validado com Sucesso!' });
+  }catch(err){
+    res
+    .status(500)
+    .send({ message: "Código de verificação não encontrado!"});
+  }
+
+}
+
+exports.listarCertificados = async(req,res) => {  
+  const estudante = await Estudante.findOne({userid: req.params.id});
+
+  const certificado = await Certificado.find({idEstudante: estudante._id}).populate({
+    path: "idInscricao",
+    select: "vagaId",
+    populate: {
+      path: "vagaId",
+      select: "nomeVaga"
+    }
+  }).populate({
+    path: "idEntidade",
+    select: "razaoSocial nomeFantasia userid",
+    populate: {
+      path: "userid",
+      select: "login"
+    }
+  });
+  
+
+  try {
+    res.status(200).send({ certificado });
+  }catch(err){
+    res
+    .status(500)
+    .send({ message: "Não foi possível completar a operação" + error });
+  }
+}
+
 exports.gerarCertificado = async(req,res) => {
 
+  const estudante = await Estudante.findOne({userid: req.params.id}).populate({
+    path: "userid",
+    select: "login"
+  });
+
+  const certificado = await Certificado.findOne({_id: req.params.idCertificado}).populate({
+    path: "idInscricao",
+    select: "vagaId",
+    populate: {
+      path: "vagaId",
+      select: "nomeVaga"
+    }
+  }).populate({
+    path: "idEntidade",
+    select: "razaoSocial nomeFantasia userid",
+    populate: {
+      path: "userid",
+      select: "login"
+    }
+  });
+
+  //Criando a data e hora da emissão do formulário
   var dataAtual = new Date();
   var dia = dataAtual.getDate();
   var mes = (dataAtual.getMonth() + 1);
@@ -17,7 +108,16 @@ exports.gerarCertificado = async(req,res) => {
 
   let data = `${dia}/${mes}/${ano} - ${horas}:${minutos}h`;
 
-  let valor = "123456";
+  //Campos do Formulário
+  let nome = estudante.nomeCompleto;
+  let nomeVaga = certificado.idInscricao.vagaId.nomeVaga;
+  let cpf = formataCPF(estudante.userid.login);
+  let nomeEntidade = certificado.idEntidade.razaoSocial;
+  let cnpj = formataCNPJ(certificado.idEntidade.userid.login);
+  let cargaHoraria = certificado.cargaHoraria;
+  let dataInicio = certificado.dataInicio.toLocaleDateString("pt-BR");
+  let dataFim = certificado.dataFim.toLocaleDateString("pt-BR");
+  let codigoValidacao = certificado.codigoVerificacao;
 
   const chunks = [];
 
@@ -53,10 +153,10 @@ exports.gerarCertificado = async(req,res) => {
      {
        text: [
          'Declaramos para fins de cômputo e aproveitamento de horas para Atividades Curriculares', 
-         'complementares que ',{text: 'Gustavo de Oliveira Achinitz', bold:true, fontSize:15}, ', ',{text: 'do CPF Nº: XXX.XXX.XXX-XX', fontSize:15,bold:true},' do curso de ', 
-         'graduação Análise e Desenvimento de Sistemas, participou como voluntário na atividade: Amigos do', 
-         'Bem, realizada na entidade' ,{ text:' Amigos do HC', fontSize: 15, bold:true }, ', CNPJ: ',{text: 'XXX.XXXX.XXXXX.XXX-X',bold:true,fontSize:15}, ' com carga horária de ', 
-         '',{text:'20 horas', bold:true, fontSize:15},', no período de ' ,{text: '02/03/2023', fontSize:15, bold: true},' até ' ,{text: '05/03/2023', fontSize:15, bold: true},'.',
+         'complementares que ',{text: nome, bold:true, fontSize:15}, ', do CPF Nº: ',{text: cpf, fontSize:15, bold:true},' do curso de ', 
+         'graduação Análise e Desenvimento de Sistemas, participou como voluntário na atividade: ',{text: nomeVaga, fontSize:15, bold:true}, 
+         ', realizada na entidade ' ,{ text: nomeEntidade, fontSize: 15, bold:true }, ', CNPJ: ',{text: cnpj, bold:true, fontSize:15}, ' com carga horária de ', 
+         '',{text: cargaHoraria, bold:true, fontSize:15},' horas, no período de ' ,{text: dataInicio, fontSize:15, bold: true},' até ' ,{text: dataFim, fontSize:15, bold: true},'.',
          ]   
        ,style: 
          'body'
@@ -65,7 +165,7 @@ exports.gerarCertificado = async(req,res) => {
     footer: [
        {
      stack: [
-       'Código de validação: '
+       `Código de validação: ${codigoValidacao}`,
      ],
      style: '',
      margin: [10,0]
@@ -107,82 +207,25 @@ exports.gerarCertificado = async(req,res) => {
    defaultStyle: {
        font: 'Helvetica'
      }
-}
-
-
-  // var docDefinition = {
-  //   content: [
-  //     'First paragraph',
-  //     'Another paragraph, this time a little bit longer to make sure, this line will be divided into at least two lines',
-  //   ],
-  //   defaultStyle: {
-  //     font: 'Helvetica'
-  //   }
-  // };
-  
+}  
   const pdfDoc = printer.createPdfKitDocument(docDefinition);
-  // pdfDoc.pipe(fs.createWriteStream('document.pdf'));
   pdfDoc.on("data", (chunk) => {
     chunks.push(chunk);
   });
 
   pdfDoc.end();
-
   pdfDoc.on("end", () => {
     let result = Buffer.concat(chunks);
     res.end(result);
   });
-
-  console.log('deu boa');
 }
 
-exports.gerarCertificado1 = async (req, res) => {
-  try {
+function formataCPF(cpf){
+  cpf = cpf.replace(/[^\d]/g, "");
+  return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+}
 
-    var pdf = require("html-pdf");
-
-    config = {
-        "orientation": "landscape",
-        "border": {
-            "top": "1in",            // default is 0, units: mm, cm, in, px
-            "right": "1in",
-            "bottom": "1in",
-            "left": "1.5in"
-          },
-          "header": {
-            "height": "10mm",
-            "contents": '<h1>Certificado de Participação</h1>'
-          },
-      }
-    var conteudo = 
-          `
-          <style>
-              h1{
-                  font-size: 40px;
-                  text-align: center;
-              }
-          </style>
-          `;
-              pdf.create(conteudo,config).toStream((err, stream) => {
-                stream.pipe(fs.createWriteStream('./foo.pdf'));
-              })
-    //     pdf.create(conteudo, config).toFile('./MeuPrimeiroPDF.pdf', (err,res) => {
-    //     if(err){
-    //         console.log('Um erro aconteceu');
-    //     }else{
-    //         console.log(res);
-    //     }
-    // });
-    var data = fs.readFileSync('utput.pdf');  
-    console.log(data);
-    res.contentType("application/pdf");
-    res.send(data);
-
-
-
-    res.status(200).send({ message: "Notificação gerada com sucesso!" });
-  } catch (error) {
-    res.status(400).send({ message: "Erro ao gerar a notificação " + error });
-  }
-};
-
+function formataCNPJ(cnpj){
+  cnpj = cnpj.replace(/[^\d]/g, "");
+  return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+}

@@ -7,6 +7,11 @@ const CertificadoSchema = new mongoose.Schema({
     ref: "Usuario",
   },
 
+  idEntidade: {
+    type: mongoose.Types.ObjectId,
+    ref: "Entidade",
+  },
+
   idInscricao: {
     type: mongoose.Types.ObjectId,
     ref: "Inscricao",
@@ -15,6 +20,7 @@ const CertificadoSchema = new mongoose.Schema({
   nomeVaga: {
     type: String,
   },
+
 
   nomeEstudante: {
     type: String,
