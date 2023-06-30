@@ -1,16 +1,16 @@
 const Usuario = require("../models/usuario").Usuario;
 const Entidade = require("../models/usuario").Entidade;
 const Estudante = require("../models/usuario").Estudante;
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { RefreshToken, BlackList } = require("../models/token");
 
-//VERIFICAR SE O LOGIN ESTÁ CADASTRADO - funcionando no postman
+//VERIFICAR SE O LOGIN ESTÁ CADASTRADO
 exports.verificarLogin = async (req, res) => {
   const { login } = req.body;
-  
+
   var cadastro = false;
   var usuario = null;
 
@@ -67,109 +67,103 @@ exports.cadastrar = async (req, res) => {
 };
 
 //Esqueci minha senha
-exports.esqueciSenha = async (req,res) => {
-  // const { login } = req.body;
+exports.esqueciSenha = async (req, res) => {
   const { login } = req.body;
-  // console.log(login);
 
-  try{
+  try {
     const usuario = await Usuario.findOne({ login });
-    const estudante = await Estudante.findOne({ userid: usuario._id});
+    const estudante = await Estudante.findOne({ userid: usuario._id });
 
-    console.log(estudante.email)
-  
-    // console.log(estudante);
+    console.log(estudante.email);
+
     const transport = nodemailer.createTransport({
-      host: 'smtp-mail.outlook.com',
+      host: "smtp-mail.outlook.com",
       port: 587,
       secure: false,
       auth: {
-          user: 'testeparaotcc@outlook.com',
-          pass: 'Ufpr@123',
-      }
-  });
+        user: "testeparaotcc@outlook.com",
+        pass: "Ufpr@123",
+      },
+    });
 
-  novaSenha = Math.random().toString(36).substring(0, 7);
+    novaSenha = Math.random().toString(36).substring(0, 7);
 
-  transport.sendMail({
-    from: 'Estudante Voluntário <testeparaotcc@outlook.com>',
-    to: 'gustavoachinitz@gmail.com',
-    subject: 'Nova Senha - Estudante Voluntário',
-    html: `
+    transport
+      .sendMail({
+        from: "Estudante Voluntário <testeparaotcc@outlook.com>",
+        to: "gustavoachinitz@gmail.com",
+        subject: "Nova Senha - Estudante Voluntário",
+        html: `
         <h1>Olá, ${usuario.nome}! </h1>        
         <p>Recebemos sua solicitação para alterar sua senha.</p>
         <p>Por gentileza, acesse a página e clique no menu a esquerda em Perfil, após isso vá até o final da página e crie uma nova senha.</p>
         <p>Sua senha atual é: <b>${novaSenha}</b></p>
     `,
-}).then(
-    () => {
-        return res.status(200).send({ message: 'E-mail eviado com sucesso!'});
-    }
-).catch(
-    (err) => {
-        console.log('Erro ao enviar e-mail: ' + err);
-    }
-)
-    
-  //    const user = 1;
+      })
+      .then(() => {
+        return res.status(200).send({ message: "E-mail eviado com sucesso!" });
+      })
+      .catch((err) => {
+        console.log("Erro ao enviar e-mail: " + err);
+      });
 
-  //   const token = crypto.randomBytes(20).toString('hex');
-
-  //   const now = new Date();
-
-  //   now.setHours(now.getHours() + 1);
-
-  //   await Usuario.findByIdAndUpdate(user._id, {
-  //     '$set': {
-  //       resetSenhaToken: token,
-  //       resetSenhaExpires: now
-  //     }
-  //   });
-
-  //   console.log(token, now);
-
-   }catch(error){
-     return res.status(404).send({ message: "Usuário não encontrado!" });
-   }
+    //    const user = 1;
+    //   const token = crypto.randomBytes(20).toString('hex');
+    //   const now = new Date();
+    //   now.setHours(now.getHours() + 1);
+    //   await Usuario.findByIdAndUpdate(user._id, {
+    //     '$set': {
+    //       resetSenhaToken: token,
+    //       resetSenhaExpires: now
+    //     }
+    //   });
+    //   console.log(token, now);
+  } catch (error) {
+    return res.status(404).send({ message: "Usuário não encontrado!" });
+  }
 };
 
 //LOGIN - OK
 exports.login = async (req, res) => {
   const { login, senha } = req.body;
-  const user = await Usuario.findOne({ login: login });
-  
 
-  if (!user) {
-    return res.status(404).send({ message: "Usuário não encontrado!" });
-  }
-  const checkPassword = await bcrypt.compare(senha, user.senha);
-  if (!checkPassword) {
-    return res.status(401).send({ message: "Senha inválida" });
-  }
-  if (user.statusPerfil == "PENDENTE") {
-    return res.status(200).send({
-      message: "Usuário com perfil em análise",
-      statusPerfil: user.statusPerfil,
-    });
-  }
-  if (user.statusPerfil == "DESATIVADO") {
-    return res.status(200).send({ message: "Usuário com perfil desativado", statusPerfil: user.statusPerfil });
-  }
+  const user = await Usuario.findOne({ login: login });
 
   try {
+    if (!user) {
+      return res.status(404).send({ message: "Usuário não encontrado!" });
+    }
+    const checkPassword = bcrypt.compareSync(senha, user.senha);
+    if (!checkPassword) {
+      return res.status(401).send({ message: "Senha inválida" });
+    }
+    if (user.statusPerfil == "PENDENTE") {
+      return res.status(200).send({
+        message: "Usuário com perfil em análise",
+        statusPerfil: user.statusPerfil,
+      });
+    }
+    if (user.statusPerfil == "DESATIVADO") {
+      return res.status(200).send({
+        message: "Usuário com perfil desativado",
+        statusPerfil: user.statusPerfil,
+      });
+    }
+
+    await RefreshToken.findOneAndDelete({ userId: user.id });
 
     const secret = process.env.ACCESS_TOKEN_SECRET;
-    const token = jwt.sign({ id: user._id }, secret, { expiresIn: 60 }); //testar se expira
+    const token = jwt.sign({ id: user._id }, secret, { expiresIn: 3600 });
     const refresh = jwt.sign(
       { id: user._id },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "10d" }
     );
 
-    //await RefreshToken.create({ refresh, userId: user._id });
+    await RefreshToken.create({ refresh, userId: user._id });
 
     //Retirar a senha
-    user.senha = undefined;      
+    user.senha = undefined;
     res.status(200).send({
       message: "Autenticação realizada com sucesso!",
       token,
@@ -217,54 +211,66 @@ exports.reativar = async (req, res) => {
   }
 };
 
-exports.verificarToken = async (req, res) => {
-  const token = req.headers.authorization;
+//VERIFICAR TOKEN
+exports.verificarToken = async (req, res, next) => {
+  const auth = req.headers.authorization;
+
+  if (!auth)
+    return res
+      .status(401)
+      .send({ message: "Não autorizado, favor entrar no sistema novamente" });
+
+  var [, token] = auth.split(" ");
 
   try {
     if (await BlackList.findOne({ token }))
       return res.status(400).send({ message: "Token inválido" });
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
       if (err) return res.status(401).send({ message: "Token expirado" });
-      req.userId = decode.userId;
+
+      //salva o id do usuario no request
+      req.userId = decoded.id;
       next();
     });
   } catch (error) {
-    return res
-      .status(400)
-      .send({ message: "Não foi possivel realizar a busca" });
+    res.status(400).send({ message: "Token inválido" });
   }
 };
 
 exports.refreshToken = async (req, res) => {
-  const refresh = req.headers.authorization;
-  try {
-    const busca = await RefreshToken.findOne({ refresh });
-    if (!busca) return res.status(404).send({ message: "Sessão expirada" });
+  const refresh = req.body.refresh;
+  const userId = req.body.userId;
 
-    const userid = busca?.userId;
+  try {
+    const busca = await RefreshToken.find({ refresh });
+    if (!busca) return res.status(404).send({ message: "Sessão expirada" });
 
     jwt.verify(
       refresh,
       process.env.REFRESH_TOKEN_SECRET,
       async (err, decode) => {
         if (err) return res.status(400).send({ message: "Sessão expirada" });
-
-        if (decode) await RefreshToken.findOneAndDelete({ refresh });
-        const newToken = jwt.sign({ userid }, process.env.ACCESS_TOKEN_SECRET, {
-          expiresIn: 3600,
-        });
-        const newRefresh = jwt.sign(
-          { id: user._id },
-          process.env.REFRESH_TOKEN_SECRET,
-          { expiresIn: "7d" }
+    
+        if (decode) await RefreshToken.findOneAndDelete({ userId: userId });
+        const token = jwt.sign(
+          { id: userId },
+          process.env.ACCESS_TOKEN_SECRET,
+          {
+            expiresIn: 3600,
+          }
         );
-
-        await RefreshToken.create({ refresh: newRefresh }, userid);
-
+        const newRefresh = jwt.sign(
+          { id: userId },
+          process.env.REFRESH_TOKEN_SECRET,
+          { expiresIn: "10d" }
+        );
+        
+        await RefreshToken.create({ userId, refresh: newRefresh });
+      
         return res
           .status(200)
-          .send({ message: "Sessão renovada", newToken, newRefresh });
+          .send({ message: "Sessão renovada", token, newRefresh });
       }
     );
   } catch (error) {
@@ -276,6 +282,7 @@ exports.refreshToken = async (req, res) => {
 
 exports.logout = async (req, res) => {
   const token = req.headers.authorization;
+  console.log(token);
   try {
     await BlackList.create({ token });
     return res

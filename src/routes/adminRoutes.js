@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const adminController = require('../controllers/adminController');
-//const { verificarToken } = require("../controllers/usuarioController");
+const usuarioContoller = require("../controllers/usuarioController");
 
 //TESTAR
-//router.all('*', verificarToken);
+router.all('*', usuarioContoller.verificarToken);
 
 router.get("/entidades", adminController.listarEntidades);
 router.get("/estudantes", adminController.listarEstudantes);
