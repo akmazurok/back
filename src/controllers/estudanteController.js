@@ -5,9 +5,7 @@ const Certificado = require("../models/certificado");
 const Estudante = require("../models/usuario").Estudante;
 const Usuario = require("../models/usuario").Usuario;
 
-//TO-DO - /termo de adesao /certificados /download certificado
-
-//ESTUDANTE POR ID - OK
+//ESTUDANTE POR ID
 exports.getPerfilEstudante = async (req, res) => {
   try {
     const estudante = await Estudante.findOne({ userid: req.params.id });
@@ -18,7 +16,7 @@ exports.getPerfilEstudante = async (req, res) => {
   }
 };
 
-//EDITAR ESTUDANTE - OK
+//EDITAR ESTUDANTE
 exports.setPerfilEstudante = async (req, res) => {
   const dados = req.body;
 
@@ -32,7 +30,7 @@ exports.setPerfilEstudante = async (req, res) => {
   }
 };
 
-//LISTAR TODAS AS VAGAS ABERTAS - OK
+//LISTAR TODAS AS VAGAS ABERTAS
 exports.listarVagas = async (req, res) => {
   const id = parseInt(req.params.id);
   const pagina = parseInt(req.params.pagina);
@@ -45,27 +43,34 @@ exports.listarVagas = async (req, res) => {
   }).select("_id");
 
   //Verificando todas as vagas que o estudante está inscrito
-  const busca = await Inscricao.find({estudanteId }).select('_id');
+  const busca = await Inscricao.find({ estudanteId }).select("_id");
 
   try {
     //$nin a gente filtra para ele não trazer aqueles dados que possuem aquele id no caso da vaga
-    const tamanhoVagas = await Vaga.find({ statusVaga: "ABERTA", "inscricoes": {$nin: busca},}).populate({
+    const tamanhoVagas = await Vaga.find({
+      statusVaga: "ABERTA",
+      inscricoes: { $nin: busca },
+    }).populate({
       path: "inscricoes",
       select: "userId",
     });
 
-    const vagas = await Vaga.find({ statusVaga: "ABERTA", "inscricoes": {$nin: busca},}).populate({
+    const vagas = await Vaga.find({
+      statusVaga: "ABERTA",
+      inscricoes: { $nin: busca },
+    })
+      .populate({
         path: "inscricoes",
         select: "userId",
       })
       .populate({
         path: "entidadeId",
         select: "nome",
-      }).skip(skipPage).limit(limit);
+      })
+      .skip(skipPage)
+      .limit(limit);
 
-    //arrumar funcao para mostrar em quais vagas o estudante tem inscricao
-    
-    res.status(200).send({vagas: vagas, tamanhoPagina: tamanhoVagas.length});
+    res.status(200).send({ vagas: vagas, tamanhoPagina: tamanhoVagas.length });
   } catch (error) {
     res
       .status(404)
@@ -73,8 +78,7 @@ exports.listarVagas = async (req, res) => {
   }
 };
 
-/***- ARRUMAR */
-//BUSCA DE VAGAS PELO NOME DA VAGA OU DA ENTIDADE
+//BUSCA DE VAGAS
 exports.buscarVagas = async (req, res) => {
   try {
     const vagas = await Vaga.find({ statusVaga: "ABERTA" }).populate({
@@ -90,10 +94,8 @@ exports.buscarVagas = async (req, res) => {
   }
 };
 
-//DETALHES DA VAGA -  to-do //verificar se está inscrito na vaga
+//DETALHES DA VAGA
 exports.detalhesVaga = async (req, res) => {
-  // const estudanteId = req.params.id;}
-
   try {
     //mostra os detalhes da vaga, escondendo o campo inscricoes
     const vaga = await Vaga.find(
@@ -106,9 +108,8 @@ exports.detalhesVaga = async (req, res) => {
   }
 };
 
-//INSCREVER-SE EM VAGA ok
+//INSCREVER-SE EM VAGA
 exports.inscricaoVaga = async (req, res) => {
-  
   const vagaId = mongoose.Types.ObjectId(req.params.vagaid);
 
   try {
@@ -116,14 +117,10 @@ exports.inscricaoVaga = async (req, res) => {
     const estudanteId = await Estudante.findOne({
       userid: req.params.id,
     }).select("_id");
+
     //verifica se está inscrito na vaga
-    console.log("Vaga id: " + vagaId);
-    console.log("Estudante Id: " + estudanteId);
-    const estudante = await Estudante.find({estudanteId});
+    const estudante = await Estudante.find({ estudanteId });
     const busca = await Inscricao.find({ vagaId, estudanteId });
-    console.log('Busca vaga begin');
-    console.log(busca);
-    console.log('Busca vaga end');
     if (busca.length > 0)
       return res
         .status(422)
@@ -157,7 +154,7 @@ exports.inscricaoVaga = async (req, res) => {
   }
 };
 
-//LISTAR INSCRICOES - OK
+//LISTAR INSCRICOES
 exports.listarInscricoes = async (req, res) => {
   try {
     const inscricoes = await Inscricao.find({
@@ -180,7 +177,7 @@ exports.listarInscricoes = async (req, res) => {
   }
 };
 
-//DETALHES DA INSCRICAO - OK
+//DETALHES DA INSCRICAO
 exports.detalhesInscricao = async (req, res) => {
   try {
     const inscricao = await Inscricao.find({ _id: req.params.inscricaoid });
@@ -190,7 +187,7 @@ exports.detalhesInscricao = async (req, res) => {
   }
 };
 
-//CANCELAR INSCRICAO - OK
+//CANCELAR INSCRICAO
 exports.cancelarInscricao = async (req, res) => {
   try {
     const inscricao = await Inscricao.updateOne(
@@ -206,7 +203,7 @@ exports.cancelarInscricao = async (req, res) => {
   }
 };
 
-//ACEITAR TERMO DE ADESAO - arrumar na entidade primeiro
+//ACEITAR TERMO DE ADESAO
 exports.aceitarTermo = async (req, res) => {
   try {
     await Inscricao.updateOne(
@@ -221,7 +218,7 @@ exports.aceitarTermo = async (req, res) => {
   }
 };
 
-//RESCINDIR TERMO DE ADESAO - arrumar dados para inserir no certificado
+//RESCINDIR TERMO DE ADESAO
 exports.rescindirTermo = async (req, res) => {
   try {
     const inscricao = await Inscricao.updateOne(
@@ -241,8 +238,7 @@ exports.rescindirTermo = async (req, res) => {
   }
 };
 
-//***ARRUMAR*****/
-//LISTAR CERTIFICADOS - arrumar
+//LISTAR CERTIFICADOS
 exports.listarCertificados = async (req, res) => {
   try {
     const certificados = await Certificado.find({ estudanteId: req.params.id });

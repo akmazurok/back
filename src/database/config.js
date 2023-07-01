@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const connectToDatabase = async () => {
   try {
     await mongoose.connect(
-      //conexao mongodb atlas
+      //CONEXÃO MONGODB ATLAS
        /*   `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@estudantevoluntario.vy1b0.mongodb.net/?retryWrites=true&w=majority`,
       {
         useUnifiedTopology: true,
@@ -11,7 +11,7 @@ const connectToDatabase = async () => {
       }   */
            
 
-      //conexao mongodb local
+      //CONEXÃO MONGODB LOCAL
         "mongodb://localhost:27017/estudantevoluntario",
       {
         useNewUrlParser: true,

@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 
 const Notificacao = require("../models/notificacao");
 
-//GERAR NOTIFICAÇÂO - OK
+//GERAR NOTIFICAÇÂO
 exports.gerarNotificacao = async (req, res) => {
   const { idRemetente, idDestinatario, titulo, mensagem } = req.body;
   try {
@@ -20,7 +20,7 @@ exports.gerarNotificacao = async (req, res) => {
   }
 };
 
-//DESTINATÁRIO LISTA NOTIFICAÇÕES RECEBIDAS - OK
+//DESTINATÁRIO LISTA NOTIFICAÇÕES RECEBIDAS
 exports.listarNotificacoes = async (req, res) => {
  
   try {
@@ -39,7 +39,7 @@ exports.listarNotificacoes = async (req, res) => {
   }
 };
 
-//DESTINATÁRIO EXCLUI NOTIFICAÇÕES - OK
+//DESTINATÁRIO EXCLUI NOTIFICAÇÕES
 exports.excluirNotificacao = async (req, res) => { 
   try {
     await Notificacao.findByIdAndRemove({ _id: req.params.id });

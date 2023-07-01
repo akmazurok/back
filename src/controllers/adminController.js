@@ -5,8 +5,6 @@ const Estudante = require("../models/usuario").Estudante;
 const Administrador = require("../models/usuario").Administrador;
 const Vaga = require("../models/vaga");
 
-//TO-DO -
-
 //VISUALIZAR PERFIL - passando id de usuario
 exports.getPerfilAdmin = async (req, res) => {
   try {
@@ -31,7 +29,7 @@ exports.setPerfilAdmin = async (req, res) => {
   }
 };
 
-//RETORNAR TODAS AS VAGAS PARA APROVACAO - OK
+//RETORNAR TODAS AS VAGAS PARA APROVACAO
 exports.listarVagas = async (req, res) => {
   try {
     const vagas = await Vaga.find({ statusVaga: "APROVACAO" })
@@ -50,7 +48,7 @@ exports.listarVagas = async (req, res) => {
   }
 };
 
-//RETORNAR VAGA POR ID - OK
+//RETORNAR VAGA POR ID
 exports.detalhesVaga = async (req, res) => {
   try {
     const vaga = await Vaga.find({ _id: req.params.vagaid });
@@ -64,7 +62,7 @@ exports.detalhesVaga = async (req, res) => {
   }
 };
 
-//VALIDAR VAGA - OK
+//VALIDAR VAGA
 exports.validarVaga = async (req, res) => {
   var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
@@ -84,7 +82,7 @@ exports.validarVaga = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS AS ENTIDADES PARA APROVAÇÃO - OK
+//RETORNAR TODOS AS ENTIDADES PARA APROVAÇÃO
 exports.listarEntidades = async (req, res) => {
   try {
     const usuarios = await Usuario.find(
@@ -102,7 +100,7 @@ exports.listarEntidades = async (req, res) => {
   }
 };
 
-//VER DETALHES ENTIDADE - OK
+//VER DETALHES ENTIDADE
 exports.entidade = async (req, res) => {
   try {
     const entidade = await Entidade.findOne({ _id: req.params.entid }).populate(
@@ -117,7 +115,7 @@ exports.entidade = async (req, res) => {
   }
 };
 
-//VALIDAR ENTIDADE - OK
+//VALIDAR ENTIDADE
 exports.validarEntidade = async (req, res) => {
   var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
@@ -142,7 +140,7 @@ exports.validarEntidade = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO - OK
+//RETORNAR TODOS OS ESTUDANTES PARA APROVAÇÃO
 exports.listarEstudantes = async (req, res) => {
   try {
     const usuarios = await Usuario.find(
@@ -161,7 +159,7 @@ exports.listarEstudantes = async (req, res) => {
   }
 };
 
-//VER DETALHES ESTUDANTE - OK
+//VER DETALHES ESTUDANTE
 exports.estudante = async (req, res) => {
   try {
     const estudante = await Estudante.findOne({
@@ -176,7 +174,7 @@ exports.estudante = async (req, res) => {
   }
 };
 
-//VALIDAR ESTUDANTE - OK
+//VALIDAR ESTUDANTE
 exports.validarEstudante = async (req, res) => {
   var { avaliacao, comentario } = req.body.formResolucao;
   var idAdmin = req.params.id;
@@ -199,7 +197,7 @@ exports.validarEstudante = async (req, res) => {
   }
 };
 
-//RETORNAR TODOS OS ADMINS - OK
+//RETORNAR TODOS OS ADMINS
 exports.listarAdmins = async (req, res) => {
   const busca = ["ADMINISTRADOR", "ADMINISTRADORGERAL"];
   try {
@@ -307,8 +305,7 @@ exports.promoverAdmin = async (req, res) => {
 
 //REBAIXAR ADMIN - passando id do uusario admin
 exports.rebaixarAdmin = async (req, res) => {
-  var comentario = req.body.comentario;
-  console.log(comentario);
+  var comentario = req.body.comentario; 
   try {
     await Usuario.findOneAndUpdate(
       { _id: req.params.adminid },
@@ -327,20 +324,3 @@ exports.rebaixarAdmin = async (req, res) => {
       .send({ message: "Erro ao realizar ao atualizar" + error });
   }
 };
-
-//EXCLUIR ADMIN - passando id do admin - SEM USO
-/* exports.excluirAdmin = async (req, res) => {
-  try {
-    const admin = await Administrador.findOneAndRemove({
-      _id: req.params.adminid,
-    });
-    var userid = mongoose.Types.ObjectId(admin.userid);
-    await Usuario.findOneAndRemove({ _id: userid });
-
-    res.status(200).send({ message: "Cadastro excluído com sucesso." });
-  } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Não foi possível excluir o Administrador " + error });
-  }
-}; */

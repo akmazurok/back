@@ -19,38 +19,18 @@ const doc = {
   ],
   consumes: ["application/json"],
   apis: ["./app.js"],
-  components: {
-    schemas: {
-      Usuario: {
-        type: "object",
-        properties: {
-          documento: { type: String },
-          email: { type: String },
-          senha: { type: String },
-          acesso: {
-            type: String,
-            enum: ["Administrador", "Estudante", "Entidade"],
-          },
-        },
-      },
+  produces: ['application/json'],
+  securityDefinitions: {
+    JWT: {
+      description: 'JWT token',
+      type: 'apiKey',
+      in: 'header',
+      name: 'Authorization',
     },
   },
-  /*  securityDefinitions: {
-        api_key: {
-            type: "apiKey",
-            name: "api_key",
-            in: "header"
-        },
-        petstore_auth: {
-            type: "oauth2",
-            authorizationUrl: "https://petstore.swagger.io/oauth/authorize",
-               flow: "implicit",
-            scopes: {
-                read_pets: "read your pets",
-                write_pets: "modify pets in your account"
-            }
-        }
-    }, */
+  definitions: {
+  },
+  
 };
 
 swaggerAutogen(outputFile, endpointsFiles, doc);

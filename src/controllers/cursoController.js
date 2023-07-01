@@ -2,14 +2,11 @@ var mongoose = require("mongoose");
 const Instituicao = require("../models/instituicao");
 const Curso = require("../models/curso");
 
-//TO DO
-
-//CADASTRAR INSTITUICAO - OK
+//CADASTRAR INSTITUICAO
 exports.cadastrarIes = async (req, res) => {
   const cnpj = req.body.cnpj;
   try {
-    if (await Instituicao.find({ cnpj: cnpj })) {
-      console.log("achou");
+    if (await Instituicao.find({ cnpj: cnpj })) {    
       return res.status(422).send({ message: "CNPJ já cadastrado" });
     }
     const ies = await Instituicao.create(req.body);
@@ -23,7 +20,7 @@ exports.cadastrarIes = async (req, res) => {
   }
 };
 
-//LISTAR IES - OK
+//LISTAR IES
 exports.listarIes = async function (req, res) {
   try {
     const instituicoes = await Instituicao.find().sort({ nome: "asc" });
@@ -35,7 +32,7 @@ exports.listarIes = async function (req, res) {
   }
 };
 
-//RETORNA IES POR ID - OK
+//RETORNA IES POR ID
 exports.visualizarIes = async function (req, res) {
   try {
     const instituicao = await Instituicao.findOne({ _id: req.params.iesid });
@@ -62,7 +59,7 @@ exports.editarIes = async function (req, res) {
   }
 };
 
-//EXCLUI IES POR ID - OK
+//EXCLUI IES POR ID
 exports.excluirIes = async function (req, res) {
   try {
     const iesId = req.params.iesid;
@@ -80,7 +77,7 @@ exports.excluirIes = async function (req, res) {
   }
 };
 
-//CADASTRAR CURSO - OK
+//CADASTRAR CURSO
 exports.cadastrarCurso = async (req, res) => {
   const { nomeCurso, grau } = req.body;
   const instituicao = req.params.iesid;
@@ -97,7 +94,7 @@ exports.cadastrarCurso = async (req, res) => {
   }
 };
 
-//LISTAR CURSOS NA IES - OK
+//LISTAR CURSOS NA IES
 exports.listarCursos = async (req, res) => {
   try {
     const instituicao = await Instituicao.findOne({ _id: req.params.iesid });
@@ -113,7 +110,7 @@ exports.listarCursos = async (req, res) => {
   }
 };
 
-//EXCLUI CURSO POR ID - O
+//EXCLUI CURSO POR ID
 exports.excluirCurso = async function (req, res) {
   try {
     await Curso.findOneAndRemove({ _id: req.params.cursoid });
@@ -124,15 +121,3 @@ exports.excluirCurso = async function (req, res) {
       .send({ message: "Não foi possível excluir o curso: " + error });
   }
 };
-
-//RETORNA CURSO POR ID - Não utilizado
-/* exports.visualizarCurso = async function (req, res) {
-  try {
-    const curso = await Curso.findOne({ _id: req.params.cursoid });
-    res.status(200).send({ curso });
-  } catch (error) {
-    res.status(404).send({
-      message: "Curso " + req.params.nome + " não localizado: " + error,
-    });
-  }
-}; */

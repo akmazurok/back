@@ -7,7 +7,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { RefreshToken, BlackList } = require("../models/token");
 
-//VERIFICAR SE O LOGIN ESTÁ CADASTRADO
+//VERIFICA SE O USUÁRIO ESTÁ CADASTRADO
 exports.verificarLogin = async (req, res) => {
   const { login } = req.body;
 
@@ -31,7 +31,7 @@ exports.verificarLogin = async (req, res) => {
   }
 };
 
-//CADASTRAR - OK
+//CADASTRAR
 exports.cadastrar = async (req, res) => {
   const { login, senha, perfil, nome } = req.body;
 
@@ -66,15 +66,13 @@ exports.cadastrar = async (req, res) => {
   }
 };
 
-//Esqueci minha senha
+//ESQUECI MINHA SENHA
 exports.esqueciSenha = async (req, res) => {
   const { login } = req.body;
 
   try {
     const usuario = await Usuario.findOne({ login });
-    const estudante = await Estudante.findOne({ userid: usuario._id });
-
-    console.log(estudante.email);
+    const estudante = await Estudante.findOne({ userid: usuario._id });  
 
     const transport = nodemailer.createTransport({
       host: "smtp-mail.outlook.com",
@@ -104,26 +102,15 @@ exports.esqueciSenha = async (req, res) => {
         return res.status(200).send({ message: "E-mail eviado com sucesso!" });
       })
       .catch((err) => {
-        console.log("Erro ao enviar e-mail: " + err);
+        return res.status(500).send({ message: "Erro ao enviar e-mail: " + err });        
       });
-
-    //    const user = 1;
-    //   const token = crypto.randomBytes(20).toString('hex');
-    //   const now = new Date();
-    //   now.setHours(now.getHours() + 1);
-    //   await Usuario.findByIdAndUpdate(user._id, {
-    //     '$set': {
-    //       resetSenhaToken: token,
-    //       resetSenhaExpires: now
-    //     }
-    //   });
-    //   console.log(token, now);
+  
   } catch (error) {
     return res.status(404).send({ message: "Usuário não encontrado!" });
   }
 };
 
-//LOGIN - OK
+//LOGIN
 exports.login = async (req, res) => {
   const { login, senha } = req.body;
 
@@ -177,7 +164,7 @@ exports.login = async (req, res) => {
   }
 };
 
-//DESATIVAR USUARIO - ok
+//DESATIVAR USUARIO
 exports.desativar = async (req, res) => {
   const user = await Usuario.findOne({ _id: req.params.id });
 
@@ -194,7 +181,7 @@ exports.desativar = async (req, res) => {
   }
 };
 
-//REATIVAR USUARIO - ok
+//REATIVAR USUARIO
 exports.reativar = async (req, res) => {
   const { login } = req.body;
 
@@ -238,6 +225,7 @@ exports.verificarToken = async (req, res, next) => {
   }
 };
 
+//REFRESH TOKEN
 exports.refreshToken = async (req, res) => {
   const refresh = req.body.refresh;
   const userId = req.body.userId;
@@ -280,9 +268,9 @@ exports.refreshToken = async (req, res) => {
   }
 };
 
+//LOGOUT
 exports.logout = async (req, res) => {
   const token = req.headers.authorization;
-  console.log(token);
   try {
     await BlackList.create({ token });
     return res

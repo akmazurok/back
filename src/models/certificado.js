@@ -21,7 +21,6 @@ const CertificadoSchema = new mongoose.Schema({
     type: String,
   },
 
-
   nomeEstudante: {
     type: String,
   },  

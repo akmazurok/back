@@ -1,10 +1,8 @@
 const express = require("express");
 const router = express.Router();
-
 const adminController = require('../controllers/adminController');
 const usuarioContoller = require("../controllers/usuarioController");
 
-//TESTAR
 router.all('*', usuarioContoller.verificarToken);
 
 router.get("/entidades", adminController.listarEntidades);
@@ -18,12 +16,8 @@ router.get("/:id", adminController.getPerfilAdmin);
 router.patch("/:id", adminController.setPerfilAdmin);
 
 //rotas para de gerenciamento de administradores
-//router.get("/:adminid", adminController.visualizarAdmin);
-//router.patch("/:adminid", adminController.editarAdmin);
-//router.delete("/:adminid", adminController.excluirAdmin);
 router.patch("/:adminid/rebaixar", adminController.rebaixarAdmin);
 router.patch("/:adminid/promover", adminController.promoverAdmin);
-
 
 router.get("/vagas/:vagaid", adminController.detalhesVaga);
 router.patch("/vagas/:vagaid/:id", adminController.validarVaga);
