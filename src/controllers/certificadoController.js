@@ -1,46 +1,41 @@
 var mongoose = require("mongoose");
 const Certificado = require("../models/certificado");
-
+const Entidade = require("../models/usuario").Entidade;
 const Estudante = require("../models/usuario").Estudante;
+const Vaga = require("../models/vaga");
+const Inscricao = require("../models/inscricao");
 
 //import PDFPrinter from "pdfmake";
 
 const PDFPrinter = require('pdfmake');
 const fs = require('fs');
+const { error } = require("console");
 
 exports.validarCertificado = async(req,res) => {
-  console.log('Certificado validado');
-  const codigo = req.body.codigo;
+  const codigo = req.params.codigo;
+
   try {
-  const certificado = await Certificado.find({codigoVerificacao: codigo}).populate({
-    path: "idInscricao",
-    select: "vagaId",
-    populate: {
-      path: "vagaId",
-      select: "nomeVaga"
-    }
-  }).populate({
-    path: "idEntidade",
-    select: "razaoSocial nomeFantasia userid",
-    populate: {
-      path: "userid",
-      select: "login"
-    }
-  });
-  const estudante = await Estudante.findOne({_id: certificado.idEstudante});
+    let certificado = await Certificado.find({codigoVerificacao: codigo}).populate({
+      path: "idEntidade",
+      select: "nomeFantasia razaoSocial userid",
+      populate: {
+        path: "userid",
+        select: "login nome"
+      }
+    }).populate({
+      path: "idInscricao",
+      select: "vagaId",
+      populate: {
+        path: "vagaId",
+        select: "nomeVaga"
+      }
+    });
 
-  let nome = estudante.nomeCompleto;
-  let nomeVaga = certificado.idInscricao.vagaId.nomeVaga;
-  let nomeEntidade = certificado.idEntidade.razaoSocial;
-  let cnpj = formataCNPJ(certificado.idEntidade.userid.login);
-  let cargaHoraria = certificado.cargaHoraria;
-  let dataInicio = certificado.dataInicio.toLocaleDateString("pt-BR");
-  let dataFim = certificado.dataFim.toLocaleDateString("pt-BR");
+    res.status(200).send({ certificado, message: 'O código de verificação é valido!' });
 
-    res.status(200).send({ nome, nomeVaga, nomeEntidade, cnpj, cargaHoraria, dataInicio, dataFim, message: 'Validado com Sucesso!' });
   }catch(err){
     res
-    .status(500)
+    .status(404)
     .send({ message: "Código de verificação não encontrado!"});
   }
 

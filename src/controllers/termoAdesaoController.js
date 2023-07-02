@@ -91,6 +91,11 @@ exports.aceitarTermo = async (req, res) => {
 
 //RESCINDIR TERMO - fazer gerar o certificado
 exports.rescindirTermo = async (req, res) => {
+  let cargaHoraria = 0;
+  let dataInicio = 0;
+  let dataFim = 0;
+  let datas = ['0','1','2','3','4','5','6'];
+
   try {
     const termo = await TermoAdesao.findByIdAndUpdate(
       { _id: req.params.termoid },
@@ -99,46 +104,54 @@ exports.rescindirTermo = async (req, res) => {
     
     let inscricao = null;
 
-    await Inscricao.findByIdAndUpdate(
-      { _id: termo.idInscricao },
-      { $set: { statusInscricao: "ENCERRADO", dataEncerramentoTrabalho: Date.now() } }
-    );
-
-    console.log(inscricao);
+     await Inscricao.findByIdAndUpdate(
+       { _id: termo.idInscricao },
+       { $set: { statusInscricao: "ENCERRADO", dataEncerramentoTrabalho: Date.now() } }
+     );
 
     inscricao = await Inscricao.findById(termo.idInscricao);
+    vaga = await Vaga.findOne({ _id: inscricao.vagaId });
+    datas = datas.filter( function( el ) {
+      return vaga.diasTrabalho.indexOf( el ) < 0;
+    });
 
-    //Aqui vem o certificado
+    dataBegin = JSON.stringify(inscricao.dataInicioTrabalho).substring(0,11);
+    dataEnd = JSON.stringify(inscricao.dataEncerramentoTrabalho).substring(0,11);
 
-    console.log(inscricao);
+    datasSel = getWeekDayList(dataBegin, 
+    dataEnd, datas);
+    dataInicio = parseInt(vaga.horarioInicioTrabalho.split(':')[0]);
+    dataFim = parseInt(vaga.horarioEncerramentoTrabalho.split(':')[0]);
+
+    (dataInicio > dataFim) ? cargaHoraria = dataInicio - dataFim : cargaHoraria = dataFim - dataInicio;
 
     //dados para certificado
     const nomeEntidade = await Entidade.findById(termo.idEntidade).select(
       "razaoSocial"
     );
-    console.log(nomeEntidade);
-    const nomeEstudante = await Estudante.findById(
+
+    const estudante = await Estudante.findById(
       termo.idEstudante
-    ).select("nomeCompleto");
-    console.log(nomeEstudante);
+    ).populate({
+      path: "userid",
+      select: "nome"
+    });
 
     //Vai gerar um código de verificação
     let codigoVerificacao = novaSenha = Math.random().toString(36).substring(0, 12);
-    console.log(codigoVerificacao);
 
-    const horasTotais = 20;
-    const certificado = new Certificado();
-    certificado.nomeEntidade = nomeEntidade;
-    certificado.nomeEstudante = nomeEstudante;
-    certificado.cargaHoraria = horasTotais;
-    certificado.idInscricao = termo.idInscricao;
-    certificado.idEstudante = termo.idEstudante;
-    certificado.idEntidade = termo.idEntidade;
-    certificado.dataInicio = inscricao.dataInicioTrabalho;
-    certificado.dataFim = inscricao.dataEncerramentoTrabalho;
-    certificado.codigoVerificacao = codigoVerificacao;
-    certificado.save();
-
+     const horasTotais = (parseInt(cargaHoraria) != 0 ) ? datasSel.length * cargaHoraria : 0;
+     const certificado = new Certificado();
+     certificado.nomeEntidade = nomeEntidade;
+     certificado.nomeEstudante = estudante.userid.nome;
+     certificado.cargaHoraria = horasTotais;
+     certificado.idInscricao = termo.idInscricao;
+     certificado.idEstudante = termo.idEstudante;
+     certificado.idEntidade = termo.idEntidade;
+     certificado.dataInicio = inscricao.dataInicioTrabalho;
+     certificado.dataFim = inscricao.dataEncerramentoTrabalho;
+     certificado.codigoVerificacao = codigoVerificacao;
+     certificado.save();
     res
       .status(200)
       .send({ message: "Termo de Adesão rescindido com sucesso!" });
@@ -157,4 +170,21 @@ function calcularHoras(inscricao) {
 
   //calcular horas totais
   return horasTotais;
+}
+
+function getWeekDayList(startDate, endDate, datas) {
+  let days = []
+  let end = new Date(endDate);
+  for (let start = new Date(startDate); start <= end; start.setDate(start.getDate() + 1)) {
+    for(let i = 0; i < datas.length; i++)
+      {
+        let day = start.getDay();   
+        if (day == parseInt(datas[i]))
+          {
+            days.push(new Date(start));
+
+          }
+      }       
+  }
+  return days;
 }
