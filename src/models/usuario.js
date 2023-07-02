@@ -275,6 +275,16 @@ UsuarioSchema.pre("save", async function (next) {
   next(); 
 });
 
+
+UsuarioSchema.pre('updateOne', async function (next) { 
+  let update = {...this.getUpdate()};   
+  if (update.senha){
+    update.senha = await bcrypt.hash(update.senha, 10);    
+    this.setUpdate(update);
+    next();
+  }
+})
+
 var Usuario = mongoose.model("Usuario", UsuarioSchema);
 var Estudante = mongoose.model("Estudante", EstudanteSchema);
 var Administrador = mongoose.model("Administrador", AdministradorSchema);

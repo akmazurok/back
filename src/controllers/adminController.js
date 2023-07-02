@@ -8,7 +8,7 @@ const Vaga = require("../models/vaga");
 //VISUALIZAR PERFIL - passando id de usuario
 exports.getPerfilAdmin = async (req, res) => {
   try {
-    const usuario = await Usuario.findOne({ _id: req.params.id }, "-senha");
+    const usuario = await Usuario.findOne({ _id: req.params.id });
     const admin = await Administrador.findOne({ userid: req.params.id });
     res.status(200).send({ admin, usuario });
   } catch (error) {

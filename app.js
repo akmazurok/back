@@ -13,7 +13,6 @@ const admin = require("./src/routes/adminRoutes");
 const entidade = require("./src/routes/entidadeRoutes");
 const cursos = require("./src/routes/cursoRoutes");
 const estudante = require("./src/routes/estudanteRoutes")
-const vagas = require("./src/routes/vagasRoutes");
 const notificacao = require("./src/routes/notificacaoRoutes");
 const termo = require("./src/routes/termoAdesaoRoutes");
 const certificado = require("./src/routes/certificadoRoutes");
@@ -28,15 +27,12 @@ app.use(cors());
 app.use(bodyParser.json({limit: "10mb", extended: true}));
 app.use(bodyParser.urlencoded({ extended: true, parameterLimit: 100000,limit: "10mb" }));
 app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
-app.use("/files", express.static(__dirname + "/tmp/uploads")
-);
 
 app.use("/auth", usuario);
 app.use("/admin", admin);
 app.use("/entidade", entidade);
 app.use("/ies", cursos);
 app.use("/estudante", estudante);
-app.use("/vagas", vagas);
 app.use("/notificacao", notificacao);
 app.use("/termo", termo);
 app.use("/certificado", certificado);
