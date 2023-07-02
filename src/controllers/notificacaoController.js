@@ -1,7 +1,4 @@
 var mongoose = require("mongoose");
-
-const nodemailer = require('nodemailer');
-
 const Notificacao = require("../models/notificacao");
 
 //GERAR NOTIFICAÇÂO
@@ -28,7 +25,7 @@ exports.listarNotificacoes = async (req, res) => {
       idDestinatario: req.params.idUsuario,
     }).populate({
       path: "idRemetente",
-      select: "nome",
+      select: "nome perfil",
     });
 
     res.status(200).send(notificacoes);

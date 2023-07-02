@@ -17,12 +17,6 @@ const VagaSchema = new mongoose.Schema({
     type: String,
   },
 
-  img: {
-    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    key: { type: String },
-    url: { type: String },
-  },
-
   descricao: {
     type: String,
   },
@@ -39,11 +33,6 @@ const VagaSchema = new mongoose.Schema({
     type: String,
   },
 
-  utilizarEnderecoEntidade: {
-    type: Boolean,
-  },
-
-  
   endereco: {
     cep: { type: String },
     logradouro: { type: String },
@@ -67,7 +56,7 @@ const VagaSchema = new mongoose.Schema({
   },
 
   dataEncerramentoTrabalho: {
-    type: String,
+    type: Date,
   },
   
   diasTrabalho: [{ type: String }],
