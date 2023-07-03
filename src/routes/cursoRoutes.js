@@ -5,7 +5,7 @@ const usuarioContoller = require("../controllers/usuarioController");
 
 router.post("/", usuarioContoller.verificarToken, cursoController.cadastrarIes);
 router.get("/", cursoController.listarIes);
-router.get("/:iesid", usuarioContoller.verificarToken, cursoController.visualizarIes);
+router.get("/:iesid", cursoController.visualizarIes);
 router.patch("/:iesid", usuarioContoller.verificarToken, cursoController.editarIes);
 router.delete("/:iesid", usuarioContoller.verificarToken, cursoController.excluirIes);
 router.get("/:iesid/cursos", cursoController.listarCursos);

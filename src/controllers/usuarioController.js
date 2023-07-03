@@ -25,7 +25,7 @@ exports.verificarLogin = async (req, res) => {
       if (usuario.statusPerfil == "REPROVADO") cadastro = false;
       return res.status(200).send({ cadastro, usuario });
     }
-    return res.status(404).send({ message: "Não encontrado", cadastro });
+    return res.status(200).send({ message: "Não encontrado", cadastro });
   } catch (error) {
     return res.status(400).send({ message: "Erro" + error });
   }
