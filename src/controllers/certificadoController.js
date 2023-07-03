@@ -31,7 +31,7 @@ exports.validarCertificado = async(req,res) => {
       }
     });
 
-    res.status(200).send({ certificado, message: 'O código de verificação é valido!' });
+    res.status(200).send({ certificado, message: 'O código de verificação é válido!' });
 
   }catch(err){
     res
@@ -147,10 +147,10 @@ exports.gerarCertificado = async(req,res) => {
    },
      {
        text: [
-         'Declaramos para fins de cômputo e aproveitamento de horas para Atividades Curriculares', 
-         'complementares que ',{text: nome, bold:true, fontSize:15}, ', do CPF Nº: ',{text: cpf, fontSize:15, bold:true},' do curso de ', 
-         'graduação Análise e Desenvimento de Sistemas, participou como voluntário na atividade: ',{text: nomeVaga, fontSize:15, bold:true}, 
-         ', realizada na entidade ' ,{ text: nomeEntidade, fontSize: 15, bold:true }, ', CNPJ: ',{text: cnpj, bold:true, fontSize:15}, ' com carga horária de ', 
+         'Declaramos para fins de cômputo e aproveitamento de horas para Atividades Curriculares ',
+         'complementares, que ',{text: nome, bold:true, fontSize:15}, ', CPF ',{text: cpf, fontSize:15, bold:true}, 
+         ', participou como voluntário na atividade "',{text: nomeVaga, fontSize:15, bold:true}, 
+         '", realizada na entidade ' ,{ text: nomeEntidade, fontSize: 15, bold:true }, ', CNPJ ',{text: cnpj, bold:true, fontSize:15}, ', com carga horária de ', 
          '',{text: cargaHoraria, bold:true, fontSize:15},' horas, no período de ' ,{text: dataInicio, fontSize:15, bold: true},' até ' ,{text: dataFim, fontSize:15, bold: true},'.',
          ]   
        ,style: 
