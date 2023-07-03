@@ -111,19 +111,41 @@ exports.rescindirTermo = async (req, res) => {
 
     inscricao = await Inscricao.findById(termo.idInscricao);
     vaga = await Vaga.findOne({ _id: inscricao.vagaId });
-    datas = datas.filter( function( el ) {
-      return vaga.diasTrabalho.indexOf( el ) < 0;
-    });
+    // datas = datas.filter( function( el ) {
+    //   return vaga.diasTrabalho.indexOf( el ) < 0;
+    // });
+
+    if(vaga.diasTrabalho.length != 0){
+      datas = vaga.diasTrabalho;
+    }
+
+    console.log('vagas dias de trabalho');
+    console.log(vaga.diasTrabalho);
+
+    console.log('as datas');
+    console.log(datas);
 
     dataBegin = JSON.stringify(inscricao.dataInicioTrabalho).substring(0,11);
+    console.log('Data Begin');
+    console.log(dataBegin);
     dataEnd = JSON.stringify(inscricao.dataEncerramentoTrabalho).substring(0,11);
+    console.log('Data End');
+    console.log(dataEnd);
 
     datasSel = getWeekDayList(dataBegin, 
     dataEnd, datas);
+
     dataInicio = parseInt(vaga.horarioInicioTrabalho.split(':')[0]);
     dataFim = parseInt(vaga.horarioEncerramentoTrabalho.split(':')[0]);
+    console.log('HoraInicial');
+    console.log( parseInt(vaga.horarioInicioTrabalho.split(':')[0]) );
+    console.log('HoraFim');
+    console.log( parseInt(vaga.horarioEncerramentoTrabalho.split(':')[0]) );
 
-    (dataInicio > dataFim) ? cargaHoraria = dataInicio - dataFim : cargaHoraria = dataFim - dataInicio;
+    (dataInicio > dataFim) ? cargaHoraria = dataInicio - dataFim : cargaHoraria = dataFim - dataInicio;    
+
+      console.log("Carga Horária");
+      console.log(cargaHoraria);
 
     //dados para certificado
     const nomeEntidade = await Entidade.findById(termo.idEntidade).select(
@@ -141,6 +163,8 @@ exports.rescindirTermo = async (req, res) => {
     let codigoVerificacao = novaSenha = Math.random().toString(36).substring(0, 12);
 
      const horasTotais = (parseInt(cargaHoraria) != 0 ) ? datasSel.length * cargaHoraria : 0;
+     console.log('Dias trabalhados');
+     console.log(horasTotais/9);
      const certificado = new Certificado();
      certificado.nomeEntidade = nomeEntidade;
      certificado.nomeEstudante = estudante.userid.nome;
