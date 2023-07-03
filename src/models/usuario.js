@@ -10,18 +10,7 @@ const UsuarioSchema = new mongoose.Schema({
   },
 
   senha: {
-    type: String,
-    // select: false,
-  },
-
-  resetSenhaToken: {
-    type: String,
-    // select: false,
-  },
-
-  resetSenhaExpires: {
-    type: Date,
-    // select: false,
+    type: String,   
   },
 
   nome: {
@@ -52,10 +41,6 @@ const UsuarioSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-
-
-
-
 });
 
 // Estudante Schema
@@ -134,10 +119,9 @@ const EstudanteSchema = new mongoose.Schema({
   },
 
   comprovanteMatricula: {
-    id: { type: mongoose.Types.ObjectId, ref: "Arquivo" },
-    contentType: { type: String },
     file: { type: String },
     fileName: { type: String },
+    contentType: { type: String },    
   },
 
   termoDeUso: {
@@ -275,7 +259,7 @@ UsuarioSchema.pre("save", async function (next) {
   next(); 
 });
 
-
+//usando bcrypt para update
 UsuarioSchema.pre('updateOne', async function (next) { 
   let update = {...this.getUpdate()};   
   if (update.senha){
