@@ -111,20 +111,24 @@ exports.rescindirTermo = async (req, res) => {
 
     inscricao = await Inscricao.findById(termo.idInscricao);
     vaga = await Vaga.findOne({ _id: inscricao.vagaId });
-    datas = datas.filter( function( el ) {
-      return vaga.diasTrabalho.indexOf( el ) < 0;
-    });
+    // datas = datas.filter( function( el ) {
+    //   return vaga.diasTrabalho.indexOf( el ) < 0;
+    // });
+
+    if(vaga.diasTrabalho.length != 0){
+      datas = vaga.diasTrabalho;
+    }
 
     dataBegin = JSON.stringify(inscricao.dataInicioTrabalho).substring(0,11);
     dataEnd = JSON.stringify(inscricao.dataEncerramentoTrabalho).substring(0,11);
 
     datasSel = getWeekDayList(dataBegin, 
     dataEnd, datas);
+
     dataInicio = parseInt(vaga.horarioInicioTrabalho.split(':')[0]);
     dataFim = parseInt(vaga.horarioEncerramentoTrabalho.split(':')[0]);
 
-    (dataInicio > dataFim) ? cargaHoraria = dataInicio - dataFim : cargaHoraria = dataFim - dataInicio;
-
+    (dataInicio > dataFim) ? cargaHoraria = dataInicio - dataFim : cargaHoraria = dataFim - dataInicio;    
     //dados para certificado
     const nomeEntidade = await Entidade.findById(termo.idEntidade).select(
       "razaoSocial"
@@ -142,6 +146,7 @@ exports.rescindirTermo = async (req, res) => {
 
      const horasTotais = (parseInt(cargaHoraria) != 0 ) ? datasSel.length * cargaHoraria : 0;
      const certificado = new Certificado();
+     
      certificado.nomeEntidade = nomeEntidade;
      certificado.nomeEstudante = estudante.userid.nome;
      certificado.cargaHoraria = horasTotais;
