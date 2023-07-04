@@ -250,11 +250,41 @@ exports.visualizarInscrito = async (req, res) => {
 //APROVAR INSCRITO 
 exports.aprovarInscrito = async (req, res) => {
   try {
+
+    let inscricao;
+
     await Inscricao.updateOne(
       { _id: req.params.inscricaoid },
       { $set: { statusInscricao: "APROVADO" } }
     );
-    return res.status(200).send({ message: "Inscrição aprovada com sucesso!" });
+
+    inscricao = await Inscricao.findOne({ _id: req.params.inscricaoid }).populate({
+      path:"vagaId"
+    });
+
+    let quantidadeVaga = parseInt(inscricao.vagaId.numeroVagas) - 1;
+
+    await Vaga.updateOne(
+      { _id: inscricao.vagaId },
+      { $set: { numeroVagas: quantidadeVaga } }
+    );
+    
+
+    if(quantidadeVaga == 0){
+
+      console.log("Valor igual a zero");
+
+      await Vaga.updateOne(
+        { _id: inscricao.vagaId },
+        { $set: { statusVaga: "ANDAMENTO" } }
+      );
+
+      return res.status(200).send({ message: "Inscrição aprovada com sucesso, Vaga Finalizada!" });
+    }else{
+      console.log(quantidadeVaga);
+      return res.status(200).send({ message: "Inscrição aprovada com sucesso!" });    
+    }
+  
   } catch (error) {
     return res
       .status(500)
