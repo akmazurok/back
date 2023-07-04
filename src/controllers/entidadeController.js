@@ -271,9 +271,7 @@ exports.aprovarInscrito = async (req, res) => {
     
 
     if(quantidadeVaga == 0){
-
       console.log("Valor igual a zero");
-
       await Vaga.updateOne(
         { _id: inscricao.vagaId },
         { $set: { statusVaga: "ANDAMENTO" } }
