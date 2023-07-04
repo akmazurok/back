@@ -204,7 +204,8 @@ exports.cancelarInscricao = async (req, res) => {
 };
 
 //ACEITAR TERMO DE ADESAO
-exports.aceitarTermo = async (req, res) => {
+exports.aceitarTermo = async (req, res) => { 
+
   try {
     await Inscricao.updateOne(
       { _id: req.params.inscricaoid },

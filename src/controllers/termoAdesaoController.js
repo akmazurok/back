@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 const Entidade = require("../models/usuario").Entidade;
 const Estudante = require("../models/usuario").Estudante;
+const Usuario = require("../models/usuario").Usuario;
 const TermoAdesao = require("../models/termoAdesao");
 const Inscricao = require("../models/inscricao");
 const Vaga = require("../models/vaga");
@@ -37,6 +38,7 @@ exports.gerarTermo = async (req, res) => {
 
 //VISUALIZAR TERMO - OK
 exports.visualizarTermo = async (req, res) => {
+
   try {
     const termo = await TermoAdesao.findOne({
       _id: req.params.termoid,

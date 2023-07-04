@@ -1,5 +1,8 @@
 const dotenv = require("dotenv");
 
+const cron = require('node-cron');
+
+const validaCron = require('./src/cron/EndJobDaily');
 const express = require("express");
 const cors = require("cors");
 const { restart } = require("nodemon");
@@ -43,4 +46,5 @@ app.get("/", (req, res) => {
 
 app.listen(port, () => {
   console.log(`API EstudanteVoluntario rodando em http://localhost:${port}`);
+  validaCron.verificaCron();
 });

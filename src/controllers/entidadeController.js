@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 const Entidade = require("../models/usuario").Entidade;
 const Estudante = require("../models/usuario").Estudante;
+const Notificacao = require("../models/notificacao");
 const Usuario = require("../models/usuario").Usuario;
 const Vaga = require("../models/vaga");
 const Inscricao = require("../models/inscricao");
@@ -53,7 +54,7 @@ exports.filtrarVagas = async (req, res) => {
   const id = req.params.id;
   const pagina = parseInt(req.params.pagina);
 
-  let limit = 3;
+  let limit = 5;
   let skip = limit * (pagina - 1);
 
   try {
@@ -249,6 +250,7 @@ exports.visualizarInscrito = async (req, res) => {
 
 //APROVAR INSCRITO 
 exports.aprovarInscrito = async (req, res) => {
+
   try {
 
     let inscricao;
@@ -259,8 +261,25 @@ exports.aprovarInscrito = async (req, res) => {
     );
 
     inscricao = await Inscricao.findOne({ _id: req.params.inscricaoid }).populate({
-      path:"vagaId"
+      path:"vagaId",
+      populate: {
+        path: "entidadeId"
+      }
     });
+
+    console.log(inscricao.userId);
+
+     let idRemetente = inscricao.vagaId.entidadeId._id;
+     let idDestinatario = inscricao.userId;
+     let titulo = "Você foi Selecionado!!";
+     let mensagem = "Parabéns, você foi o selecionado para a vaga: " + inscricao.vagaId.nomeVaga;
+
+     await Notificacao.create({
+       idRemetente,
+       idDestinatario,
+       titulo,
+       mensagem,
+     });
 
     let quantidadeVaga = parseInt(inscricao.vagaId.numeroVagas) - 1;
 
@@ -271,7 +290,7 @@ exports.aprovarInscrito = async (req, res) => {
     
 
     if(quantidadeVaga == 0){
-      console.log("Valor igual a zero");
+
       await Vaga.updateOne(
         { _id: inscricao.vagaId },
         { $set: { statusVaga: "ANDAMENTO" } }
