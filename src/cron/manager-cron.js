@@ -1,24 +1,14 @@
-const Vaga = require("../models/vaga");
-const Notificacao = require("../models/notificacao");
-const Estudante = require("../models/usuario").Estudante;
-const Inscricao = require("../models/inscricao");
+class ManagerCron{
+    constructor(){
+        this.jobs = [enviarEmailNotificacaoVaga,validarVagasIniciadas,validarVagasParaFechar,validaVagasEncerradas];
+    }
 
-const cron = require('node-cron');
-const nodemailer = require("nodemailer");
+    run(){
 
-const verificaCron = async () => {
-       //cron.schedule('* * 0/24 * * *', validaVagasEncerradas).start();
-       cron.schedule('* 0/1 * * * *', async () => {
-        await validarVagasIniciadas();
-        await enviarEmailNotificacaoVaga();        
-        await validarVagasParaFechar();
-        await validaVagasEncerradas()
-       }).start();
-       //Site para Criar Crons http://www.cronmaker.com/?0
+    }
+
 }
-module.exports = {
-    verificaCron
-};
+
 
 async function enviarEmailNotificacaoVaga(){
         
@@ -30,14 +20,14 @@ async function enviarEmailNotificacaoVaga(){
     let mensagem = "Prezado, Estudante. Seu Trabalho voluntário começa amanhã, dia: " + diaComecoTrabalho;
     let inscricoes = await Inscricao.find({ dataInicioTrabalho: diaComecoTrabalho }).populate({
         path: "vagaId"
-    });   
+    });
+   
 
     //Percorrendo a lista de Inscricoes e Atualizando as Datas que começam hoje
     inscricoes.forEach( async (data) => {
 
         //Buscando o Estudante para pegar o e-mail
         let estudante = await Estudante.findOne({ id: data.estudanteId });
-
         //Dados Para a Mensagem de Notificação
         let idRemetente = data.vagaId.entidadeId;
         let idDestinatario = data.estudanteId;

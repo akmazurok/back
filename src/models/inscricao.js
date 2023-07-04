@@ -19,6 +19,7 @@ const InscricaoSchema = new mongoose.Schema({
   },
 
   dataInscricao: {
+    
     type: Date,
     default: Date.now,
   },

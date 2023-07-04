@@ -267,8 +267,6 @@ exports.aprovarInscrito = async (req, res) => {
       }
     });
 
-    console.log(inscricao.userId);
-
      let idRemetente = inscricao.vagaId.entidadeId._id;
      let idDestinatario = inscricao.userId;
      let titulo = "Você foi Selecionado!!";
@@ -298,7 +296,6 @@ exports.aprovarInscrito = async (req, res) => {
 
       return res.status(200).send({ message: "Inscrição aprovada com sucesso, Vaga Finalizada!" });
     }else{
-      console.log(quantidadeVaga);
       return res.status(200).send({ message: "Inscrição aprovada com sucesso!" });    
     }
   
