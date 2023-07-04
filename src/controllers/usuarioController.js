@@ -70,9 +70,19 @@ exports.cadastrar = async (req, res) => {
 exports.esqueciSenha = async (req, res) => {
   const { login } = req.body;
 
+  let usuarioDados;
+
   try {
     const usuario = await Usuario.findOne({ login });
-    const estudante = await Estudante.findOne({ userid: usuario._id });  
+    if(login.length > 11){
+      usuarioDados = await Estudante.findOne({ _id: usuario._id });
+    }else{
+      usuarioDados = await Entidade.findOne({ _id: usuario._id });
+    }
+
+    novaSenha = Math.random().toString(36).substring(0, 7);
+
+    await Usuario.updateOne({ login: login}, novaSenha);
 
     const transport = nodemailer.createTransport({
       host: "smtp-mail.outlook.com",
@@ -82,14 +92,12 @@ exports.esqueciSenha = async (req, res) => {
         user: "testeparaotcc@outlook.com",
         pass: "Ufpr@123",
       },
-    });
-
-    novaSenha = Math.random().toString(36).substring(0, 7);
+    });   
 
     transport
       .sendMail({
         from: "Estudante Voluntário <testeparaotcc@outlook.com>",
-        to: "gustavoachinitz@gmail.com",
+        to: usuarioDados.email,
         subject: "Nova Senha - Estudante Voluntário",
         html: `
         <h1>Olá, ${usuario.nome}! </h1>        

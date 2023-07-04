@@ -146,7 +146,7 @@ function enviarEmail(data,dataTrabalho){
           to: data,
           subject: "Lembrete Inicio de Trabalho - Estudante Voluntário",
           html: `
-          <h1>Olá, Futuro Voluntário! </h1>        
+          <h2>Olá, Futuro Voluntário! </h2>        
           <p>Lembrando que seu trabalho voluntário começa amanhã!! Lembre-se de chegar no horário e levar seus documentos: RG e CPF</p>          
       `,
         });
