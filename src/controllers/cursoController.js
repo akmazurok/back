@@ -104,9 +104,7 @@ exports.listarCursos = async (req, res) => {
       .sort({ nome: "asc" });
     res.status(200).send(cursos);
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Não foi possível listar os cursos: " + error });
+    
   }
 };
 
