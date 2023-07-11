@@ -1,7 +1,8 @@
 # Estudante Voluntário - Back End
 <header>
    <ul>
-     <li>Universidade Federal do Paraná - UFPR - Setor de Educação Profissional e Tecnológica - SEPT</li>
+     <li>Universidade Federal do Paraná - UFPR</li>
+     <li>Setor de Educação Profissional e Tecnológica - SEPT</li>
      <li>Tecnologia em Análise e Desenvolvimento de Sistemas</li>
      <li>DS960 - TCC-2 - N6</li>
      <li>Orientador: Prof. Dr. Alexander Robert Kutzke</li>   
@@ -9,30 +10,41 @@
      <li>GRR20184614 - Gustavo de Oliveira Achinitz</li>
     </ul>
  </header>
-
+ 
 ## Introdução 
-<p>Este aplicativo foi realizado com o objetivo de conclusão do Curso de Análise e Desenvolvimento de Sistemas da Universidade Federal do Paraná.</p>
+Aplicação desenvolvida como Trabalho de Conclusão do Curso de Tecnologia em Análise e Desenvolvimento de Sistemas, da Universidade Federal do Paraná.
 
 ## Sobre o Projeto
-<p> 
-  Projeto feito para Entidades que desejam contratar voluntariados para ajudar nas suas tarefas e para estudantes que desejam adquirir Horas Formativas. 
-  A aplicação dividida em quatro perfis:
-</p>
+O projeto consiste em uma aplicação web para gerenciamento de vagas de trabalho voluntário, que permita que as entidades ofertem as suas vagas e que os estudantes de graduação possam se inscrever nelas e utilizar as horas trabalhadas para comprovação de atividade formativa.
+
+A aplicação possui três perfis de usuários:
 <ul>
   <li>Estudante</li>
   <li>Entidade</li>
   <li>Administrador</li>
-  <li>Administrador Geral</li>
 </ul>
 
+### Funcionamento do Projeto
+![Funcionamento][def]
+
 ## Tecnologias Utilizadas
+### Back end
+<ul>
+  <li>Node.js</li>
+  <li>Express,js</li>
+  <li>Mongoose 6.4.0</li>
+  <li>JsonWebToken 8.5.1</li>
+  <li>Nodemailer 6.9.3</li>
+  <li>bcrypt</li>
+  <li>pdfmake</li>
+</ul>
+
+### Banco de Dados
+MongoDB Compass
 
 ### Pré Requisitos
 <ul>
-  <li>GitHub instalado e configurado   <a href="https://www.hostinger.com.br/tutoriais/tutorial-do-git-basics-                    introducao#:~:text=Instalar%20o%20GIT%20no%20Windows%3A&text=Acesse%20o%20site%20oficial%20e,concluir%20com%20%C3%AAxito%20a%20instala%C3%A7%C3%A3o.">
-    Acessar tutorial
-  </a> 
-  </li>
+  <li>GitHub instalado e configurado</li>
   <li>
     [npm] ( https://www.npmjs.com/package/node )
   </li>
@@ -44,40 +56,41 @@
   </li>
 </ul>
 
-### Back end
-<ul>
-  <li> node</li>
-  <li>nodemon</li>
-  <li>express</li>
-</ul>
 
-### Banco de Dados
-<ul>
-  <li>MongoDB Compass</li>
-</ul>
-
-#### Instalar o Node
-`npm i node`
+#### Instalar o Node.Js
+`npm install node`
 
 #### Instalar o Nodemon
-`npm i nodemon`
+`npm install nodemon`
 
-#### Instalar o MongoDb
-`npm install mongodb`
+#### Instalar o Mongoose
+`npm install mongoose`
 
 #### Instalar o dotenv
-`npm install dotenv`
+```
+#instalar localmente
+npm install dotenv --save`
+```
+
+Adicionar as seguintes variáveis no arquivo .env:
+```javascript
+APP_URL=http://localhost:3000
+MONGODB_USERNAME=
+MONGODB_PASSWORD=
+ACCESS_TOKEN_SECRET=
+REFRESH_TOKEN_SECRET=
+```
 
 #### Clonar repositório
-`git clone https://github.com/Achinitz/TCC.git`
+`git clone https://github.com/akmazurok/back.git`
 
-#### Entrar na pasta do projeto front end Web
+#### Entrar na pasta do projeto
 `cd back`
 
-#### instalar dependências
+#### Instalar dependências
 `npm install`
 
-#### executar o projeto
+#### Executar o projeto
 `npm start run:dev`
 
 #### Executando o Projeto
@@ -85,3 +98,5 @@ O sistema está sendo executado em `localhost:3000`
 
 #### Interrompendo a Execução
 Apertar as teclas do seu teclado Ctrl + C juntas no terminal
+
+[def]: src/config/funcionamento-tcc.gif
